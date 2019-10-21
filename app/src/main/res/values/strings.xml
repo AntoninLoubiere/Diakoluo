@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Diakôluô</string>
+    <string name="informationLine">Version 0.1.0 - Antonin LOUBIÈRE - GPL 3</string>
 </resources>
