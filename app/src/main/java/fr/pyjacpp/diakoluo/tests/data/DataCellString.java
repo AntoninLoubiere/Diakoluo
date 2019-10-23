@@ -3,7 +3,7 @@ package fr.pyjacpp.diakoluo.tests.data;
 public class DataCellString extends DataCell {
     private String value;
 
-    private DataCellString(String value) {
+    public DataCellString(String value) {
         this.value = value;
     }
 
