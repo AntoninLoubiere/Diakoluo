@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Diakôluô</string>
-    <string name="informationLine">Version 0.1.0 - Antonin LOUBIÈRE - GPL 3</string>
+    <string name="information_line">Version 0.1.0 - Antonin LOUBIÈRE - GPL 3</string>
+    <string name="title">Title</string>
+    <string name="very_long_description">Default description, a description can be very long. When I say very long, it\'s because a description can become very long. But I think I can do less long but it\'s needed to the demo.</string>
+    <string name="default_created_date_test">Created the 22 of october of 2019</string>
+    <string name="default_last_modification_test">Last modification the 23 of october, 17:08</string>
+    <string name="number_test_did_format">Number of tests did %d</string>
 </resources>
