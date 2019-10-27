@@ -1,10 +1,10 @@
-package fr.pyjacpp.diakoluo;
+package fr.pyjacpp.diakoluo.list_tests;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import fr.pyjacpp.diakoluo.list_tests.ListTestsFragment;
+import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.view_test.MainInformationsViewTestFragment;
 
 public class ListTestActivity extends AppCompatActivity

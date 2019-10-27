@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".list_tests.ListTestActivity">
+    tools:context=".view_test.AnswerViewTestFragment">
 
     <fragment
-        android:id="@+id/fragmentListTest"
-        class="fr.pyjacpp.diakoluo.list_tests.ListTestsFragment"
+        android:id="@+id/AnswwerViewTestRecyclerListFragment"
+        class="fr.pyjacpp.diakoluo.view_test.AnswerViewTestRecyclerListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout="@layout/fragment_recycler_list" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

@@ -3,12 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".list_tests.ListTestsFragment">
+    tools:context=".view_test.ColumnViewTestFragment">
 
-    <view
-        class="androidx.appcompat.app.AlertController$RecycleListView"
+    <fragment
+        android:id="@+id/ColumnViewTestRecyclerListFragment"
+        class="fr.pyjacpp.diakoluo.view_test.ColumnViewTestRecyclerListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"/>
+        tools:layout="@layout/fragment_recycler_list" />
 
 </RelativeLayout>

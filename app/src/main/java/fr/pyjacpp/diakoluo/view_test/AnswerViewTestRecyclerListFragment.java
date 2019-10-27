@@ -1,4 +1,4 @@
-package fr.pyjacpp.diakoluo.list_tests;
+package fr.pyjacpp.diakoluo.view_test;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,23 +11,17 @@ import androidx.fragment.app.Fragment;
 
 import fr.pyjacpp.diakoluo.R;
 
-
-public class ListTestsFragment extends Fragment {
+public class AnswerViewTestRecyclerListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
-    public ListTestsFragment() {
+    public AnswerViewTestRecyclerListFragment() {
         // Required empty public constructor
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View inflatedLayout = inflater.inflate(R.layout.fragment_recycler_list, container, false);
-
         // TODO
-
-        return inflatedLayout;
+        return inflater.inflate(R.layout.fragment_recycler_list, container, false);
     }
 
     @Override
@@ -48,6 +42,5 @@ public class ListTestsFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        // TODO
     }
 }
