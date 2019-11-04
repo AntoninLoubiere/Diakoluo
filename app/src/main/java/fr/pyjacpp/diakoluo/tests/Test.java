@@ -7,6 +7,8 @@ public class Test {
     private String name;
     private String description;
 
+    /* TODO private ?PathClass? testPath; */
+
     private Date createdDate;
     private Date lastModification;
 
