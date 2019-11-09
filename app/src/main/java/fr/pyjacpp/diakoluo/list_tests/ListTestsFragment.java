@@ -22,10 +22,6 @@ import fr.pyjacpp.diakoluo.view_test.ViewTestActivity;
 public class ListTestsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
-    private RecyclerView testRecyclerView;
-    private RecyclerView.Adapter testRecyclerViewAdapter;
-    private LinearLayoutManager testRecyclerViewLayoutManager;
-
     public ListTestsFragment() {
         // Required empty public constructor
     }
@@ -36,14 +32,14 @@ public class ListTestsFragment extends Fragment {
         // Inflate the layout for this fragment
         View inflatedLayout = inflater.inflate(R.layout.fragment_recycler_list, container, false);
 
-        testRecyclerView = inflatedLayout.findViewById(R.id.recyclerView);
+        RecyclerView testRecyclerView = inflatedLayout.findViewById(R.id.recyclerView);
+        LinearLayoutManager testRecyclerViewLayoutManager = new LinearLayoutManager(getContext());
+        RecyclerView.Adapter testRecyclerViewAdapter = new TestAdapter(getContext());
+
+
 
         testRecyclerView.setHasFixedSize(true);
-
-        testRecyclerViewLayoutManager = new LinearLayoutManager((getContext()));
         testRecyclerView.setLayoutManager(testRecyclerViewLayoutManager);
-
-        testRecyclerViewAdapter = new TestAdapter(getContext());
         testRecyclerView.setAdapter(testRecyclerViewAdapter);
 
         testRecyclerView.addItemDecoration(new DividerItemDecoration(testRecyclerView.getContext(),

@@ -53,10 +53,16 @@ public class DiakoluoApplication extends Application {
         listTest.add(new Test(
                 "Test 3", "It's the third test", new Date(), new Date(), 3, columns, dataRows
         ));
+
+        setCurrentTest(0);
     }
 
     public void setCurrentTest(Test currentTest) {
         this.currentTest = currentTest;
+    }
+
+    public void setCurrentTest(int currentTest) {
+        this.currentTest = getListTest().get(currentTest);
     }
 
     public Test getCurrentTest() {
