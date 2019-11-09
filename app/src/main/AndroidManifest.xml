@@ -4,6 +4,7 @@
     package="fr.pyjacpp.diakoluo">
 
     <application
+        android:name=".DiakoluoApplication"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"

@@ -23,29 +23,29 @@
             android:layout_below="@id/titleTextView"/>
 
         <TextView
-            android:id="@+id/createdDate"
+            android:id="@+id/createdDateTextView"
             style="@style/Text.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/titleTextView"
-            android:text="@string/default_created_date_test"
+            android:text="@string/created_date_test_format"
             android:textStyle="italic" />
 
         <TextView
-            android:id="@+id/lastModification"
+            android:id="@+id/lastModificationTextView"
             style="@style/Text.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="italic"
-            android:text="@string/default_last_modification_test"
-            android:layout_below="@id/createdDate"/>
+            android:text="@string/last_modification_test_format"
+            android:layout_below="@id/createdDateTextView"/>
 
         <TextView
             android:id="@+id/descriptionTextView"
             style="@style/Text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/lastModification"
+            android:layout_below="@id/lastModificationTextView"
             android:text="@string/very_long_description" />
 
         <View
