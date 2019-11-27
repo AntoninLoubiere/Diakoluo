@@ -10,6 +10,7 @@ public class DataRow {
 
     public DataRow() {
         selected = true;
+        listCells = new HashMap<>();
     }
 
     public DataRow(boolean selected) {

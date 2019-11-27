@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import fr.pyjacpp.diakoluo.R;
 
@@ -21,7 +24,20 @@ public class ColumnViewTestRecyclerListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // TODO
-        return inflater.inflate(R.layout.fragment_recycler_list, container, false);
+        View inflatedView = inflater.inflate(R.layout.fragment_recycler_list, container, false);
+
+        RecyclerView columnRecyclerView = inflatedView.findViewById(R.id.recyclerView);
+        RecyclerView.Adapter columnRecyclerViewAdapter = new ColumnAdapter(columnRecyclerView.getContext());
+        LinearLayoutManager columnRecyclerViewLayoutManager = new LinearLayoutManager(columnRecyclerView.getContext());
+
+        columnRecyclerView.setHasFixedSize(true);
+        columnRecyclerView.setLayoutManager(columnRecyclerViewLayoutManager);
+        columnRecyclerView.setAdapter(columnRecyclerViewAdapter);
+
+        columnRecyclerView.addItemDecoration(new DividerItemDecoration(columnRecyclerView.getContext(),
+                columnRecyclerViewLayoutManager.getOrientation()));
+
+        return inflatedView;
     }
 
     @Override

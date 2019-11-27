@@ -6,8 +6,7 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import fr.pyjacpp.diakoluo.view_test.ViewTestActivity;
-import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.list_tests.ListTestActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -22,7 +21,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             @Override
             public void run() {
                 startActivity(
-                        new Intent(SplashScreenActivity.this, ViewTestActivity.class)
+                        new Intent(SplashScreenActivity.this, ListTestActivity.class)
                 );
                 finish();
             }

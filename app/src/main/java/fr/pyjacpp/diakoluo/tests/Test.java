@@ -64,7 +64,7 @@ public class Test {
         return createdDate;
     }
 
-    public Date getLastModification() {
+    public Date getLastModificationDate() {
         return lastModification;
     }
 

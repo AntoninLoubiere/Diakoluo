@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view_test.ColumnViewTestFragment">
 
     <fragment
-        android:id="@+id/ColumnViewTestRecyclerListFragment"
+        android:id="@+id/columnViewTestRecyclerListFragment"
         class="fr.pyjacpp.diakoluo.view_test.ColumnViewTestRecyclerListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout="@layout/fragment_recycler_list" />
 
-</RelativeLayout>
+</androidx.core.widget.NestedScrollView>

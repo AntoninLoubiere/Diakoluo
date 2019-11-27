@@ -8,7 +8,7 @@ public class DataCellString extends DataCell {
     }
 
     @Override
-    protected String getValue() {
+    public String getValue() {
         return value;
     }
 }

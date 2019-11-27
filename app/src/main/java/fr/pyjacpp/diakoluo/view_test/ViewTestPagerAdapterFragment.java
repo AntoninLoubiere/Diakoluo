@@ -38,7 +38,7 @@ public class ViewTestPagerAdapterFragment extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return NUMBER_VIEW_TEST_TAB;
     }
 
     @Nullable
