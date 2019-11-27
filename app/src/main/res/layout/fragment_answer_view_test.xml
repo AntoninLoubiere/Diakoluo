@@ -6,7 +6,7 @@
     tools:context=".view_test.AnswerViewTestFragment">
 
     <fragment
-        android:id="@+id/AnswwerViewTestRecyclerListFragment"
+        android:id="@+id/answerViewTestRecyclerListFragment"
         class="fr.pyjacpp.diakoluo.view_test.AnswerViewTestRecyclerListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

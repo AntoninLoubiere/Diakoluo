@@ -28,17 +28,17 @@ public class DiakoluoApplication extends Application {
         ArrayList<DataRow> dataRows = new ArrayList<>();
         dataRows.add(new DataRow());
         dataRows.get(0).getListCells().put(columns.get(0), new DataCellString("Test - D1C1"));
-        dataRows.get(0).getListCells().put(columns.get(1), new DataCellString("Test - D2C1"));
-        dataRows.get(0).getListCells().put(columns.get(2), new DataCellString("Test - D3C1"));
+        dataRows.get(0).getListCells().put(columns.get(1), new DataCellString("Test - D1C2"));
+        dataRows.get(0).getListCells().put(columns.get(2), new DataCellString("Test - D1C3"));
 
         dataRows.add(new DataRow());
-        dataRows.get(1).getListCells().put(columns.get(0), new DataCellString("Test - D1C2"));
+        dataRows.get(1).getListCells().put(columns.get(0), new DataCellString("Test - D2C1"));
         dataRows.get(1).getListCells().put(columns.get(1), new DataCellString("Test - D2C2"));
-        dataRows.get(1).getListCells().put(columns.get(2), new DataCellString("Test - D3C2"));
+        dataRows.get(1).getListCells().put(columns.get(2), new DataCellString("Test - D2C3"));
 
         dataRows.add(new DataRow());
-        dataRows.get(2).getListCells().put(columns.get(0), new DataCellString("Test - D1C3"));
-        dataRows.get(2).getListCells().put(columns.get(1), new DataCellString("Test - D2C3"));
+        dataRows.get(2).getListCells().put(columns.get(0), new DataCellString("Test - D3C1"));
+        dataRows.get(2).getListCells().put(columns.get(1), new DataCellString("Test - D3C2"));
         dataRows.get(2).getListCells().put(columns.get(2), new DataCellString("Test - D3C3"));
 
 

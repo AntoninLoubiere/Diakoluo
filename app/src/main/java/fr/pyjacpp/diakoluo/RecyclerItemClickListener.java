@@ -1,6 +1,5 @@
 package fr.pyjacpp.diakoluo;
 
-import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,15 +13,16 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
     private GestureDetector gestureDetector;
 
     public interface OnItemClickListener {
-        public void onItemClick(View view, int position);
+        void onItemClick(View view, int position);
 
-        public void onLongItemClick(View view, int position);
+        void onLongItemClick(View view, int position);
     }
 
 
-    public RecyclerItemClickListener(Context context, final RecyclerView recyclerView, OnItemClickListener listener) {
+    public RecyclerItemClickListener(final RecyclerView recyclerView, OnItemClickListener listener) {
         mListener = listener;
-        gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+        gestureDetector = new GestureDetector(recyclerView.getContext(),
+                new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
                 return true;

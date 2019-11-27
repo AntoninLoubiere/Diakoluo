@@ -6,7 +6,7 @@
     tools:context=".view_test.ColumnViewTestFragment">
 
     <fragment
-        android:id="@+id/ColumnViewTestRecyclerListFragment"
+        android:id="@+id/columnViewTestRecyclerListFragment"
         class="fr.pyjacpp.diakoluo.view_test.ColumnViewTestRecyclerListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

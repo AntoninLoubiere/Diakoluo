@@ -46,7 +46,7 @@ public class ListTestsFragment extends Fragment {
                 testRecyclerViewLayoutManager.getOrientation()));
 
         testRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(
-                getContext(), testRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+                testRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 DiakoluoApplication.setCurrentTest(view.getContext(),
