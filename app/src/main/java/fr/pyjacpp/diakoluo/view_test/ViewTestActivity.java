@@ -26,6 +26,8 @@ public class ViewTestActivity extends AppCompatActivity
         TabLayout tabLayout = findViewById(R.id.viewTestTabLayout);
         ViewPager viewPager = findViewById(R.id.viewTestViewPager);
 
+        viewPager.setOffscreenPageLimit(2);
+
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         viewPager.setAdapter(new ViewTestPagerAdapterFragment(
