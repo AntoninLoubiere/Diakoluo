@@ -3,6 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".test_tests.TestSettingsActivity">
+    tools:context=".test_tests.TestSettingsActivity"
+    android:layout_margin="8dp">
+
+    <fragment
+        android:id="@+id/fragmentTestSettings"
+        class="fr.pyjacpp.diakoluo.test_tests.TestSettingsFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_test_settings"/>
 
 </RelativeLayout>

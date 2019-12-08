@@ -13,7 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".test_tests.TestSettingsActivity"></activity>
+        <activity
+            android:name=".test_tests.TestSettingsActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".view_test.AnswerDataViewActivity" />
         <activity
             android:name=".view_test.ViewTestActivity"

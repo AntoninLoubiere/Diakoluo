@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerItemClickListener;
+import fr.pyjacpp.diakoluo.test_tests.TestSettingsActivity;
 import fr.pyjacpp.diakoluo.view_test.ViewTestActivity;
 
 
@@ -46,7 +47,10 @@ public class ListTestsFragment extends Fragment {
 
             @Override
             public void onPlayButtonClick(View view, int position) {
-                Log.d("Diakoluo", "Play button click: " + position);
+                DiakoluoApplication.setCurrentTest(view.getContext(),
+                        DiakoluoApplication.getListTest(view.getContext()).get(position));
+
+                startActivity(new Intent(view.getContext(), TestSettingsActivity.class));
             }
 
             @Override
