@@ -25,6 +25,7 @@ public class TestScoreActivity extends AppCompatActivity implements TestScoreFra
     public void restartButton() {
         TestTestContext testTestContext = DiakoluoApplication.getTestTestContext(this);
         testTestContext.reset();
+        testTestContext.selectShowColumn();
         startActivity(new Intent(this, TestActivity.class));
         finish();
     }

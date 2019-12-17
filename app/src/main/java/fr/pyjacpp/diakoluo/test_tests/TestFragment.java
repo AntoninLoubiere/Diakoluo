@@ -4,10 +4,6 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import java.util.HashMap;
 
@@ -112,9 +111,9 @@ public class TestFragment extends Fragment {
                         answerRow.removeAllViews();
 
                         Boolean columnShow = testTestContext.getShowColumn().get(column);
-                        DataCellString dataCellString = (DataCellString) testTestContext.getCurrentRow().getListCells().get(column);
+                        DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
 
-                        if (columnShow != null && dataCellString != null) {
+                        if (columnShow != null && dataCell != null) {
                             if (columnShow) {
                                 addAnswer(column, answerRow, params);
                             } else {
@@ -123,6 +122,7 @@ public class TestFragment extends Fragment {
                                     switch (column.getInputType()) {
                                         case String:
                                             String answerS = (String) answer;
+                                            DataCellString dataCellString = (DataCellString) dataCell;
 
                                             TextView answerTextView = new TextView(inflatedView.getContext());
 
@@ -142,8 +142,6 @@ public class TestFragment extends Fragment {
                                                 answerTextView.setTextColor(getResources().getColor(
                                                         R.color.trueAnswer
                                                 ));
-
-                                                testTestContext.addScore(1);
 
                                             } else {
                                                 answerTextView.setTextColor(getResources().getColor(
@@ -229,8 +227,28 @@ public class TestFragment extends Fragment {
             }
         } else {
             saveAnswer();
+            addScore();
             testTestContext.setAnswerGive(true);
             updateAnswer();
+        }
+    }
+
+    private void addScore() {
+        for (Column column : testTestContext.getTest().getListColumn()) {
+            Boolean columnShow = testTestContext.getShowColumn().get(column);
+            Object answer = testTestContext.getUserAnswer().get(column);
+            DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
+            if (columnShow != null && answer != null && dataCell != null && !columnShow) {
+                switch (column.getInputType()) {
+                    case String:
+                        String answerS = (String) answer;
+                        DataCellString dataCellString = (DataCellString) dataCell;
+
+                        if (answerS.equalsIgnoreCase(dataCellString.getValue())) {
+                            testTestContext.addScore(1);
+                        }
+                }
+            }
         }
     }
 
