@@ -6,6 +6,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.Date;
 
+import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
@@ -15,6 +16,7 @@ import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 public class DiakoluoApplication extends Application {
     private ArrayList<Test> listTest;
     private Test currentTest;
+    private TestTestContext testTestContext;
 
     @Override
     public void onCreate() {
@@ -655,6 +657,14 @@ public class DiakoluoApplication extends Application {
         return listTest;
     }
 
+    public TestTestContext getTestTestContext() {
+        return testTestContext;
+    }
+
+    public void setTestTestContext(TestTestContext testTestContext) {
+        this.testTestContext = testTestContext;
+    }
+
     public static void setCurrentTest(Context context, Test currentTest) {
         ((DiakoluoApplication) context.getApplicationContext()).setCurrentTest(currentTest);
     }
@@ -665,5 +675,13 @@ public class DiakoluoApplication extends Application {
 
     public static ArrayList<Test> getListTest(Context context) {
         return ((DiakoluoApplication) context.getApplicationContext()).getListTest();
+    }
+
+    public static TestTestContext getTestTestContext(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getTestTestContext();
+    }
+
+    public static void setTestTestContext(Context context,TestTestContext testTestContext) {
+        ((DiakoluoApplication) context.getApplicationContext()).setTestTestContext(testTestContext);
     }
 }

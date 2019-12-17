@@ -77,7 +77,6 @@ public class AnswerDataViewFragment extends Fragment {
                 columnValue.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
 
                 TableRow.LayoutParams params = new TableRow.LayoutParams();
-
                 params.weight = 1;
 
                 columnTitle.setLayoutParams(params);

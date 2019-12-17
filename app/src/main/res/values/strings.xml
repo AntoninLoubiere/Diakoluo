@@ -17,4 +17,6 @@
     <string name="number_column_to_show">Select the number of column show:</string>
     <string name="number_column_to_show_seekbar_textview">%d/%d</string>
     <string name="valid">valid</string>
+    <string name="continue_text">Continue</string>
+    <string name="skip">Skip</string>
 </resources>

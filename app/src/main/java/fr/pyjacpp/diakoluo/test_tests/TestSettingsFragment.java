@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -51,8 +52,10 @@ public class TestSettingsFragment extends Fragment {
 
         TextView testTitle = inflatedView.findViewById(R.id.testTitle);
         final TextView numberColumnToShowSeekBarTextView = inflatedView.findViewById(R.id.numberColumnToShowSeekBarTextView);
-        SeekBar numberColumnToShowSeekBar = inflatedView.findViewById(R.id.numberColumnToShowSeekBar);
-        Spinner numberQuestionToAskSpinner = inflatedView.findViewById(R.id.numberQuestionToAskSpinner);
+        final SeekBar numberColumnToShowSeekBar = inflatedView.findViewById(R.id.numberColumnToShowSeekBar);
+        final Spinner numberQuestionToAskSpinner = inflatedView.findViewById(R.id.numberQuestionToAskSpinner);
+
+        Button validButton = inflatedView.findViewById(R.id.validButton);
 
         final Test currentTest = DiakoluoApplication.getCurrentTest(inflatedView.getContext());
 
@@ -101,6 +104,15 @@ public class TestSettingsFragment extends Fragment {
                 R.string.number_column_to_show_seekbar_textview,
                 1, currentTest.getNumberColumn()));
 
+        validButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int numberQuestionToAsk = ((TestQuestionPossibility) numberQuestionToAskSpinner.getSelectedItem()).possibility;
+                int numberColumnToShow = numberColumnToShowSeekBar.getProgress() + 1;
+                mListener.onDoTest(numberQuestionToAsk, numberColumnToShow);
+            }
+        });
+
         return inflatedView;
     }
 
@@ -122,5 +134,6 @@ public class TestSettingsFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
+        void onDoTest(int numberQuestionToAsk, int numberColumnToShow);
     }
 }
