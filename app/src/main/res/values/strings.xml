@@ -19,4 +19,8 @@
     <string name="valid">valid</string>
     <string name="continue_text">Continue</string>
     <string name="skip">Skip</string>
+    <string name="score_20">%.2f/20</string>
+    <string name="score_presice">%d/%d</string>
+    <string name="restart">Restart</string>
+    <string name="main_menu">Main menu</string>
 </resources>

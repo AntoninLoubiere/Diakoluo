@@ -1,9 +1,9 @@
 package fr.pyjacpp.diakoluo.test_tests;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import fr.pyjacpp.diakoluo.R;
 
@@ -17,9 +17,7 @@ public class TestActivity extends AppCompatActivity implements TestFragment.OnFr
 
     @Override
     public void showScore(TestTestContext context) {
+        startActivity(new Intent(getApplicationContext(), TestScoreActivity.class));
         finish();
-        Toast.makeText(this,
-                context.getScore() + "/" + context.getMaxScore(),
-                Toast.LENGTH_LONG).show();
     }
 }

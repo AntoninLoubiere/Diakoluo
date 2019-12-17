@@ -16,6 +16,7 @@ public class TestTestContext {
     private int score = 0;
     private int maxScore;
 
+    private int numberQuestionToAsk;
     private int numberColumnToShow;
 
     private ArrayList<DataRow> listRowToAsk = new ArrayList<>();
@@ -31,6 +32,7 @@ public class TestTestContext {
 
 
     TestTestContext(Context context, int numberQuestionToAsk, int numberColumnToShow) {
+        this.numberQuestionToAsk = numberQuestionToAsk;
         this.numberColumnToShow = numberColumnToShow;
 
         test = DiakoluoApplication.getCurrentTest(context);
@@ -52,11 +54,11 @@ public class TestTestContext {
         }
     }
 
-    int getMaxScore() {
+    public int getMaxScore() {
         return maxScore;
     }
 
-    int getScore() {
+    public int getScore() {
         return score;
     }
 
@@ -130,5 +132,30 @@ public class TestTestContext {
 
     void removeUserInput() {
         userAnswer.clear();
+    }
+
+    void reset() {
+        score = 0;
+        maxScore = numberQuestionToAsk * (test.getNumberColumn() - numberColumnToShow);
+        listRowToAsk = new ArrayList<>();
+        currentIndex = 0;
+        answerGive = false;
+
+        userAnswer = new HashMap<>();
+        showColumn = new HashMap<>();
+
+        ArrayList<DataRow> dataRowsToChoose = new ArrayList<>(test.getListRow());
+
+        Random random = new Random();
+        for (int i = 0; i < numberQuestionToAsk; i++) {
+            int index = random.nextInt(dataRowsToChoose.size());
+            listRowToAsk.add(dataRowsToChoose.get(index));
+            dataRowsToChoose.remove(index);
+        }
+
+        for (Column column : test.getListColumn()) {
+            userAnswer.put(column, null);
+            showColumn.put(column, false);
+        }
     }
 }

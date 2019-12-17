@@ -354,7 +354,7 @@ public class DiakoluoApplication extends Application {
         dataRows.get(53).getListCells().put(columns.get(0), new DataCellString("lie"));
         dataRows.get(53).getListCells().put(columns.get(1), new DataCellString("lay"));
         dataRows.get(53).getListCells().put(columns.get(2), new DataCellString("lain"));
-        dataRows.get(53).getListCells().put(columns.get(3), new DataCellString("s’allonger"));
+        dataRows.get(53).getListCells().put(columns.get(3), new DataCellString("s'allonger"));
 
         dataRows.add(new DataRow());
         dataRows.get(54).getListCells().put(columns.get(0), new DataCellString("lose"));
