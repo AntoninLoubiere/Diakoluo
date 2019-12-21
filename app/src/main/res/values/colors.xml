@@ -9,6 +9,6 @@
     <color name="secondaryText">#757575</color>
     <color name="dividerColor">#BDBDBD</color>
     <color name="appNameTitleColor">#FFF</color>
-    <color name="trueAnswer">#0F0</color>
-    <color name="wrongAnswer">#F00</color>
+    <color name="trueAnswer">#3ae93a</color>
+    <color name="wrongAnswer">#e93a3a</color>
 </resources>
