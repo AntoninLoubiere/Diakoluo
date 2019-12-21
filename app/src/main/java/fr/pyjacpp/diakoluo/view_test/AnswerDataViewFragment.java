@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
+import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
@@ -61,26 +63,27 @@ public class AnswerDataViewFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View inflatedView = inflater.inflate(R.layout.fragment_answer_data_view, container, false);
-        TableLayout layout = inflatedView.findViewById(R.id.answersListTableLayout);
+        LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
 
         DataRow row = DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getListRow().get(answerIndex);
 
-        for (Column column : DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getListColumn()) {
+        LinearLayout.LayoutParams params = new TableRow.LayoutParams();
+        params.topMargin = 24;
+
+        ArrayList<Column> listColumn = DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getListColumn();
+        for (int i = 0; i < listColumn.size(); i++) {
+            Column column = listColumn.get(i);
+
             DataCell dataCell = row.getListCells().get(column);
             if (dataCell != null) {
-                TableRow tableRow = new TableRow(inflatedView.getContext());
-
                 TextView columnTitle = new TextView(inflatedView.getContext());
                 TextView columnValue = new TextView(inflatedView.getContext());
 
                 columnTitle.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
                 columnValue.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-
-                TableRow.LayoutParams params = new TableRow.LayoutParams();
-                params.weight = 1;
-
-                columnTitle.setLayoutParams(params);
-                columnValue.setLayoutParams(params);
+                
+                if (i > 0)
+                    columnTitle.setLayoutParams(params);
 
                 columnTitle.setTypeface(null, Typeface.BOLD);
 
@@ -89,10 +92,8 @@ public class AnswerDataViewFragment extends Fragment {
                     columnValue.setText((String) dataCell.getValue());
                 }
 
-                tableRow.addView(columnTitle);
-                tableRow.addView(columnValue);
-
-                layout.addView(tableRow);
+                layout.addView(columnTitle);
+                layout.addView(columnValue);
             }
         }
 

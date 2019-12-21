@@ -62,7 +62,7 @@ public class TestFragment extends Fragment {
             columnName.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
             columnName.setText(column.getName() + ":");
 
-            columnName.setTextColor(getResources().getColor(R.color.colorAccent));
+            columnName.setTypeface(null, Typeface.BOLD);
 
             linearLayout.addView(columnName, params);
 
