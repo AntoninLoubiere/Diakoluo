@@ -24,11 +24,11 @@ public class ScoreUtils {
     }
 
     public static float getScore20(TestTestContext context) {
-        return getScore10(context.getScore(), context.getMaxScore());
+        return getScore20(context.getScore(), context.getMaxScore());
     }
 
     public static float getScore10(TestTestContext context) {
-        return getScore20(context.getScore(), context.getMaxScore());
+        return getScore10(context.getScore(), context.getMaxScore());
     }
 
     public static float getScoreFrac(TestTestContext context) {

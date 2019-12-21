@@ -103,4 +103,8 @@ public class Test {
     public void addRow(DataRow row) {
         listRow.add(row);
     }
+
+    public void addNumberTestDid() {
+        numberTestDid++;
+    }
 }
