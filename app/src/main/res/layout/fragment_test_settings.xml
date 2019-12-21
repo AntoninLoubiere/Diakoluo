@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".test_tests.TestSettingsActivity" >
+
+    <TextView
+        android:id="@+id/testTitle"
+        style="@style/Text.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/numberQuestionToAskTextView"
+        style="@style/Text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/testTitle"
+        android:text="@string/number_question_to_ask" />
+
+    <Spinner
+        android:id="@+id/numberQuestionToAskSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/numberQuestionToAskTextView"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:id="@+id/numberColumnToShowTextView"
+        style="@style/Text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/numberQuestionToAskSpinner"
+        android:text="@string/number_column_to_show" />
+
+    <SeekBar
+        android:id="@+id/numberColumnToShowSeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/numberColumnToShowTextView"
+        android:layout_toStartOf="@id/numberColumnToShowSeekBarTextView"
+        android:layout_toLeftOf="@id/numberColumnToShowSeekBarTextView" />
+
+    <TextView
+        android:id="@+id/numberColumnToShowSeekBarTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/numberColumnToShowSeekBar"
+        android:layout_alignBottom="@id/numberColumnToShowSeekBar"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/number_column_to_show_seekbar_textview" />
+
+    <Button
+        android:id="@+id/validButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/valid"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

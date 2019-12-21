@@ -12,4 +12,15 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
+    <string name="play_test_button_content_description">Play</string>
+    <string name="number_question_to_ask">Select the number of question:</string>
+    <string name="number_column_to_show">Select the number of column show:</string>
+    <string name="number_column_to_show_seekbar_textview">%d/%d</string>
+    <string name="valid">valid</string>
+    <string name="continue_text">Continue</string>
+    <string name="skip">(Skip)</string>
+    <string name="score_20">%.2f/20</string>
+    <string name="score_presice">%d/%d</string>
+    <string name="restart">Restart</string>
+    <string name="main_menu">Main menu</string>
 </resources>

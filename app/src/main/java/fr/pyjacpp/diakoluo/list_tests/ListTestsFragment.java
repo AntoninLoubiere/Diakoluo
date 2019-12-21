@@ -3,6 +3,7 @@ package fr.pyjacpp.diakoluo.list_tests;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerItemClickListener;
+import fr.pyjacpp.diakoluo.test_tests.TestSettingsActivity;
 import fr.pyjacpp.diakoluo.view_test.ViewTestActivity;
 
 
@@ -34,19 +36,7 @@ public class ListTestsFragment extends Fragment {
 
         RecyclerView testRecyclerView = inflatedLayout.findViewById(R.id.recyclerView);
         LinearLayoutManager testRecyclerViewLayoutManager = new LinearLayoutManager(getContext());
-        RecyclerView.Adapter testRecyclerViewAdapter = new TestAdapter(getContext());
-
-
-
-        testRecyclerView.setHasFixedSize(true);
-        testRecyclerView.setLayoutManager(testRecyclerViewLayoutManager);
-        testRecyclerView.setAdapter(testRecyclerViewAdapter);
-
-        testRecyclerView.addItemDecoration(new DividerItemDecoration(testRecyclerView.getContext(),
-                testRecyclerViewLayoutManager.getOrientation()));
-
-        testRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(
-                testRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+        RecyclerView.Adapter testRecyclerViewAdapter = new TestAdapter(getContext(), new TestAdapter.TestViewListener() {
             @Override
             public void onItemClick(View view, int position) {
                 DiakoluoApplication.setCurrentTest(view.getContext(),
@@ -56,10 +46,27 @@ public class ListTestsFragment extends Fragment {
             }
 
             @Override
-            public void onLongItemClick(View view, int position) {
+            public void onPlayButtonClick(View view, int position) {
+                DiakoluoApplication.setCurrentTest(view.getContext(),
+                        DiakoluoApplication.getListTest(view.getContext()).get(position));
+
+                startActivity(new Intent(view.getContext(), TestSettingsActivity.class));
             }
-        }
-        ));
+
+            @Override
+            public void onSeeButtonClick(View view, int position) {
+                onItemClick(view, position);
+            }
+        });
+
+
+
+        testRecyclerView.setHasFixedSize(true);
+        testRecyclerView.setLayoutManager(testRecyclerViewLayoutManager);
+        testRecyclerView.setAdapter(testRecyclerViewAdapter);
+
+        testRecyclerView.addItemDecoration(new DividerItemDecoration(testRecyclerView.getContext(),
+                testRecyclerViewLayoutManager.getOrientation()));
 
         return inflatedLayout;
     }

@@ -13,7 +13,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".view_test.AnswerDataViewActivity"></activity>
+        <activity android:name=".test_tests.TestScoreActivity"></activity>
+        <activity
+            android:name=".test_tests.TestActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".test_tests.TestSettingsActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".view_test.AnswerDataViewActivity" />
         <activity
             android:name=".view_test.ViewTestActivity"
             android:theme="@style/AppThemeNoActionBar" />

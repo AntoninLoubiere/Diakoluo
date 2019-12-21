@@ -3,10 +3,12 @@
     <color name="colorPrimary">#009688</color>
     <color name="colorPrimaryDark">#00796B</color>
     <color name="primaryColorLight">#B2DFDB</color>
-    <color name="text_icon">#FFFFFF</color>
+    <color name="text_icon">#FFF </color>
     <color name="colorAccent">#FF5722</color>
     <color name="primaryText">#212121</color>
     <color name="secondaryText">#757575</color>
     <color name="dividerColor">#BDBDBD</color>
-    <color name="appNameTitleColor">#fff</color>
+    <color name="appNameTitleColor">#FFF</color>
+    <color name="trueAnswer">#3ae93a</color>
+    <color name="wrongAnswer">#e93a3a</color>
 </resources>
