@@ -1,4 +1,4 @@
-package fr.pyjacpp.diakoluo.view_test;
+package fr.pyjacpp.diakoluo.edit_test;
 
 
 import android.content.Context;

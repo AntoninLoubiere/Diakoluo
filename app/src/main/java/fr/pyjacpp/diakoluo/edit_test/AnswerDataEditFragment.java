@@ -1,4 +1,4 @@
-package fr.pyjacpp.diakoluo.view_test;
+package fr.pyjacpp.diakoluo.edit_test;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -22,19 +22,28 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
-public class AnswerDataViewFragment extends Fragment {
+public class AnswerDataEditFragment extends Fragment {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     static final String ARG_ANSWER_INDEX = "answer_index";
 
+    // TODO: Rename and change types of parameters
     private int answerIndex;
 
     private OnFragmentInteractionListener mListener;
 
-    public AnswerDataViewFragment() {
+    public AnswerDataEditFragment() {
     }
 
-    
-    public static AnswerDataViewFragment newInstance(int answerIndex) {
-        AnswerDataViewFragment fragment = new AnswerDataViewFragment();
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param answerIndex Index of answer.
+     * @return A new instance of fragment AnswerDataEditFragment.
+     */
+    public static AnswerDataEditFragment newInstance(int answerIndex) {
+        AnswerDataEditFragment fragment = new AnswerDataEditFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_ANSWER_INDEX, answerIndex);
         fragment.setArguments(args);

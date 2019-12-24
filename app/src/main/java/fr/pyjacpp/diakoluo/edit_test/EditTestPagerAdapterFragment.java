@@ -1,4 +1,4 @@
-package fr.pyjacpp.diakoluo.view_test;
+package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
 
@@ -11,11 +11,11 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import fr.pyjacpp.diakoluo.R;
 
 
-public class ViewTestPagerAdapterFragment extends FragmentPagerAdapter {
+public class EditTestPagerAdapterFragment extends FragmentPagerAdapter {
     private static final int NUMBER_VIEW_TEST_TAB = 3;
     private Context context;
 
-    ViewTestPagerAdapterFragment(@NonNull FragmentManager fm, int behavior, Context context) {
+    EditTestPagerAdapterFragment(@NonNull FragmentManager fm, int behavior, Context context) {
         super(fm, behavior);
         this.context = context;
     }
@@ -25,14 +25,14 @@ public class ViewTestPagerAdapterFragment extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 1:
-                return new ColumnViewTestFragment();
+                return new ColumnEditTestFragment();
 
             case 2:
-                return new AnswerViewTestFragment();
+                return new AnswerEditTestFragment();
 
             case 0:
             default:
-                return new MainInformationsViewTestFragment();
+                return new MainInformationsEditTestFragment();
         }
     }
 

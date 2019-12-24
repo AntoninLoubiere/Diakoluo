@@ -23,4 +23,5 @@
     <string name="score_presice">%d/%d</string>
     <string name="restart">Restart</string>
     <string name="main_menu">Main menu</string>
+    <string name="description">Description</string>
 </resources>

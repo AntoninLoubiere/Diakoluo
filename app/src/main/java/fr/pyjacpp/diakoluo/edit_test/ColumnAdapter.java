@@ -1,4 +1,4 @@
-package fr.pyjacpp.diakoluo.view_test;
+package fr.pyjacpp.diakoluo.edit_test;
 
 
 import android.content.Context;
@@ -14,7 +14,7 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-class ColumnAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<ColumnAdapter.ColumnViewHolder> {
+class ColumnAdapter extends RecyclerView.Adapter<ColumnAdapter.ColumnViewHolder> {
     private Context context;
 
     static class ColumnViewHolder extends RecyclerView.ViewHolder {

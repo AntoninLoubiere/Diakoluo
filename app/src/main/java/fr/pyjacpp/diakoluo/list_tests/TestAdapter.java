@@ -60,7 +60,7 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
                                              int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.view_holder_test, parent, false);
+                .inflate(R.layout.view_holder_view_test, parent, false);
         return new TestViewHolder(v);
     }
 

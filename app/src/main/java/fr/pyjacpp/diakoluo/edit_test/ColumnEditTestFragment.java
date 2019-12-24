@@ -1,4 +1,4 @@
-package fr.pyjacpp.diakoluo.view_test;
+package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,18 +12,17 @@ import androidx.fragment.app.Fragment;
 import fr.pyjacpp.diakoluo.R;
 
 
-
-public class ColumnViewTestFragment extends Fragment {
+public class ColumnEditTestFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
-    public ColumnViewTestFragment() {
+    public ColumnEditTestFragment() {
         // Required empty public constructor
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_view_column_test, container, false);
+        return inflater.inflate(R.layout.fragment_edit_column_test, container, false);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package fr.pyjacpp.diakoluo.view_test;
+package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,10 +15,10 @@ import java.text.DateFormat;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 
-public class MainInformationsViewTestFragment extends Fragment {
+public class MainInformationsEditTestFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
-    public MainInformationsViewTestFragment() {
+    public MainInformationsEditTestFragment() {
         // Required empty public constructor
     }
 
@@ -26,7 +26,7 @@ public class MainInformationsViewTestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflatedView = inflater.inflate(R.layout.fragment_view_main_informations_test, container, false);
+        View inflatedView = inflater.inflate(R.layout.fragment_edit_main_informations_test, container, false);
 
         inflatedView.findViewById(R.id.titleTextView);
 
@@ -40,8 +40,8 @@ public class MainInformationsViewTestFragment extends Fragment {
         TextView lastModification = inflatedView.findViewById(R.id.lastModificationTextView);
         TextView numberTedtDid = inflatedView.findViewById(R.id.numberTestDid);
 
-        title.setText(DiakoluoApplication.getCurrentTest(container.getContext()).getName());
-        description.setText(DiakoluoApplication.getCurrentTest(container.getContext()).getDescription());
+//        title.setText(DiakoluoApplication.getCurrentTest(container.getContext()).getName());
+//        description.setText(DiakoluoApplication.getCurrentTest(container.getContext()).getDescription());
         createdDate.setText(
                 String.format(
                         getString(R.string.created_date_test_format),
