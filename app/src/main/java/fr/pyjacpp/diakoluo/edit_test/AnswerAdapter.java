@@ -43,10 +43,12 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull AnswerViewHolder holder, int position) {
-        Test currentTest = DiakoluoApplication.getCurrentTest(context);
+        Test currentTest = DiakoluoApplication.getCurrentEditTest(context);
 
         if (currentTest.getNumberColumn() >= 1) {
             holder.textView.setText(
+                    // TODO
+
                     (String) currentTest.getListRow().get(position).getListCells().get(
                     currentTest.getListColumn().get(0)
                     ).getValue()
@@ -60,7 +62,7 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
 
     @Override
     public int getItemCount() {
-        return DiakoluoApplication.getCurrentTest(context).getNumberRow();
+        return DiakoluoApplication.getCurrentEditTest(context).getNumberRow();
     }
 
 }

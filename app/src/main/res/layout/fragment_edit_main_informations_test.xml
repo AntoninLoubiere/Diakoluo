@@ -15,7 +15,7 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/titleTextView"
+                android:id="@+id/titleEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/title"
@@ -56,7 +56,7 @@
             android:layout_below="@id/lastModificationTextView">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/descriptionTextView"
+                android:id="@+id/descriptionEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/description"

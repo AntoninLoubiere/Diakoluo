@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.edit_test.EditTestActivity;
+import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.view_test.MainInformationsViewTestFragment;
 
 public class ListTestActivity extends AppCompatActivity
@@ -25,7 +27,8 @@ public class ListTestActivity extends AppCompatActivity
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(view.getContext(), EditTestActivity.class));
+                DiakoluoApplication.setCurrentEditTest(ListTestActivity.this, new Test());
+                startActivity(new Intent(ListTestActivity.this, EditTestActivity.class));
             }
         });
     }

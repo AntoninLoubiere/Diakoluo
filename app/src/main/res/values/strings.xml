@@ -24,4 +24,13 @@
     <string name="restart">Restart</string>
     <string name="main_menu">Main menu</string>
     <string name="description">Description</string>
+    <string name="dialog_delete_test_title">Delete test</string>
+    <string name="dialog_delete_test_message">Are you sure to delete the test \"%s\" ?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="error_label_title_blank">The title can\'t be blank</string>
+    <string name="error_label_title_already_exist">A test with this name already exist</string>
+    <string name="error">Error</string>
+    <string name="warning">Warning</string>
 </resources>

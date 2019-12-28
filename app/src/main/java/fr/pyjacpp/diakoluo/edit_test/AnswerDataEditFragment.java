@@ -23,11 +23,8 @@ import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public class AnswerDataEditFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     static final String ARG_ANSWER_INDEX = "answer_index";
 
-    // TODO: Rename and change types of parameters
     private int answerIndex;
 
     private OnFragmentInteractionListener mListener;
@@ -35,13 +32,6 @@ public class AnswerDataEditFragment extends Fragment {
     public AnswerDataEditFragment() {
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param answerIndex Index of answer.
-     * @return A new instance of fragment AnswerDataEditFragment.
-     */
     public static AnswerDataEditFragment newInstance(int answerIndex) {
         AnswerDataEditFragment fragment = new AnswerDataEditFragment();
         Bundle args = new Bundle();
@@ -65,12 +55,12 @@ public class AnswerDataEditFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_view_answer_data, container, false);
         LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
 
-        DataRow row = DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getListRow().get(answerIndex);
+        DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
 
         LinearLayout.LayoutParams params = new TableRow.LayoutParams();
         params.topMargin = 24;
 
-        ArrayList<Column> listColumn = DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getListColumn();
+        ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
         for (int i = 0; i < listColumn.size(); i++) {
             Column column = listColumn.get(i);
 

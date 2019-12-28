@@ -2,12 +2,16 @@ package fr.pyjacpp.diakoluo.list_tests;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
@@ -22,6 +26,8 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
         void onItemClick(View view, int position);
         void onPlayButtonClick(View view, int position);
         void onSeeButtonClick(View view, int position);
+        void onDeleteMenuItemClick(View view, int position);
+        void onEditMenuItemClick(View view, int position);
     }
 
     static class TestViewHolder extends RecyclerView.ViewHolder {
@@ -65,8 +71,8 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TestViewHolder holder, final int position) {
-        Test currentTest = DiakoluoApplication.getListTest(context).get(position);
+    public void onBindViewHolder(@NonNull final TestViewHolder holder, final int position) {
+        final Test currentTest = DiakoluoApplication.getListTest(context).get(position);
 
         holder.title.setText(currentTest.getName());
         holder.description.setText(currentTest.getDescription());
@@ -93,6 +99,40 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
                 if (listener != null) {
                     listener.onItemClick(view, position);
                 }
+            }
+        });
+
+        holder.inflatedView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(final View view) {
+                PopupMenu popup = new PopupMenu(context, holder.inflatedView);
+                popup.inflate(R.menu.menu_list_test_item);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.edit:
+                                if (listener != null) {
+                                    listener.onEditMenuItemClick(view, position);
+                                }
+                                return true;
+                            case R.id.delete:
+                                if (listener != null) {
+                                    listener.onDeleteMenuItemClick(view, position);
+                                }
+                                return true;
+
+                            default:
+                                return false;
+                        }
+                    }
+                });
+
+
+                MenuPopupHelper menuHelper = new MenuPopupHelper(context, (MenuBuilder) popup.getMenu(), holder.inflatedView);
+                menuHelper.setForceShowIcon(true);
+                menuHelper.show();
+                return true;
             }
         });
     }

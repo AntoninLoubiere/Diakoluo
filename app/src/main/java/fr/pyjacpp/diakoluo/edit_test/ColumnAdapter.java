@@ -45,7 +45,7 @@ class ColumnAdapter extends RecyclerView.Adapter<ColumnAdapter.ColumnViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull ColumnViewHolder holder, int position) {
-        Test currentTest = DiakoluoApplication.getCurrentTest(context);
+        Test currentTest = DiakoluoApplication.getCurrentEditTest(context);
 
         holder.title.setText(currentTest.getListColumn().get(position).getName());
         holder.description.setText(currentTest.getListColumn().get(position).getDescription());
@@ -54,7 +54,7 @@ class ColumnAdapter extends RecyclerView.Adapter<ColumnAdapter.ColumnViewHolder>
 
     @Override
     public int getItemCount() {
-        return DiakoluoApplication.getCurrentTest(context).getNumberColumn();
+        return DiakoluoApplication.getCurrentEditTest(context).getNumberColumn();
     }
 
 }

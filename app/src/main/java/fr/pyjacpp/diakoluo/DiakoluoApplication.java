@@ -17,6 +17,9 @@ public class DiakoluoApplication extends Application {
     private ArrayList<Test> listTest;
     private Test currentTest;
     private TestTestContext testTestContext;
+    private Test currentEditTest;
+    private Integer currentIndexEditTest;
+    private boolean testListChanged;
 
     @Override
     public void onCreate() {
@@ -665,6 +668,37 @@ public class DiakoluoApplication extends Application {
         this.testTestContext = testTestContext;
     }
 
+    public Test getCurrentEditTest() {
+        return currentEditTest;
+    }
+
+    public void setCurrentEditTest(Test currentEditTest) {
+        this.currentEditTest = currentEditTest;
+        currentIndexEditTest = null;
+    }
+
+    public Integer getCurrentIndexEditTest() {
+        return currentIndexEditTest;
+    }
+
+    public void setCurrentIndexEditTest(Integer currentIndexEditTest) {
+        if (currentIndexEditTest == null) {
+            currentEditTest = null;
+            this.currentIndexEditTest = null;
+        } else {
+            currentEditTest = new Test(listTest.get(currentIndexEditTest));
+            this.currentIndexEditTest = currentIndexEditTest;
+        }
+    }
+
+    public void setTestListChanged(boolean testListChanged) {
+        this.testListChanged = testListChanged;
+    }
+
+    public boolean getTestListChanged() {
+        return testListChanged;
+    }
+
     public static void setCurrentTest(Context context, Test currentTest) {
         ((DiakoluoApplication) context.getApplicationContext()).setCurrentTest(currentTest);
     }
@@ -683,5 +717,29 @@ public class DiakoluoApplication extends Application {
 
     public static void setTestTestContext(Context context,TestTestContext testTestContext) {
         ((DiakoluoApplication) context.getApplicationContext()).setTestTestContext(testTestContext);
+    }
+
+    public static Test getCurrentEditTest(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentEditTest();
+    }
+
+    public static void setCurrentEditTest(Context context, Test currentEditTest) {
+        ((DiakoluoApplication) context.getApplicationContext()).setCurrentEditTest(currentEditTest);
+    }
+
+    public static Integer getCurrentIndexEditTest(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentIndexEditTest();
+    }
+
+    public static void setCurrentIndexEditTest(Context context, Integer currentIndexEditTest) {
+        ((DiakoluoApplication) context.getApplicationContext()).setCurrentIndexEditTest(currentIndexEditTest);
+    }
+
+    public static void setTestListChanged(Context context, boolean setTestListChanged) {
+        ((DiakoluoApplication) context.getApplicationContext()).setTestListChanged(setTestListChanged);
+    }
+
+    public static boolean getTestListChanged(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getTestListChanged();
     }
 }
