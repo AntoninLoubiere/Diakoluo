@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.edit_test.EditTestActivity;
 import fr.pyjacpp.diakoluo.test_tests.TestSettingsActivity;
 import fr.pyjacpp.diakoluo.tests.Test;
@@ -61,9 +62,10 @@ public class ListTestsFragment extends Fragment implements TestAdapter.TestViewL
         super.onResume();
         Context context = getContext();
         if (context != null) {
-            if (DiakoluoApplication.getTestListChanged(context)) {
-                DiakoluoApplication.setTestListChanged(context, false);
-                testRecyclerViewAdapter.notifyDataSetChanged();
+            RecyclerViewChange testListChanged = DiakoluoApplication.getTestListChanged(context);
+            if (testListChanged != null) {
+                testListChanged.apply(testRecyclerViewAdapter);
+                DiakoluoApplication.setTestListChanged(context, null);
             }
         }
     }

@@ -126,9 +126,9 @@ public class MainInformationsEditTestFragment extends Fragment {
         EditTestActivity.EditTestValidator descriptionEditTestValidator(String text);
     }
 
-    public abstract class EditTextTextWacher implements TextWatcher {
+    abstract class EditTextTextWacher implements TextWatcher {
 
-        private EditText editText;
+        private final EditText editText;
 
         EditTextTextWacher(EditText editText) {
             super();

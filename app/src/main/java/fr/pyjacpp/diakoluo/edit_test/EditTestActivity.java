@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 public class EditTestActivity extends AppCompatActivity
@@ -32,9 +33,9 @@ public class EditTestActivity extends AppCompatActivity
     private boolean errorInDeque;
 
     class EditTestValidator {
-        private boolean error;
-        private boolean warning;
-        private Integer errorMessageRessourceId;
+        private final boolean error;
+        private final boolean warning;
+        private final Integer errorMessageRessourceId;
 
         EditTestValidator() {
             errorMessageRessourceId = null;
@@ -131,12 +132,20 @@ public class EditTestActivity extends AppCompatActivity
         if (currentIndex == null) {
             listTest.add(editTest);
             DiakoluoApplication.setCurrentIndexEditTest(EditTestActivity.this, null);
-            DiakoluoApplication.setTestListChanged(EditTestActivity.this, true);
+            RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
+                    RecyclerViewChange.ItemInserted
+                    );
+            recyclerViewChange.setPosition(listTest.size() - 1);
+            DiakoluoApplication.setTestListChanged(EditTestActivity.this, recyclerViewChange);
             finish();
         } else {
             listTest.set(currentIndex, editTest);
             DiakoluoApplication.setCurrentIndexEditTest(EditTestActivity.this, null);
-            DiakoluoApplication.setTestListChanged(EditTestActivity.this, true);
+            RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
+                    RecyclerViewChange.ItemChanged
+            );
+            recyclerViewChange.setPosition(currentIndex);
+            DiakoluoApplication.setTestListChanged(EditTestActivity.this, recyclerViewChange);
             finish();
         }
     }

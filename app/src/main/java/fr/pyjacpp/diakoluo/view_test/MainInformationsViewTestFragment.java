@@ -85,6 +85,5 @@ public class MainInformationsViewTestFragment extends Fragment {
         mListener = null;
     }
     public interface OnFragmentInteractionListener {
-        // TODO
     }
 }

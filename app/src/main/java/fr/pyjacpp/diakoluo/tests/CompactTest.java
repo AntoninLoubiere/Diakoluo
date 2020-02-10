@@ -1,6 +1,6 @@
 package fr.pyjacpp.diakoluo.tests;
 
-public class CompactTest {
+class CompactTest {
     private String name;
     private String compactDescription;
 

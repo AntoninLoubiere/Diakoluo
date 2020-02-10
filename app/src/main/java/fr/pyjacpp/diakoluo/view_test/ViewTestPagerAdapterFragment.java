@@ -13,7 +13,7 @@ import fr.pyjacpp.diakoluo.R;
 
 public class ViewTestPagerAdapterFragment extends FragmentPagerAdapter {
     private static final int NUMBER_VIEW_TEST_TAB = 3;
-    private Context context;
+    private final Context context;
 
     ViewTestPagerAdapterFragment(@NonNull FragmentManager fm, int behavior, Context context) {
         super(fm, behavior);

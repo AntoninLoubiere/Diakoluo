@@ -10,7 +10,7 @@ import fr.pyjacpp.diakoluo.list_tests.ListTestActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
-    public static final int LOADING_TIME_SPLASH_SCREEN = 3000;
+    private static final int LOADING_TIME_SPLASH_SCREEN = 3000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

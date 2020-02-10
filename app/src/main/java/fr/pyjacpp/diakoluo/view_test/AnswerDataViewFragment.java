@@ -78,7 +78,7 @@ public class AnswerDataViewFragment extends Fragment {
 
                 columnTitle.setTypeface(null, Typeface.BOLD);
 
-                columnTitle.setText(column.getName() + ":");
+                columnTitle.setText(getString(R.string.column_name_format, column.getName()));
                 if (column.getInputType() == ColumnInputType.String) {
                     columnValue.setText((String) dataCell.getValue());
                 }

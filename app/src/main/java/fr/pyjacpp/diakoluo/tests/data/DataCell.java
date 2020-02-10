@@ -16,4 +16,8 @@ public class DataCell {
                 throw new RuntimeException("Unknow inputType !");
         }
     }
+
+    public void setValue(Object object) {
+        throw new RuntimeException("Not implemented");
+    }
 }

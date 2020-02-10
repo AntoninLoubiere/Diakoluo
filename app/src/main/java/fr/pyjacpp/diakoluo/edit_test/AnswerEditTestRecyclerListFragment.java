@@ -13,11 +13,14 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerItemClickListener;
+import fr.pyjacpp.diakoluo.RecyclerViewChange;
 
 public class AnswerEditTestRecyclerListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
+    private RecyclerView.Adapter answerRecyclerViewAdapter;
 
     public AnswerEditTestRecyclerListFragment() {
         // Required empty public constructor
@@ -25,11 +28,10 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // TODO
         View inflatedView = inflater.inflate(R.layout.fragment_recycler_list, container, false);
 
         RecyclerView answerRecyclerView = inflatedView.findViewById(R.id.recyclerView);
-        RecyclerView.Adapter answerRecyclerViewAdapter = new AnswerAdapter(answerRecyclerView.getContext());
+        answerRecyclerViewAdapter = new AnswerAdapter(answerRecyclerView.getContext());
         LinearLayoutManager answerRecyclerViewLayout = new LinearLayoutManager(answerRecyclerView.getContext());
 
         answerRecyclerView.setHasFixedSize(true);
@@ -73,6 +75,21 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Context context = getContext();
+        if (context != null) {
+            RecyclerViewChange testListChanged = DiakoluoApplication.getAnswerListChanged(context);
+            if (testListChanged != null) {
+
+                testListChanged.apply(answerRecyclerViewAdapter);
+                DiakoluoApplication.setAnswerListChanged(context, null);
+            }
+        }
     }
 
     public interface OnFragmentInteractionListener {

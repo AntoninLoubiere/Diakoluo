@@ -23,7 +23,6 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // TODO
         View inflatedView = inflater.inflate(R.layout.fragment_recycler_list, container, false);
 
         RecyclerView columnRecyclerView = inflatedView.findViewById(R.id.recyclerView);

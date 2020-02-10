@@ -19,7 +19,7 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<TestAdapter.TestViewHolder> {
-    private Context context;
+    private final Context context;
     private TestViewListener listener;
 
     interface TestViewListener {
@@ -32,12 +32,12 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
 
     static class TestViewHolder extends RecyclerView.ViewHolder {
 
-        TextView title;
-        TextView description;
-        ImageButton playButton;
-        ImageButton seeButton;
+        final TextView title;
+        final TextView description;
+        final ImageButton playButton;
+        final ImageButton seeButton;
 
-        View inflatedView;
+        final View inflatedView;
 
         TestViewHolder(View v) {
             super(v);

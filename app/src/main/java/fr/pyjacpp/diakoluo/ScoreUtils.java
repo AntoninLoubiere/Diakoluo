@@ -3,23 +3,23 @@ package fr.pyjacpp.diakoluo;
 import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 
 public class ScoreUtils {
-    public static float getScore20(float score, float max) {
+    private static float getScore20(float score, float max) {
         return score / max * 20;
     }
 
-    public static float getScore10(float score, float max) {
+    private static float getScore10(float score, float max) {
         return score / max * 10;
     }
 
-    public static float getScoreFrac(float score, float max) {
+    private static float getScoreFrac(float score, float max) {
         return score / max;
     }
 
-    public static float getScorePercent(float score, float max) {
+    private static float getScorePercent(float score, float max) {
         return score / max * 100;
     }
 
-    public static float getScoreCustom(float score, float max, int n) {
+    private static float getScoreCustom(float score, float max, int n) {
         return score / max * n;
     }
 

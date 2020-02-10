@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view_test.ColumnViewTestFragment">
+    <Button
+        style="?attr/buttonBarButtonStyle"
+        android:id="@+id/addColumnButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_add_accent_color_24dp"
+        android:drawableRight="@drawable/ic_add_accent_color_24dp"
+        android:text="@string/add_column" />
 
-    <fragment
-        android:id="@+id/columnEditTestRecyclerListFragment"
-        class="fr.pyjacpp.diakoluo.edit_test.ColumnEditTestRecyclerListFragment"
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/dividerColor"
+        android:layout_below="@id/addColumnButton"/>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@layout/fragment_recycler_list" />
+        tools:context=".view_test.ColumnViewTestFragment"
+        android:layout_below="@id/separator">
 
-</androidx.core.widget.NestedScrollView>
+        <fragment
+            android:id="@+id/columnEditTestRecyclerListFragment"
+            class="fr.pyjacpp.diakoluo.edit_test.ColumnEditTestRecyclerListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            tools:layout="@layout/fragment_recycler_list" />
+
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>

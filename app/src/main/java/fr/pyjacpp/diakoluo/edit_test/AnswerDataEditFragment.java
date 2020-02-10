@@ -7,27 +7,32 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.Column;
-import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
+import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 public class AnswerDataEditFragment extends Fragment {
     static final String ARG_ANSWER_INDEX = "answer_index";
 
+    HashMap<Column, View> columnAnswerEditHashMap = new HashMap<>();
+
     private int answerIndex;
 
     private OnFragmentInteractionListener mListener;
+    private View inflatedView;
 
     public AnswerDataEditFragment() {
     }
@@ -45,6 +50,7 @@ public class AnswerDataEditFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             answerIndex = getArguments().getInt(ARG_ANSWER_INDEX);
+
         }
     }
 
@@ -52,12 +58,12 @@ public class AnswerDataEditFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View inflatedView = inflater.inflate(R.layout.fragment_view_answer_data, container, false);
+        inflatedView = inflater.inflate(R.layout.fragment_edit_answer_data, container, false);
         LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
 
         DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
 
-        LinearLayout.LayoutParams params = new TableRow.LayoutParams();
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(layout.getLayoutParams());
         params.topMargin = 24;
 
         ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
@@ -65,26 +71,39 @@ public class AnswerDataEditFragment extends Fragment {
             Column column = listColumn.get(i);
 
             DataCell dataCell = row.getListCells().get(column);
-            if (dataCell != null) {
-                TextView columnTitle = new TextView(inflatedView.getContext());
-                TextView columnValue = new TextView(inflatedView.getContext());
+            TextView columnTitle = new TextView(inflatedView.getContext());
 
-                columnTitle.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-                columnValue.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-                
-                if (i > 0)
-                    columnTitle.setLayoutParams(params);
+            columnTitle.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
 
-                columnTitle.setTypeface(null, Typeface.BOLD);
+            if (i > 0)
+                columnTitle.setLayoutParams(params);
 
-                columnTitle.setText(column.getName() + ":");
-                if (column.getInputType() == ColumnInputType.String) {
-                    columnValue.setText((String) dataCell.getValue());
-                }
+            columnTitle.setTypeface(null, Typeface.BOLD);
 
-                layout.addView(columnTitle);
-                layout.addView(columnValue);
+            columnTitle.setText(getString(R.string.column_name_format, column.getName()));
+            View columnValue;
+            switch (column.getInputType()) {
+                case String:
+                    DataCellString dataCellString = (DataCellString) dataCell;
+                    if (dataCellString == null) {
+                        dataCellString = new DataCellString((String) column.getDefaultValue());
+                        row.getListCells().put(column, dataCellString);
+                    }
+                    EditText _columnValue = new EditText(inflatedView.getContext());
+                    _columnValue.setText(dataCellString.getValue());
+                    _columnValue.setHint(column.getName());
+                    _columnValue.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
+                    columnValue = _columnValue;
+                    break;
+
+                default:
+                    throw new IllegalStateException("Unexpected value: " + column.getInputType());
             }
+
+            columnAnswerEditHashMap.put(column, columnValue);
+
+            layout.addView(columnTitle);
+            layout.addView(columnValue);
         }
 
         return inflatedView;
@@ -105,6 +124,46 @@ public class AnswerDataEditFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onPause() {
+        DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
+
+        ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
+        for (int i = 0; i < listColumn.size(); i++) {
+            Column column = listColumn.get(i);
+
+            View answerEdit = columnAnswerEditHashMap.get(column);
+
+            DataCell dataCell = row.getListCells().get(column);
+            switch (column.getInputType()) {
+                case String:
+                    EditText answerEditText = (EditText) answerEdit;
+                    DataCellString dataCellString = (DataCellString) dataCell;
+
+                    if (answerEditText != null) {
+                        if (dataCellString == null) {
+                            row.getListCells().put(column, new DataCellString(answerEditText.getText().toString()));
+                        } else {
+                            dataCellString.setValue(answerEditText.getText().toString());
+                        }
+                    }
+            }
+
+        }
+
+        RecyclerViewChange recyclerViewChange = DiakoluoApplication.getAnswerListChanged(
+                inflatedView.getContext());
+        if (recyclerViewChange == null) {
+            recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.None);
+        }
+        recyclerViewChange.setChanges(recyclerViewChange.getChanges() | RecyclerViewChange.ItemChanged);
+        recyclerViewChange.setPosition(answerIndex);
+
+        DiakoluoApplication.setAnswerListChanged(inflatedView.getContext(), recyclerViewChange);
+
+        super.onPause();
     }
 
     interface OnFragmentInteractionListener {

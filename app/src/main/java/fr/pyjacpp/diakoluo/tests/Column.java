@@ -5,11 +5,13 @@ public class Column {
     private String description;
 
     private ColumnInputType inputType;
+    private Object defaultValue;
 
     public Column(String name, String description, ColumnInputType inputType) {
         this.name = name;
         this.description = description;
         this.inputType = inputType;
+        this.defaultValue = "";
     }
 
     public String getName() {
@@ -34,5 +36,13 @@ public class Column {
 
     public void setInputType(ColumnInputType inputType) {
         this.inputType = inputType;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
     }
 }

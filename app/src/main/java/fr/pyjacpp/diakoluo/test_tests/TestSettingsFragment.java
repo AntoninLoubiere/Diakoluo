@@ -25,8 +25,8 @@ public class TestSettingsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private class TestQuestionPossibility {
-        int possibility;
-        String toShow;
+        final int possibility;
+        final String toShow;
 
         TestQuestionPossibility(int possibility, String toShow) {
             this.possibility = possibility;
