@@ -51,9 +51,9 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
         }
     }
 
-    TestAdapter(Context context) {
+    /*TestAdapter(Context context) {
         this.context = context;
-    }
+    }*/
 
     TestAdapter(Context context, TestViewListener listener) {
         this.context = context;
@@ -135,6 +135,10 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
                 return true;
             }
         });
+
+        if (!currentTest.canBePlay()) {
+            holder.playButton.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_play_arrow_gray_24dp));
+        }
     }
 
     @Override

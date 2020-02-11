@@ -95,10 +95,13 @@ public class ListTestsFragment extends Fragment implements TestAdapter.TestViewL
 
     @Override
     public void onPlayButtonClick(View view, int position) {
-        DiakoluoApplication.setCurrentTest(view.getContext(),
-                DiakoluoApplication.getListTest(view.getContext()).get(position));
+        Test currentTest = DiakoluoApplication.getListTest(view.getContext()).get(position);
+        if (currentTest.canBePlay()) {
+            DiakoluoApplication.setCurrentTest(view.getContext(),
+                    currentTest);
 
-        startActivity(new Intent(view.getContext(), TestSettingsActivity.class));
+            startActivity(new Intent(view.getContext(), TestSettingsActivity.class));
+        } // TODO warning
     }
 
     @Override

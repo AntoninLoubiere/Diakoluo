@@ -20,19 +20,14 @@
         android:background="@color/dividerColor"
         android:layout_below="@id/addAnswerButton"/>
 
-    <androidx.core.widget.NestedScrollView
+    <fragment
+        android:id="@+id/answerEditTestRecyclerListFragment"
+        class="fr.pyjacpp.diakoluo.edit_test.AnswerEditTestRecyclerListFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".view_test.AnswerViewTestFragment"
-        android:layout_below="@id/separator">
+        android:layout_height="0dp"
+        android:layout_below="@id/separator"
+        tools:layout="@layout/fragment_recycler_list"
+        android:layout_alignParentBottom="true"/>
 
-        <fragment
-            android:id="@+id/answerEditTestRecyclerListFragment"
-            class="fr.pyjacpp.diakoluo.edit_test.AnswerEditTestRecyclerListFragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            tools:layout="@layout/fragment_recycler_list" />
-
-    </androidx.core.widget.NestedScrollView>
 
 </RelativeLayout>

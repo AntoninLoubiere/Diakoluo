@@ -22,6 +22,7 @@ public class DiakoluoApplication extends Application {
     
     private RecyclerViewChange testListChanged;
     private RecyclerViewChange answerListChanged;
+    private RecyclerViewChange columnListChanged;
 
     @Override
     public void onCreate() {
@@ -693,10 +694,14 @@ public class DiakoluoApplication extends Application {
         }
     }
 
+    private RecyclerViewChange getTestListChanged() {
+        return testListChanged;
+    }
+
     private void setTestListChanged(RecyclerViewChange testListChanged) {
         this.testListChanged = testListChanged;
     }
-
+    
     private RecyclerViewChange getAnswerListChanged() {
         return answerListChanged;
     }
@@ -705,9 +710,15 @@ public class DiakoluoApplication extends Application {
         this.answerListChanged = answerListChanged;
     }
 
-    private RecyclerViewChange getTestListChanged() {
-        return testListChanged;
+    private RecyclerViewChange getColumnListChanged() {
+        return columnListChanged;
     }
+
+    private void setColumnListChanged(RecyclerViewChange columnListChanged) {
+        this.columnListChanged = columnListChanged;
+    }
+
+    // static
 
     public static void setCurrentTest(Context context, Test currentTest) {
         ((DiakoluoApplication) context.getApplicationContext()).setCurrentTest(currentTest);
@@ -761,5 +772,12 @@ public class DiakoluoApplication extends Application {
         return ((DiakoluoApplication) context.getApplicationContext()).getAnswerListChanged();
     }
 
+    public static void setColumnListChanged(Context context, RecyclerViewChange setColumnListChanged) {
+        ((DiakoluoApplication) context.getApplicationContext()).setColumnListChanged(setColumnListChanged);
+    }
 
+    public static RecyclerViewChange getColumnListChanged(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getColumnListChanged();
+    }
+    
 }

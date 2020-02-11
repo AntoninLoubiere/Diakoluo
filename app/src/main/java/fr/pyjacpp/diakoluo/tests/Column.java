@@ -7,6 +7,13 @@ public class Column {
     private ColumnInputType inputType;
     private Object defaultValue;
 
+    public Column() {
+        this.name = "";
+        this.description = "";
+        this.inputType = ColumnInputType.DEFAULT_INPUT_TYPE;
+        this.defaultValue = "";
+    }
+
     public Column(String name, String description, ColumnInputType inputType) {
         this.name = name;
         this.description = description;

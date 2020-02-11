@@ -126,4 +126,8 @@ public class Test {
     public void addNumberTestDid() {
         numberTestDid++;
     }
+
+    public boolean canBePlay() {
+        return getNumberColumn() > 1 && getNumberRow() > 0;
+    }
 }

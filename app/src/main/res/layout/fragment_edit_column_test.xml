@@ -20,19 +20,13 @@
         android:background="@color/dividerColor"
         android:layout_below="@id/addColumnButton"/>
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".view_test.ColumnViewTestFragment"
-        android:layout_below="@id/separator">
-
         <fragment
             android:id="@+id/columnEditTestRecyclerListFragment"
             class="fr.pyjacpp.diakoluo.edit_test.ColumnEditTestRecyclerListFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_below="@id/separator"
+            android:layout_alignParentBottom="true"
             tools:layout="@layout/fragment_recycler_list" />
-
-    </androidx.core.widget.NestedScrollView>
 
 </RelativeLayout>

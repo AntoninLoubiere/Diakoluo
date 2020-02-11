@@ -1,5 +1,7 @@
 package fr.pyjacpp.diakoluo.tests;
 
 public enum ColumnInputType {
-    String
+    String;
+
+    public static final ColumnInputType DEFAULT_INPUT_TYPE = String;
 }

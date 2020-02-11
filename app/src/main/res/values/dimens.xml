@@ -3,4 +3,5 @@
     <dimen name="appbar_padding">15dp</dimen>
     <dimen name="testViewHolderTitleTextSize">20sp</dimen>
     <dimen name="textAnswerSize">10sp</dimen>
+    <dimen name="textColumnSize">10sp</dimen>
 </resources>
