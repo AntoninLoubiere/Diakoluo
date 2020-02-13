@@ -184,6 +184,10 @@ public class TestFragment extends Fragment {
                                     answer.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
                                     answer.setHint(column.getName());
 
+                                    Object answerGiven = testTestContext.getUserAnswer().get(column);
+                                    if (answerGiven != null)
+                                        answer.setText((String) answerGiven);
+
                                     answerRow.addView(answer, params);
 
                                     columnViewHashMap.put(column, answer);
