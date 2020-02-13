@@ -33,8 +33,5 @@
     <string name="add_answer">Add answer</string>
     <string name="add_column">Add column</string>
     <string name="column_name_format">%s:</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="column_type">Column type:</string>
 </resources>

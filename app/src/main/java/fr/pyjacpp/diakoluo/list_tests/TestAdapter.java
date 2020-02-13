@@ -37,12 +37,8 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
         final ImageButton playButton;
         final ImageButton seeButton;
 
-        final View inflatedView;
-
         TestViewHolder(View v) {
             super(v);
-
-            inflatedView = v;
 
             title = v.findViewById(R.id.titleTextView);
             description = v.findViewById(R.id.descriptionTextView);
@@ -93,7 +89,7 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
                 }
             }
         });
-        holder.inflatedView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (listener != null) {
@@ -102,10 +98,10 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
             }
         });
 
-        holder.inflatedView.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(final View view) {
-                PopupMenu popup = new PopupMenu(context, holder.inflatedView);
+                PopupMenu popup = new PopupMenu(context, holder.itemView);
                 popup.inflate(R.menu.menu_list_test_item);
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -129,7 +125,7 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
                 });
 
 
-                MenuPopupHelper menuHelper = new MenuPopupHelper(context, (MenuBuilder) popup.getMenu(), holder.inflatedView);
+                MenuPopupHelper menuHelper = new MenuPopupHelper(context, (MenuBuilder) popup.getMenu(), holder.itemView);
                 menuHelper.setForceShowIcon(true);
                 menuHelper.show();
                 return true;
