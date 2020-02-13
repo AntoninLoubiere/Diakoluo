@@ -26,7 +26,7 @@ public class MainInformationsViewTestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflatedView = inflater.inflate(R.layout.fragment_main_informations_view_test, container, false);
+        View inflatedView = inflater.inflate(R.layout.fragment_view_main_informations_test, container, false);
 
         inflatedView.findViewById(R.id.titleTextView);
 
@@ -85,6 +85,5 @@ public class MainInformationsViewTestFragment extends Fragment {
         mListener = null;
     }
     public interface OnFragmentInteractionListener {
-        // TODO
     }
 }

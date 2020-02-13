@@ -13,6 +13,8 @@
         android:layout_alignParentLeft="true"
         android:layout_toStartOf="@id/buttonSee"
         android:layout_toLeftOf="@id/buttonSee"
+        android:maxLines="1"
+        android:singleLine="true"
         android:text="@string/title"
         android:textSize="20sp" />
 

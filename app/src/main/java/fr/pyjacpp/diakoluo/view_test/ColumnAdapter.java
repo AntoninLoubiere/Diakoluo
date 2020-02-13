@@ -15,12 +15,12 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 class ColumnAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<ColumnAdapter.ColumnViewHolder> {
-    private Context context;
+    private final Context context;
 
     static class ColumnViewHolder extends RecyclerView.ViewHolder {
 
-        TextView title;
-        TextView description;
+        final TextView title;
+        final TextView description;
 
         ColumnViewHolder(View v) {
             super(v);
@@ -39,7 +39,7 @@ class ColumnAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Co
     public ColumnViewHolder onCreateViewHolder(ViewGroup parent,
                                              int viewType) {
         // create a new view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_column, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_view_column, parent, false);
         return new ColumnViewHolder(v);
     }
 

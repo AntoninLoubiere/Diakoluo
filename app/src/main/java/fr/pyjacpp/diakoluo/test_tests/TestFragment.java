@@ -32,8 +32,8 @@ public class TestFragment extends Fragment {
     private View inflatedView;
     private TestTestContext testTestContext;
 
-    private HashMap<Column, LinearLayout> columnLinearLayoutHashMap = new HashMap<>();
-    private HashMap<Column, View> columnViewHashMap = new HashMap<>();
+    private final HashMap<Column, LinearLayout> columnLinearLayoutHashMap = new HashMap<>();
+    private final HashMap<Column, View> columnViewHashMap = new HashMap<>();
 
     public TestFragment() {
     }
@@ -60,7 +60,7 @@ public class TestFragment extends Fragment {
 
             TextView columnName = new TextView(inflatedView.getContext());
             columnName.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-            columnName.setText(column.getName() + ":");
+            columnName.setText(getString(R.string.column_name_format, column.getName()));
 
             columnName.setTypeface(null, Typeface.BOLD);
 

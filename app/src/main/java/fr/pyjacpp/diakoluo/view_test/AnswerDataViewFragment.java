@@ -23,11 +23,8 @@ import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public class AnswerDataViewFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     static final String ARG_ANSWER_INDEX = "answer_index";
 
-    // TODO: Rename and change types of parameters
     private int answerIndex;
 
     private OnFragmentInteractionListener mListener;
@@ -35,13 +32,7 @@ public class AnswerDataViewFragment extends Fragment {
     public AnswerDataViewFragment() {
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param answerIndex Index of answer.
-     * @return A new instance of fragment AnswerDataViewFragment.
-     */
+    
     public static AnswerDataViewFragment newInstance(int answerIndex) {
         AnswerDataViewFragment fragment = new AnswerDataViewFragment();
         Bundle args = new Bundle();
@@ -62,7 +53,7 @@ public class AnswerDataViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View inflatedView = inflater.inflate(R.layout.fragment_answer_data_view, container, false);
+        View inflatedView = inflater.inflate(R.layout.fragment_view_answer_data, container, false);
         LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
 
         DataRow row = DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getListRow().get(answerIndex);
@@ -87,7 +78,7 @@ public class AnswerDataViewFragment extends Fragment {
 
                 columnTitle.setTypeface(null, Typeface.BOLD);
 
-                columnTitle.setText(column.getName() + ":");
+                columnTitle.setText(getString(R.string.column_name_format, column.getName()));
                 if (column.getInputType() == ColumnInputType.String) {
                     columnValue.setText((String) dataCell.getValue());
                 }

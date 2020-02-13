@@ -23,7 +23,7 @@ public class ColumnViewTestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_column_view_test, container, false);
+        return inflater.inflate(R.layout.fragment_view_column_test, container, false);
     }
 
     @Override

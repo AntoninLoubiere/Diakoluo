@@ -17,6 +17,12 @@ public class DiakoluoApplication extends Application {
     private ArrayList<Test> listTest;
     private Test currentTest;
     private TestTestContext testTestContext;
+    private Test currentEditTest;
+    private Integer currentIndexEditTest;
+    
+    private RecyclerViewChange testListChanged;
+    private RecyclerViewChange answerListChanged;
+    private RecyclerViewChange columnListChanged;
 
     @Override
     public void onCreate() {
@@ -641,29 +647,78 @@ public class DiakoluoApplication extends Application {
         setCurrentTest(0);
     }
 
-    public void setCurrentTest(Test currentTest) {
+    private void setCurrentTest(Test currentTest) {
         this.currentTest = currentTest;
     }
 
-    public void setCurrentTest(int currentTest) {
+    private void setCurrentTest(int currentTest) {
         this.currentTest = getListTest().get(currentTest);
     }
 
-    public Test getCurrentTest() {
+    private Test getCurrentTest() {
         return currentTest;
     }
 
-    public ArrayList<Test> getListTest() {
+    private ArrayList<Test> getListTest() {
         return listTest;
     }
 
-    public TestTestContext getTestTestContext() {
+    private TestTestContext getTestTestContext() {
         return testTestContext;
     }
 
-    public void setTestTestContext(TestTestContext testTestContext) {
+    private void setTestTestContext(TestTestContext testTestContext) {
         this.testTestContext = testTestContext;
     }
+
+    private Test getCurrentEditTest() {
+        return currentEditTest;
+    }
+
+    private void setCurrentEditTest(Test currentEditTest) {
+        this.currentEditTest = currentEditTest;
+        currentIndexEditTest = null;
+    }
+
+    private Integer getCurrentIndexEditTest() {
+        return currentIndexEditTest;
+    }
+
+    private void setCurrentIndexEditTest(Integer currentIndexEditTest) {
+        if (currentIndexEditTest == null) {
+            currentEditTest = null;
+            this.currentIndexEditTest = null;
+        } else {
+            currentEditTest = new Test(listTest.get(currentIndexEditTest));
+            this.currentIndexEditTest = currentIndexEditTest;
+        }
+    }
+
+    private RecyclerViewChange getTestListChanged() {
+        return testListChanged;
+    }
+
+    private void setTestListChanged(RecyclerViewChange testListChanged) {
+        this.testListChanged = testListChanged;
+    }
+    
+    private RecyclerViewChange getAnswerListChanged() {
+        return answerListChanged;
+    }
+
+    private void setAnswerListChanged(RecyclerViewChange answerListChanged) {
+        this.answerListChanged = answerListChanged;
+    }
+
+    private RecyclerViewChange getColumnListChanged() {
+        return columnListChanged;
+    }
+
+    private void setColumnListChanged(RecyclerViewChange columnListChanged) {
+        this.columnListChanged = columnListChanged;
+    }
+
+    // static
 
     public static void setCurrentTest(Context context, Test currentTest) {
         ((DiakoluoApplication) context.getApplicationContext()).setCurrentTest(currentTest);
@@ -684,4 +739,45 @@ public class DiakoluoApplication extends Application {
     public static void setTestTestContext(Context context,TestTestContext testTestContext) {
         ((DiakoluoApplication) context.getApplicationContext()).setTestTestContext(testTestContext);
     }
+
+    public static Test getCurrentEditTest(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentEditTest();
+    }
+
+    public static void setCurrentEditTest(Context context, Test currentEditTest) {
+        ((DiakoluoApplication) context.getApplicationContext()).setCurrentEditTest(currentEditTest);
+    }
+
+    public static Integer getCurrentIndexEditTest(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentIndexEditTest();
+    }
+
+    public static void setCurrentIndexEditTest(Context context, Integer currentIndexEditTest) {
+        ((DiakoluoApplication) context.getApplicationContext()).setCurrentIndexEditTest(currentIndexEditTest);
+    }
+
+    public static void setTestListChanged(Context context, RecyclerViewChange setTestListChanged) {
+        ((DiakoluoApplication) context.getApplicationContext()).setTestListChanged(setTestListChanged);
+    }
+
+    public static RecyclerViewChange getTestListChanged(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getTestListChanged();
+    }
+
+    public static void setAnswerListChanged(Context context, RecyclerViewChange setAnswerListChanged) {
+        ((DiakoluoApplication) context.getApplicationContext()).setAnswerListChanged(setAnswerListChanged);
+    }
+
+    public static RecyclerViewChange getAnswerListChanged(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getAnswerListChanged();
+    }
+
+    public static void setColumnListChanged(Context context, RecyclerViewChange setColumnListChanged) {
+        ((DiakoluoApplication) context.getApplicationContext()).setColumnListChanged(setColumnListChanged);
+    }
+
+    public static RecyclerViewChange getColumnListChanged(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getColumnListChanged();
+    }
+    
 }

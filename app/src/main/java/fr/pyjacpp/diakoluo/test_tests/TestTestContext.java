@@ -16,12 +16,12 @@ public class TestTestContext {
     private int score = 0;
     private int maxScore;
 
-    private int numberQuestionToAsk;
-    private int numberColumnToShow;
+    private final int numberQuestionToAsk;
+    private final int numberColumnToShow;
 
     private ArrayList<DataRow> listRowToAsk = new ArrayList<>();
 
-    private Test test;
+    private final Test test;
 
     private int currentIndex = 0;
     private boolean answerGive = false;

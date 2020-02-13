@@ -17,18 +17,24 @@ public class Test {
     private ArrayList<Column> listColumn;
     private ArrayList<DataRow> listRow;
 
-    public Test(String name, String description) {
-        // new test
-        this.name = name;
-        this.description = description;
-
-        createdDate = new Date();
-        lastModification = new Date();
-        numberTestDid = 0;
-
-        listColumn = new ArrayList<>();
-        listRow = new ArrayList<>();
+    public Test() {
+        init("", "");
     }
+
+    public Test(Test test) {
+        name = test.name;
+        description = test.description;
+        createdDate = new Date(test.createdDate.getTime());
+        lastModification = new Date(test.lastModification.getTime());
+        numberTestDid = test.numberTestDid;
+        listColumn = new ArrayList<>(test.listColumn);
+        listRow = new ArrayList<>(test.listRow);
+    }
+
+    public Test(String name, String description) {
+        init(name, description);
+    }
+
 
     public Test(String name, String description, Date createdDate, Date lastModification, int numberTestDid,
                 ArrayList<Column> listColumn, ArrayList<DataRow> listRow) {
@@ -42,6 +48,19 @@ public class Test {
 
         this.listColumn = listColumn;
         this.listRow = listRow;
+    }
+
+    private void init(String name, String description) {
+        // new test
+        this.name = name;
+        this.description = description;
+
+        createdDate = new Date();
+        lastModification = new Date();
+        numberTestDid = 0;
+
+        listColumn = new ArrayList<>();
+        listRow = new ArrayList<>();
     }
 
     public String getName() {
@@ -106,5 +125,9 @@ public class Test {
 
     public void addNumberTestDid() {
         numberTestDid++;
+    }
+
+    public boolean canBePlay() {
+        return getNumberColumn() > 1 && getNumberRow() > 0;
     }
 }

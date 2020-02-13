@@ -15,11 +15,11 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder> {
-    private Context context;
+    private final Context context;
 
     static class AnswerViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textView;
+        final TextView textView;
 
         AnswerViewHolder(View v) {
             super(v);
@@ -37,7 +37,7 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
     public AnswerViewHolder onCreateViewHolder(ViewGroup parent,
                                              int viewType) {
         // create a new view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_answer, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_view_answer, parent, false);
         return new AnswerViewHolder(v);
     }
 

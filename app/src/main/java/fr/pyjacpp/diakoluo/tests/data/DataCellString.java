@@ -11,4 +11,9 @@ public class DataCellString extends DataCell {
     public String getValue() {
         return value;
     }
+
+    @Override
+    public void setValue(Object object) {
+        value = (String) object;
+    }
 }
