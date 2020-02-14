@@ -17,6 +17,7 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.Column;
+import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
@@ -42,7 +43,7 @@ public class ColumnEditTestFragment extends Fragment {
             public void onClick(View view) {
                 Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
                 ArrayList<Column> listColumn = currentEditTest.getListColumn();
-                Column column = new Column();
+                Column column = new Column("", "", ColumnInputType.DEFAULT_INPUT_TYPE);
                 listColumn.add(column);
 
                 RecyclerViewChange columnListChanged = new RecyclerViewChange(

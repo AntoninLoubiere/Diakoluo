@@ -7,8 +7,7 @@ public class Test {
     private String name;
     private String description;
 
-    /* TODO private ?PathClass? testPath; */
-
+    private String filename;
     private Date createdDate;
     private Date lastModification;
 
@@ -18,7 +17,16 @@ public class Test {
     private ArrayList<DataRow> listRow;
 
     public Test() {
-        init("", "");
+        // new test
+        this.name = null;
+        this.description = null;
+
+        createdDate = null;
+        lastModification = null;
+        numberTestDid = 0;
+
+        listColumn = null;
+        listRow = null;
     }
 
     public Test(Test test) {
@@ -29,6 +37,7 @@ public class Test {
         numberTestDid = test.numberTestDid;
         listColumn = new ArrayList<>(test.listColumn);
         listRow = new ArrayList<>(test.listRow);
+        filename = test.filename;
     }
 
     public Test(String name, String description) {
@@ -83,8 +92,16 @@ public class Test {
         return createdDate;
     }
 
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
     public Date getLastModificationDate() {
         return lastModification;
+    }
+
+    public void setLastModificationDate(Date lastModification) {
+        this.lastModification = lastModification;
     }
 
     public void registerModificationDate() {
@@ -95,12 +112,20 @@ public class Test {
         return numberTestDid;
     }
 
+    public void setNumberTestDid(int numberTestDid) {
+        this.numberTestDid = numberTestDid;
+    }
+
     public void incrementTestDid() {
         numberTestDid++;
     }
 
     public ArrayList<Column> getListColumn() {
         return listColumn;
+    }
+
+    public void setListColumn(ArrayList<Column> listColumn) {
+        this.listColumn = listColumn;
     }
 
     public int getNumberColumn() {
@@ -113,6 +138,10 @@ public class Test {
 
     public ArrayList<DataRow> getListRow() {
         return listRow;
+    }
+
+    public void setListRow(ArrayList<DataRow> listRow) {
+        this.listRow = listRow;
     }
 
     public int getNumberRow() {
@@ -129,5 +158,23 @@ public class Test {
 
     public boolean canBePlay() {
         return getNumberColumn() > 1 && getNumberRow() > 0;
+    }
+
+    public boolean isValid() {
+        return !(name == null ||
+                description == null ||
+                createdDate == null ||
+                lastModification == null ||
+                listColumn == null ||
+                listRow == null
+        );
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public String getFilename() {
+        return filename;
     }
 }

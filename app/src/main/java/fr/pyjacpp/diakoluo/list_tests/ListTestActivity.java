@@ -27,7 +27,7 @@ public class ListTestActivity extends AppCompatActivity
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DiakoluoApplication.setCurrentEditTest(ListTestActivity.this, new Test());
+                DiakoluoApplication.setCurrentEditTest(ListTestActivity.this, new Test("", ""));
                 startActivity(new Intent(ListTestActivity.this, EditTestActivity.class));
             }
         });
