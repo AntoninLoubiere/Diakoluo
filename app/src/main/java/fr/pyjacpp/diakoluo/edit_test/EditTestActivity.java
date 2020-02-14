@@ -148,6 +148,12 @@ public class EditTestActivity extends AppCompatActivity
             DiakoluoApplication.setTestListChanged(EditTestActivity.this, recyclerViewChange);
             finish();
         }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DiakoluoApplication.saveTest(EditTestActivity.this);
+            }
+        }).start();
     }
 
     private void saveInTestVar() {

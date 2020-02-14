@@ -9,7 +9,7 @@ class CompactTest {
         this.compactDescription = description; // FIXME need to be cut ?
     }
 
-    /*TODO private ?PathClass? testPath;*/
+    private String filename;
 
     public String getName() {
         return name;

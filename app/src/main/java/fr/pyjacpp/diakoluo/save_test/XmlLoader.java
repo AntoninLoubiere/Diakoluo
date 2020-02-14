@@ -1,6 +1,5 @@
 package fr.pyjacpp.diakoluo.save_test;
 
-import android.content.Context;
 import android.util.Log;
 import android.util.Xml;
 
@@ -21,42 +20,21 @@ import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 public class XmlLoader {
 
-    private static final String TAG_TEST              = "test";
-    private static final String TAG_NAME              = "name";
-    private static final String TAG_DESCRIPTION       = "description";
-    private static final String TAG_NUMBER_TEST_DID   = "numberTestDid";
-    private static final String TAG_CREATED_DATE      = "createdDate";
-    private static final String TAG_LAST_MODIFICATION = "lastModification";
-    private static final String TAG_COLUMNS           = "columns";
-    private static final String TAG_COLUMN            = "column";
-    private static final String TAG_ROWS              = "rows";
-    private static final String TAG_ROW               = "row";
-    private static final String TAG_CELL              = "cell";
-    private static final String TAG_INPUT_TYPE        = "inputType";
-    private static final String TAG_DEFAULT_VALUE     = "defaultValue";
-
-
-    public static Test parse(Context context, String assetName) throws IOException, XmlPullParserException {
-        InputStream inputStream = context.getAssets().open(assetName);
-        //noinspection TryFinallyCanBeTryWithResources (because not enought API
-        try {
+    static Test load(InputStream fileInputStream) throws IOException, XmlPullParserException {
             // configure parser
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(inputStream, null);
-            parser.nextTag();
+        XmlPullParser parser = Xml.newPullParser();
+        parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+        parser.setInput(fileInputStream, null);
+        parser.nextTag();
 
-            return readFeed(parser);
-        } finally {
-            inputStream.close();
-        }
+        return readFeed(parser);
     }
 
     private static Test readFeed(XmlPullParser parser) throws IOException, XmlPullParserException {
         Test test = new Test();
 
         // start of the document
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_TEST);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_TEST);
 
         while (parser.next() != XmlPullParser.END_DOCUMENT) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -65,31 +43,31 @@ public class XmlLoader {
             }
 
             switch (parser.getName()) {
-                case TAG_NAME:
+                case FileManager.TAG_NAME:
                     test.setName(readName(parser));
                     break;
 
-                case TAG_DESCRIPTION:
+                case FileManager.TAG_DESCRIPTION:
                     test.setDescription(readDescription(parser));
                     break;
 
-                case TAG_CREATED_DATE:
+                case FileManager.TAG_CREATED_DATE:
                     test.setCreatedDate(readCreatedDate(parser));
                     break;
 
-                case TAG_LAST_MODIFICATION:
+                case FileManager.TAG_LAST_MODIFICATION:
                     test.setLastModificationDate(readLastModificationDate(parser));
                     break;
 
-                case TAG_NUMBER_TEST_DID:
+                case FileManager.TAG_NUMBER_TEST_DID:
                     test.setNumberTestDid(readNumberTestDid(parser));
                     break;
 
-                case TAG_COLUMNS:
+                case FileManager.TAG_COLUMNS:
                     test.setListColumn(readColumns(parser));
                     break;
 
-                case TAG_ROWS:
+                case FileManager.TAG_ROWS:
                     test.setListRow(readRows(parser, test));
                     break;
 
@@ -107,19 +85,19 @@ public class XmlLoader {
     }
 
     private static String readName(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_NAME);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_NAME);
 
         return readText(parser);
     }
 
     private static String readDescription(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_DESCRIPTION);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_DESCRIPTION);
 
         return readText(parser);
     }
 
     private static Date readCreatedDate(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_CREATED_DATE);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_CREATED_DATE);
         try {
             return new Date(Long.parseLong(readText(parser)));
         } catch (NumberFormatException e) {
@@ -128,7 +106,7 @@ public class XmlLoader {
     }
 
     private static Date readLastModificationDate(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_LAST_MODIFICATION);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_LAST_MODIFICATION);
         try {
             return new Date(Long.parseLong(readText(parser)));
         } catch (NumberFormatException e) {
@@ -137,7 +115,7 @@ public class XmlLoader {
     }
 
     private static int readNumberTestDid(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_NUMBER_TEST_DID);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_NUMBER_TEST_DID);
 
         try {
             return Integer.parseInt(readText(parser));
@@ -147,7 +125,7 @@ public class XmlLoader {
     }
 
     private static ArrayList<Column> readColumns(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_COLUMNS);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMNS);
 
         ArrayList<Column> columnsList = new ArrayList<>();
 
@@ -157,7 +135,7 @@ public class XmlLoader {
                 continue;
             }
 
-            if (TAG_COLUMN.equals(parser.getName())) {
+            if (FileManager.TAG_COLUMN.equals(parser.getName())) {
                 Column column = readColumn(parser);
                 if (column != null) {
                     columnsList.add(column);
@@ -171,7 +149,7 @@ public class XmlLoader {
     }
 
     private static Column readColumn(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_COLUMN);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMN);
 
         Column column = new Column();
 
@@ -182,22 +160,22 @@ public class XmlLoader {
             }
 
             switch (parser.getName()) {
-                case TAG_NAME:
+                case FileManager.TAG_NAME:
                     column.setName(readName(parser));
                     break;
 
-                case TAG_DESCRIPTION:
+                case FileManager.TAG_DESCRIPTION:
                     column.setDescription(readDescription(parser));
                     break;
 
-                case TAG_INPUT_TYPE:
+                case FileManager.TAG_INPUT_TYPE:
                     ColumnInputType inputType = readInputType(parser);
                     if (inputType != null) {
                         column.setInputType(inputType);
                     }
                     break;
 
-                case TAG_DEFAULT_VALUE:
+                case FileManager.TAG_DEFAULT_VALUE:
                     column.setDefaultValue(readDefaultValue(parser));
                     break;
 
@@ -215,7 +193,7 @@ public class XmlLoader {
     }
 
     private static ColumnInputType readInputType(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_INPUT_TYPE);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_INPUT_TYPE);
         try {
             return ColumnInputType.valueOf(readText(parser));
         } catch (IllegalArgumentException e) {
@@ -224,12 +202,12 @@ public class XmlLoader {
     }
 
     private static String readDefaultValue(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_DEFAULT_VALUE);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_DEFAULT_VALUE);
         return readText(parser);
     }
 
     private static ArrayList<DataRow> readRows(XmlPullParser parser, Test test) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_ROWS);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_ROWS);
 
         if (test.getListColumn() == null) {
             throw new XmlPullParserException("Columns must be defined before");
@@ -243,7 +221,7 @@ public class XmlLoader {
                 continue;
             }
 
-            if (TAG_ROW.equals(parser.getName())) {
+            if (FileManager.TAG_ROW.equals(parser.getName())) {
                 DataRow row = readRow(parser, test);
                 if (row != null) {
                     rowsList.add(row);
@@ -257,7 +235,7 @@ public class XmlLoader {
     }
 
     private static DataRow readRow(XmlPullParser parser, Test test) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_ROW);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_ROW);
 
         DataRow dataRow = new DataRow();
         int indexColumn = 0;
@@ -269,7 +247,7 @@ public class XmlLoader {
                 continue;
             }
 
-            if (TAG_CELL.equals(parser.getName())) {
+            if (FileManager.TAG_CELL.equals(parser.getName())) {
                 if (indexColumn >= test.getNumberColumn()) {
                     Log.w("XmlLoader", "Too many columns");
                     continue;
@@ -298,7 +276,7 @@ public class XmlLoader {
     }
 
     private static DataCell readCell(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, TAG_CELL);
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_CELL);
         switch (inputType) {
             case String:
                 return new DataCellString(readText(parser));

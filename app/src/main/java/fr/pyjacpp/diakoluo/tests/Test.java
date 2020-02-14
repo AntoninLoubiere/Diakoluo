@@ -7,8 +7,7 @@ public class Test {
     private String name;
     private String description;
 
-    /* TODO private ?PathClass? testPath; */
-
+    private String filename;
     private Date createdDate;
     private Date lastModification;
 
@@ -38,6 +37,7 @@ public class Test {
         numberTestDid = test.numberTestDid;
         listColumn = new ArrayList<>(test.listColumn);
         listRow = new ArrayList<>(test.listRow);
+        filename = test.filename;
     }
 
     public Test(String name, String description) {
@@ -168,5 +168,13 @@ public class Test {
                 listColumn == null ||
                 listRow == null
         );
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public String getFilename() {
+        return filename;
     }
 }
