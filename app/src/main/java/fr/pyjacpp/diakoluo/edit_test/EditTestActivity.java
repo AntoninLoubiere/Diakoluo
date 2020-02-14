@@ -125,32 +125,32 @@ public class EditTestActivity extends AppCompatActivity
     }
 
     private void createModifyEditTest() {
-        ArrayList<Test> listTest = DiakoluoApplication.getListTest(EditTestActivity.this);
-        Test editTest = DiakoluoApplication.getCurrentEditTest(EditTestActivity.this);
-        Integer currentIndex = DiakoluoApplication.getCurrentIndexEditTest(EditTestActivity.this);
-
-        if (currentIndex == null) {
-            listTest.add(editTest);
-            DiakoluoApplication.setCurrentIndexEditTest(EditTestActivity.this, null);
-            RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
-                    RecyclerViewChange.ItemInserted
-                    );
-            recyclerViewChange.setPosition(listTest.size() - 1);
-            DiakoluoApplication.setTestListChanged(EditTestActivity.this, recyclerViewChange);
-            finish();
-        } else {
-            listTest.set(currentIndex, editTest);
-            DiakoluoApplication.setCurrentIndexEditTest(EditTestActivity.this, null);
-            RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
-                    RecyclerViewChange.ItemChanged
-            );
-            recyclerViewChange.setPosition(currentIndex);
-            DiakoluoApplication.setTestListChanged(EditTestActivity.this, recyclerViewChange);
-            finish();
-        }
+        finish();
         new Thread(new Runnable() {
             @Override
             public void run() {
+                ArrayList<Test> listTest = DiakoluoApplication.getListTest(EditTestActivity.this);
+                Test editTest = DiakoluoApplication.getCurrentEditTest(EditTestActivity.this);
+                Integer currentIndex = DiakoluoApplication.getCurrentIndexEditTest(EditTestActivity.this);
+
+                if (currentIndex == null) {
+                    listTest.add(editTest);
+                    DiakoluoApplication.setCurrentIndexEditTest(EditTestActivity.this, null);
+                    RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
+                            RecyclerViewChange.ItemInserted
+                    );
+                    recyclerViewChange.setPosition(listTest.size() - 1);
+                    DiakoluoApplication.setTestListChanged(EditTestActivity.this, recyclerViewChange);
+                } else {
+                    listTest.set(currentIndex, editTest);
+                    DiakoluoApplication.setCurrentIndexEditTest(EditTestActivity.this, null);
+                    RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
+                            RecyclerViewChange.ItemChanged
+                    );
+                    editTest.registerModificationDate();
+                    recyclerViewChange.setPosition(currentIndex);
+                    DiakoluoApplication.setTestListChanged(EditTestActivity.this, recyclerViewChange);
+                }
                 DiakoluoApplication.saveTest(EditTestActivity.this);
             }
         }).start();
