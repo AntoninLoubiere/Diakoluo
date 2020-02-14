@@ -8,10 +8,10 @@ public class Column {
     private Object defaultValue;
 
     public Column() {
-        this.name = "";
-        this.description = "";
-        this.inputType = ColumnInputType.DEFAULT_INPUT_TYPE;
-        this.defaultValue = "";
+        this.name = null;
+        this.description = null;
+        this.inputType = null;
+        this.defaultValue = null;
     }
 
     public Column(String name, String description, ColumnInputType inputType) {
@@ -51,5 +51,12 @@ public class Column {
 
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    public boolean isValid() {
+        return !(name == null ||
+                description == null ||
+                inputType == null ||
+                defaultValue == null);
     }
 }

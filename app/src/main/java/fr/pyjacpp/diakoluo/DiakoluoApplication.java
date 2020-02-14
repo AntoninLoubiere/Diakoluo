@@ -3,9 +3,13 @@ package fr.pyjacpp.diakoluo;
 import android.app.Application;
 import android.content.Context;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
@@ -643,6 +647,18 @@ public class DiakoluoApplication extends Application {
         listTest.add(new Test(
                 "Test 1", getString(R.string.very_long_description), new Date(), new Date(), 1, columns, dataRows
         ));
+
+        Test test = null;
+        try {
+            test = XmlLoader.parse(this, "test.dkl");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        }
+        if (test != null) {
+            listTest.add(test);
+        }
 
         setCurrentTest(0);
     }
