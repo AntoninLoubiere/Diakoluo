@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -19,7 +21,9 @@ import fr.pyjacpp.diakoluo.tests.Test;
 public class DiakoluoApplication extends Application {
     private static final String GLOBAL_SHARED_PREFERENCES = "diakoluo";
     private static final String PREFERENCES_LIST_TEST_FILENAMES = "testFilenames";
+    private static final String PREFERENCES_NUMBER_TEST_CREATED_FILENAMES = "numberTestCreated";
     private static final String DEFAULT_TEST = "default.dkl";
+    private static final String USER_PROPERTY_NUMBER_TEST_CREATED = "number_test";
 
     private ArrayList<Test> listTest;
     private Test currentTest;
@@ -60,6 +64,8 @@ public class DiakoluoApplication extends Application {
     }
 
     private void saveTest() {
+        int numberTestCreated = sharedPreferences.getInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, -1);
+
         Set<String> listTestFilename = new HashSet<>();
 
         for (Test test : listTest) {
@@ -75,9 +81,16 @@ public class DiakoluoApplication extends Application {
             }
         }
 
+        if (listTestFilename.size() != numberTestCreated) {
+            FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+            firebaseAnalytics.setUserProperty(USER_PROPERTY_NUMBER_TEST_CREATED,
+                    String.valueOf(listTestFilename.size()));
+        }
+
         sharedPreferences
                 .edit()
                 .putStringSet(PREFERENCES_LIST_TEST_FILENAMES, listTestFilename)
+                .putInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, listTestFilename.size())
                 .apply();
         Log.i("DiakoluoApplication", "Test saved");
     }
