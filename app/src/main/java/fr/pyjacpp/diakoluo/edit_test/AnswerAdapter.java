@@ -92,6 +92,11 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
 
     @Override
     public int getItemCount() {
-        return DiakoluoApplication.getCurrentEditTest(context).getNumberRow();
+        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(context);
+        if (currentEditTest == null) {
+            return 0;
+        } else {
+            return currentEditTest.getNumberRow();
+        }
     }
 }
