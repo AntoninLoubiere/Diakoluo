@@ -45,7 +45,9 @@ public class DiakoluoApplication extends Application {
                 null);
         if (listTestFilename == null) {
             try {
-                listTest.add(FileManager.loadFromAsset(this, DEFAULT_TEST));
+                Test test = FileManager.loadFromAsset(this, DEFAULT_TEST);
+                test.setFilename(null);
+                listTest.add(test);
                 saveTest();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -58,12 +60,7 @@ public class DiakoluoApplication extends Application {
     }
 
     private void saveTest() {
-        Set<String> listTestFilename = sharedPreferences.getStringSet(PREFERENCES_LIST_TEST_FILENAMES,
-                null);
-
-        if (listTestFilename == null) {
-            listTestFilename = new HashSet<>();
-        }
+        Set<String> listTestFilename = new HashSet<>();
 
         for (Test test : listTest) {
             if (test.getFilename() == null) {
@@ -105,6 +102,13 @@ public class DiakoluoApplication extends Application {
         }
 
         Log.i("DiakoluoApplication", "Test loaded");
+    }
+
+    private void removeTest(int position) {
+        Test testRemoved = listTest.remove(position);
+        FileManager.delete(this, testRemoved);
+
+        saveTest();
     }
 
     private void setCurrentTest(Test currentTest) {
@@ -242,6 +246,10 @@ public class DiakoluoApplication extends Application {
 
     public static void saveTest(Context context) {
         ((DiakoluoApplication) context.getApplicationContext()).saveTest();
+    }
+
+    public static void removeTest(Context context, int position) {
+        ((DiakoluoApplication) context.getApplicationContext()).removeTest(position);
     }
     
 }

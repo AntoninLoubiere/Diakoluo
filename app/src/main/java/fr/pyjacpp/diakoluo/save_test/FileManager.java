@@ -1,7 +1,6 @@
 package fr.pyjacpp.diakoluo.save_test;
 
 import android.content.Context;
-import android.text.InputType;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -77,7 +76,7 @@ public class FileManager {
                 .replace('.', '_');
         int index = -1;
 
-        String currentFileName = null;
+        String currentFileName;
 
         do {
             index++;
@@ -87,11 +86,11 @@ public class FileManager {
             }
 
             currentFileName = name + extention;
-        } while (filenameIsIn(context, currentFileName) && !test.getFilename().equals(currentFileName));
+        } while (filenameExist(context, currentFileName) && !test.getFilename().equals(currentFileName));
         test.setFilename(currentFileName);
     }
 
-    private static boolean filenameIsIn(Context context, String filename) {
+    private static boolean filenameExist(Context context, String filename) {
         filename = TEST_PREFIX + filename;
         for (String currentFilename : context.fileList()) {
             if (filename.equals(currentFilename)) {
@@ -100,5 +99,9 @@ public class FileManager {
         }
 
         return false;
+    }
+
+    public static void delete(Context context, Test testRemoved) {
+        context.deleteFile(TEST_PREFIX + testRemoved.getFilename());
     }
 }

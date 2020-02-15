@@ -127,10 +127,16 @@ public class ListTestsFragment extends Fragment implements TestAdapter.TestViewL
                 .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        listTest.remove(position);
                         testRecyclerView.removeViewAt(position);
                         testRecyclerViewAdapter.notifyItemRemoved(position);
                         testRecyclerViewAdapter.notifyItemRangeChanged(position, listTest.size());
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                DiakoluoApplication.removeTest(view.getContext(), position);
+                            }
+                        }).start();
 
                         dialogInterface.dismiss();
                     }
