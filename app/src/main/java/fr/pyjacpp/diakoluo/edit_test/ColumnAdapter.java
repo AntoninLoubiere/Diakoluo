@@ -82,7 +82,12 @@ class ColumnAdapter extends RecyclerView.Adapter<ColumnAdapter.ColumnViewHolder>
 
     @Override
     public int getItemCount() {
-        return DiakoluoApplication.getCurrentEditTest(context).getNumberColumn();
+        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(context);
+        if (currentEditTest == null) {
+            return 0;
+        } else {
+            return currentEditTest.getNumberColumn();
+        }
     }
 
 }
