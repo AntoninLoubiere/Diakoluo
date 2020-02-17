@@ -1,0 +1,14 @@
+<data>
+    <name>$NAME$</name>
+    <description>$DESCRIPTION$</description>
+    <columns>
+        <column name="$COLUMN-NAME$" description="$COLUMN-DESCRIPTION$" />
+        <column name="$COLUMN1-NAME$" description="$COLUMN1-DESCRIPTION$" />
+        ...
+    </columns>
+    <data>
+        <row $COLUMN1-NAME$="$COLUMN1-VALUE$" $COLUMN2-NAME$="$COLUMN2-VALUE$"/>
+        <row $COLUMN1-NAME$="$COLUMN1-VALUE$" $COLUMN2-NAME$="$COLUMN2-VALUE$"/>
+        ...
+    </data>
+</data>
