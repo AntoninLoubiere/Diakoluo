@@ -11,14 +11,14 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_answer_data_view);
+        setContentView(R.layout.activity_view_answer_data);
 
         if (savedInstanceState == null) {
             AnswerDataViewFragment fragment = AnswerDataViewFragment.newInstance(
                     getIntent().getIntExtra(AnswerDataViewFragment.ARG_ANSWER_INDEX, 0)
             );
 
-            getFragmentManager().beginTransaction().replace(
+            getSupportFragmentManager().beginTransaction().replace(
                     R.id.answerDataViewFragmentContainer,
                     fragment).commit();
         }

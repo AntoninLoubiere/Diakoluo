@@ -16,6 +16,7 @@ public class ViewTestActivity extends AppCompatActivity
         AnswerViewTestRecyclerListFragment.OnFragmentInteractionListener,
         ColumnViewTestFragment.OnFragmentInteractionListener,
         ColumnViewTestRecyclerListFragment.OnFragmentInteractionListener,
+        AnswerDataViewFragment.OnFragmentInteractionListener,
         MainInformationsViewTestFragment.OnFragmentInteractionListener {
 
     @Override

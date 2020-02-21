@@ -1,6 +1,5 @@
 package fr.pyjacpp.diakoluo.view_test;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -12,6 +11,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
