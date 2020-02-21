@@ -14,10 +14,11 @@ public class ViewTestActivity extends AppCompatActivity
         implements
         AnswerViewTestFragment.OnFragmentInteractionListener,
         AnswerViewTestRecyclerListFragment.OnFragmentInteractionListener,
+        AnswerDataViewFragment.OnFragmentInteractionListener,
         ColumnViewTestFragment.OnFragmentInteractionListener,
         ColumnViewTestRecyclerListFragment.OnFragmentInteractionListener,
-        AnswerDataViewFragment.OnFragmentInteractionListener,
-        MainInformationsViewTestFragment.OnFragmentInteractionListener {
+        ColumnDataViewFragment.OnFragmentInteractionListener,
+        MainInformationsViewTestFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
