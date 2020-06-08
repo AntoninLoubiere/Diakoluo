@@ -11,7 +11,7 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_column_data_edit);
+        setContentView(R.layout.activity_edit_column_data);
 
         if (savedInstanceState == null) {
             ColumnDataEditFragment fragment = ColumnDataEditFragment.newInstance(

@@ -26,8 +26,8 @@ import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.view_test.ViewTestActivity;
 
 
-public class ListTestsFragment extends Fragment implements TestAdapter.TestViewListener {
-    private OnFragmentInteractionListener mListener;
+public class ListTestsFragment extends Fragment {
+    private OnFragmentInteractionListener listener;
     private RecyclerView testRecyclerView;
     private RecyclerView.Adapter testRecyclerViewAdapter;
 
@@ -43,7 +43,62 @@ public class ListTestsFragment extends Fragment implements TestAdapter.TestViewL
 
         testRecyclerView = inflatedLayout.findViewById(R.id.recyclerView);
         LinearLayoutManager testRecyclerViewLayoutManager = new LinearLayoutManager(getContext());
-        testRecyclerViewAdapter = new TestAdapter(getContext(), this);
+        testRecyclerViewAdapter = new TestAdapter(getContext(), new TestAdapter.TestViewListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                listener.onItemClick(view, position);
+            }
+
+            @Override
+            public void onPlayButtonClick(View view, int position) {
+                listener.onPlayButtonClick(view, position);
+            }
+
+            @Override
+            public void onSeeButtonClick(View view, int position) {
+                listener.onSeeButtonClick(view, position);
+            }
+
+            @Override
+            public void onDeleteMenuItemClick(final View view, final int position) {
+                final ArrayList<Test> listTest = DiakoluoApplication.getListTest(view.getContext());
+
+                new AlertDialog.Builder(view.getContext())
+                        .setTitle(R.string.dialog_delete_test_title)
+                        .setMessage(getString(R.string.dialog_delete_test_message, listTest.get(position).getName()))
+                        .setCancelable(true)
+                        .setIcon(R.drawable.ic_delete_forever_accent_color_24dp)
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        })
+                        .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                testRecyclerView.removeViewAt(position);
+                                testRecyclerViewAdapter.notifyItemRemoved(position);
+                                testRecyclerViewAdapter.notifyItemRangeChanged(position, listTest.size());
+
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        DiakoluoApplication.removeTest(view.getContext(), position);
+                                    }
+                                }).start();
+
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .show();
+            }
+
+            @Override
+            public void onEditMenuItemClick(View view, int position) {
+                listener.onEditMenuItemClick(view, position);
+            }
+        });
 
 
 
@@ -70,83 +125,24 @@ public class ListTestsFragment extends Fragment implements TestAdapter.TestViewL
         }
     }
 
-    public interface OnFragmentInteractionListener {
-
-    }
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+            listener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
 
-    @Override
-    public void onItemClick(View view, int position) {
-        DiakoluoApplication.setCurrentTest(view.getContext(),
-                DiakoluoApplication.getListTest(view.getContext()).get(position));
+    public interface OnFragmentInteractionListener{
+        void onItemClick(View view, int position);
 
-        startActivity(new Intent(view.getContext(), ViewTestActivity.class));
-    }
+        void onPlayButtonClick(View view, int position);
 
-    @Override
-    public void onPlayButtonClick(View view, int position) {
-        Test currentTest = DiakoluoApplication.getListTest(view.getContext()).get(position);
-        if (currentTest.canBePlay()) {
-            DiakoluoApplication.setCurrentTest(view.getContext(),
-                    currentTest);
+        void onSeeButtonClick(View view, int position);
 
-            startActivity(new Intent(view.getContext(), TestSettingsActivity.class));
-        } // TODO warning
-    }
-
-    @Override
-    public void onSeeButtonClick(View view, int position) {
-        onItemClick(view, position);
-    }
-
-    @Override
-    public void onDeleteMenuItemClick(final View view, final int position) {
-        final ArrayList<Test> listTest = DiakoluoApplication.getListTest(view.getContext());
-
-        new AlertDialog.Builder(view.getContext())
-                .setTitle(R.string.dialog_delete_test_title)
-                .setMessage(getString(R.string.dialog_delete_test_message, listTest.get(position).getName()))
-                .setCancelable(true)
-                .setIcon(R.drawable.ic_delete_forever_accent_color_24dp)
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                })
-                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        testRecyclerView.removeViewAt(position);
-                        testRecyclerViewAdapter.notifyItemRemoved(position);
-                        testRecyclerViewAdapter.notifyItemRangeChanged(position, listTest.size());
-
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                DiakoluoApplication.removeTest(view.getContext(), position);
-                            }
-                        }).start();
-
-                        dialogInterface.dismiss();
-                    }
-                })
-                .show();
-    }
-
-    @Override
-    public void onEditMenuItemClick(View view, int position) {
-        DiakoluoApplication.setCurrentIndexEditTest(view.getContext(), position);
-        startActivity(new Intent(view.getContext(), EditTestActivity.class));
+        void onEditMenuItemClick(View view, int position);
     }
 }

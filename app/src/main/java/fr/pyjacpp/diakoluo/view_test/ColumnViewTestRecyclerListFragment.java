@@ -1,7 +1,6 @@
 package fr.pyjacpp.diakoluo.view_test;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +17,7 @@ import fr.pyjacpp.diakoluo.RecyclerItemClickListener;
 
 public class ColumnViewTestRecyclerListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
+    private OnFragmentInteractionParentListener parentListener;
 
     public ColumnViewTestRecyclerListFragment() {
         // Required empty public constructor
@@ -41,9 +41,7 @@ public class ColumnViewTestRecyclerListFragment extends Fragment {
         columnRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(columnRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Intent intent = new Intent(view.getContext(), ColumnDataViewActivity.class);
-                intent.putExtra(ColumnDataViewFragment.ARG_COLUMN_INDEX, position);
-                startActivity(intent);
+                parentListener.onItemClick(view, position);
             }
 
             @Override
@@ -63,6 +61,12 @@ public class ColumnViewTestRecyclerListFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+        if (getParentFragment() instanceof OnFragmentInteractionParentListener) {
+            parentListener = (OnFragmentInteractionParentListener) getParentFragment();
+        } else {
+            throw new RuntimeException("Parent fragment must implement OnFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -72,5 +76,9 @@ public class ColumnViewTestRecyclerListFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
+    }
+
+    public interface OnFragmentInteractionParentListener {
+        void onItemClick(View view, int position);
     }
 }

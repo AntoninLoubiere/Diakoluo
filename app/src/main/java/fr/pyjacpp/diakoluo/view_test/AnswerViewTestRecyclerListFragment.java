@@ -1,7 +1,6 @@
 package fr.pyjacpp.diakoluo.view_test;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +16,13 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerItemClickListener;
 
 public class AnswerViewTestRecyclerListFragment extends Fragment {
-    private OnFragmentInteractionListener mListener;
+    private OnFragmentInteractionListener listener;
+    private OnFragmentInteractionParentListener parentListener;
 
     public AnswerViewTestRecyclerListFragment() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -43,9 +44,7 @@ public class AnswerViewTestRecyclerListFragment extends Fragment {
                 new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        Intent intent = new Intent(view.getContext(), AnswerDataViewActivity.class);
-                        intent.putExtra(AnswerDataViewFragment.ARG_ANSWER_INDEX, position);
-                        startActivity(intent);
+                        parentListener.onItemClick(view, position);
                     }
 
                     @Override
@@ -61,19 +60,30 @@ public class AnswerViewTestRecyclerListFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+            listener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
+        }
+
+        if (getParentFragment() instanceof OnFragmentInteractionParentListener) {
+            parentListener = (OnFragmentInteractionParentListener) getParentFragment();
+        } else {
+            throw new RuntimeException("Parent fragment must implement OnFragmentInteractionParentListener");
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        listener = null;
+        parentListener = null;
     }
 
     public interface OnFragmentInteractionListener {
+    }
+
+    public interface OnFragmentInteractionParentListener {
+        void onItemClick(View view, int position);
     }
 }

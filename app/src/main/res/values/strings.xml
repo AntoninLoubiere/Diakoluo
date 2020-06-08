@@ -34,4 +34,5 @@
     <string name="add_column">Add column</string>
     <string name="column_name_format">%s:</string>
     <string name="column_type">Column type:</string>
+    <string name="no_test_selected">No test selected. Select a test to show his informations.</string>
 </resources>

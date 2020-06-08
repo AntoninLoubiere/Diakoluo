@@ -11,7 +11,7 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_answer_data_edit);
+        setContentView(R.layout.activity_edit_answer_data);
 
         if (savedInstanceState == null) {
             AnswerDataEditFragment fragment = AnswerDataEditFragment.newInstance(
