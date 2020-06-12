@@ -27,7 +27,7 @@ import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 public class AnswerDataEditFragment extends Fragment {
     static final String ARG_ANSWER_INDEX = "answer_index";
 
-    HashMap<Column, View> columnAnswerEditHashMap = new HashMap<>();
+    private HashMap<Column, View> columnAnswerEditHashMap = new HashMap<>();
 
     private int answerIndex;
 

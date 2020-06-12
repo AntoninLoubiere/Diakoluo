@@ -17,7 +17,7 @@
     <string name="continue_text">Continue</string>
     <string name="skip">(Skip)</string>
     <string name="score_20">%.2f/20</string>
-    <string name="score_presice">%d/%d</string>
+    <string name="score_precise">%d/%d</string>
     <string name="restart">Restart</string>
     <string name="main_menu">Main menu</string>
     <string name="description">Description</string>
@@ -34,5 +34,5 @@
     <string name="add_column">Add column</string>
     <string name="column_name_format">%s:</string>
     <string name="column_type">Column type:</string>
-    <string name="no_test_selected">No test selected. Select a test to show his informations.</string>
+    <string name="no_test_selected">No test selected. Select a test to show his information.</string>
 </resources>

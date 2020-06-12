@@ -20,11 +20,11 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-public class MainInformationsEditTestFragment extends Fragment {
+class MainInformationEditTestFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private View inflatedView;
 
-    public MainInformationsEditTestFragment() {
+    public MainInformationEditTestFragment() {
         // Required empty public constructor
     }
 
@@ -44,17 +44,17 @@ public class MainInformationsEditTestFragment extends Fragment {
         EditText description = inflatedView.findViewById(R.id.descriptionEditText);
         TextView createdDate = inflatedView.findViewById(R.id.createdDateTextView);
         TextView lastModification = inflatedView.findViewById(R.id.lastModificationTextView);
-        TextView numberTedtDid = inflatedView.findViewById(R.id.numberTestDid);
+        TextView numberTestDid = inflatedView.findViewById(R.id.numberTestDid);
 
         Test currentEditTest = DiakoluoApplication.getCurrentEditTest(container.getContext());
 
-        title.addTextChangedListener(new EditTextTextWacher(title) {
+        title.addTextChangedListener(new EditTextTextWatcher(title) {
             @Override
             EditTestActivity.EditTestValidator validatorFunction(String text) {
                 return mListener.titleEditTestValidator(text);
             }
         });
-        description.addTextChangedListener(new EditTextTextWacher(description) {
+        description.addTextChangedListener(new EditTextTextWatcher(description) {
             @Override
             EditTestActivity.EditTestValidator validatorFunction(String text) {
                 return mListener.descriptionEditTestValidator(text);
@@ -78,7 +78,7 @@ public class MainInformationsEditTestFragment extends Fragment {
                 )
         );
 
-        numberTedtDid.setText(
+        numberTestDid.setText(
                 String.format(
                         getString(R.string.number_test_did_format),
                         currentEditTest.getNumberTestDid()
@@ -126,11 +126,11 @@ public class MainInformationsEditTestFragment extends Fragment {
         EditTestActivity.EditTestValidator descriptionEditTestValidator(String text);
     }
 
-    abstract class EditTextTextWacher implements TextWatcher {
+    abstract class EditTextTextWatcher implements TextWatcher {
 
         private final EditText editText;
 
-        EditTextTextWacher(EditText editText) {
+        EditTextTextWatcher(EditText editText) {
             super();
             this.editText = editText;
         }
@@ -145,11 +145,11 @@ public class MainInformationsEditTestFragment extends Fragment {
 
         @Override
         public void afterTextChanged(Editable editable) {
-            EditTestActivity.EditTestValidator validatorReponse = validatorFunction(editable.toString());
+            EditTestActivity.EditTestValidator validatorResponse = validatorFunction(editable.toString());
 
-            if (validatorReponse.isError()) {
-                String msg = getString(validatorReponse.getErrorMessageRessourceId());
-                if (validatorReponse.isWarning()) {
+            if (validatorResponse.isError()) {
+                String msg = getString(validatorResponse.getErrorMessageResourceId());
+                if (validatorResponse.isWarning()) {
                     Drawable warningIcon= getResources().getDrawable(R.drawable.ic_warning_yellow_24dp);
                     warningIcon.setBounds(0, 0, warningIcon.getIntrinsicWidth(), warningIcon.getIntrinsicHeight());
 

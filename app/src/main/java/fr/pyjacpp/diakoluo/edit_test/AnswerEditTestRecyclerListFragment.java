@@ -21,7 +21,7 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-public class AnswerEditTestRecyclerListFragment extends Fragment {
+class AnswerEditTestRecyclerListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private RecyclerView.Adapter answerRecyclerViewAdapter;
 

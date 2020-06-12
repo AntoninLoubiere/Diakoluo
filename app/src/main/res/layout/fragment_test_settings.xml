@@ -39,8 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/numberColumnToShowTextView"
-        android:layout_toStartOf="@id/numberColumnToShowSeekBarTextView"
-        android:layout_toLeftOf="@id/numberColumnToShowSeekBarTextView" />
+        android:layout_toStartOf="@id/numberColumnToShowSeekBarTextView" />
 
     <TextView
         android:id="@+id/numberColumnToShowSeekBarTextView"
@@ -49,7 +48,6 @@
         android:layout_alignTop="@id/numberColumnToShowSeekBar"
         android:layout_alignBottom="@id/numberColumnToShowSeekBar"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:text="@string/number_column_to_show_seekbar_textview" />
 
     <Button

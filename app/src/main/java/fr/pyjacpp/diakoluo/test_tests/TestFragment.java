@@ -27,7 +27,7 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 
-public class TestFragment extends Fragment {
+class TestFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private View inflatedView;
     private TestTestContext testTestContext;

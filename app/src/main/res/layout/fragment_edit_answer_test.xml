@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/ic_add_accent_color_24dp"
-        android:drawableRight="@drawable/ic_add_accent_color_24dp"
         android:text="@string/add_answer" />
 
     <View

@@ -13,12 +13,12 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.edit_test.EditTestActivity;
 import fr.pyjacpp.diakoluo.test_tests.TestSettingsActivity;
 import fr.pyjacpp.diakoluo.tests.Test;
-import fr.pyjacpp.diakoluo.view_test.MainInformationsViewTestFragment;
+import fr.pyjacpp.diakoluo.view_test.MainInformationViewTestFragment;
 import fr.pyjacpp.diakoluo.view_test.ViewTestActivity;
 
 public class ListTestActivity extends AppCompatActivity
         implements ListTestsFragment.OnFragmentInteractionListener,
-        MainInformationsViewTestFragment.OnFragmentInteractionListener {
+        MainInformationViewTestFragment.OnFragmentInteractionListener {
 
     private boolean detailMainInformationTest;
 
@@ -42,14 +42,14 @@ public class ListTestActivity extends AppCompatActivity
     @Override
     public void onItemClick(View view, int position) {
         if (detailMainInformationTest) {
-            MainInformationsViewTestFragment mainInformationsViewTestFragment =(MainInformationsViewTestFragment)
+            MainInformationViewTestFragment mainInformationViewTestFragment =(MainInformationViewTestFragment)
                     getSupportFragmentManager().findFragmentById(R.id.testMainInformationFragment);
 
-            if (mainInformationsViewTestFragment != null) {
+            if (mainInformationViewTestFragment != null) {
                 DiakoluoApplication.setCurrentTest(view.getContext(),
                         DiakoluoApplication.getListTest(view.getContext()).get(position));
 
-                mainInformationsViewTestFragment.updateContent(this);
+                mainInformationViewTestFragment.updateContent(this);
             }
         } else {
             onSeeButtonClick(view, position);
