@@ -34,3 +34,5 @@ proguard/
 captures/
 
 \.idea/
+
+app/google-services.json
