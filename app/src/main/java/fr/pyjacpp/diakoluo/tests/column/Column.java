@@ -1,4 +1,11 @@
-package fr.pyjacpp.diakoluo.tests;
+package fr.pyjacpp.diakoluo.tests.column;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
+import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
+import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 
 public class Column {
     private String name;
@@ -58,5 +65,18 @@ public class Column {
                 description == null ||
                 inputType == null ||
                 defaultValue == null);
+    }
+
+    public void writeXmlHeader(OutputStream fileOutputStream) throws IOException {
+        switch (inputType) {
+            case String:
+                fileOutputStream.write(XmlSaver.getCoupleBalise(FileManager.TAG_DEFAULT_VALUE,
+                        (String) defaultValue).getBytes());
+                break;
+
+            default:
+                throw new IllegalStateException("State unexepted" + inputType);
+        }
+
     }
 }

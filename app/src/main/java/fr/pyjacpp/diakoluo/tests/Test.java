@@ -3,6 +3,9 @@ package fr.pyjacpp.diakoluo.tests;
 import java.util.ArrayList;
 import java.util.Date;
 
+import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.tests.column.Column;
+
 public class Test {
     private String name;
     private String description;
@@ -176,5 +179,17 @@ public class Test {
 
     public String getFilename() {
         return filename;
+    }
+
+    public String getDefaultFilename(boolean useExtension) {
+        String s = name
+                .replace(' ', '_')
+                .replace('/', '_')
+                .replace('.', '_').toLowerCase();
+        if (useExtension) {
+            return s + FileManager.extension;
+        } else {
+            return s;
+        }
     }
 }

@@ -11,14 +11,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
-import fr.pyjacpp.diakoluo.tests.Column;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
-public class XmlLoader {
+class XmlLoader {
 
     static Test load(InputStream fileInputStream) throws IOException, XmlPullParserException {
             // configure parser

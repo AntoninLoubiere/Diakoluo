@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -11,6 +12,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.edit_test.EditTestActivity;
+import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.test_tests.TestSettingsActivity;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.view_test.MainInformationsViewTestFragment;
@@ -79,5 +81,17 @@ public class ListTestActivity extends AppCompatActivity
     public void onEditMenuItemClick(View view, int position) {
         DiakoluoApplication.setCurrentIndexEditTest(view.getContext(), position);
         startActivity(new Intent(view.getContext(), EditTestActivity.class));
+    }
+
+    @Override
+    public void onExportMenuItemClick(View view, int position) {
+        FileManager.exportTest(this, position);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        FileManager.exportTestResult(this, requestCode, resultCode, data);
     }
 }

@@ -2,7 +2,6 @@ package fr.pyjacpp.diakoluo.list_tests;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +19,7 @@ import java.util.ArrayList;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
-import fr.pyjacpp.diakoluo.edit_test.EditTestActivity;
-import fr.pyjacpp.diakoluo.test_tests.TestSettingsActivity;
 import fr.pyjacpp.diakoluo.tests.Test;
-import fr.pyjacpp.diakoluo.view_test.ViewTestActivity;
 
 
 public class ListTestsFragment extends Fragment {
@@ -98,6 +94,11 @@ public class ListTestsFragment extends Fragment {
             public void onEditMenuItemClick(View view, int position) {
                 listener.onEditMenuItemClick(view, position);
             }
+
+            @Override
+            public void onExportMenuItemClick(View view, int position) {
+                listener.onExportMenuItemClick(view, position);
+            }
         });
 
 
@@ -144,5 +145,7 @@ public class ListTestsFragment extends Fragment {
         void onSeeButtonClick(View view, int position);
 
         void onEditMenuItemClick(View view, int position);
+
+        void onExportMenuItemClick(View view, int position);
     }
 }
