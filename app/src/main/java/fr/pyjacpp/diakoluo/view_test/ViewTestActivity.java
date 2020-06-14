@@ -18,7 +18,7 @@ public class ViewTestActivity extends AppCompatActivity
         ColumnViewTestFragment.OnFragmentInteractionListener,
         ColumnViewTestRecyclerListFragment.OnFragmentInteractionListener,
         ColumnDataViewFragment.OnFragmentInteractionListener,
-        MainInformationsViewTestFragment.OnFragmentInteractionListener{
+        MainInformationViewTestFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

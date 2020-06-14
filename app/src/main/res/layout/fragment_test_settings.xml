@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".test_tests.TestSettingsActivity" >
+    tools:context=".test_tests.TestSettingsActivity"
+    android:layout_margin="@dimen/default_margin">
 
     <TextView
         android:id="@+id/testTitle"
@@ -13,14 +14,16 @@
 
     <TextView
         android:id="@+id/numberQuestionToAskTextView"
-        style="@style/Text"
+        style="@style/Body0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/testTitle"
+        android:layout_marginTop="@dimen/default_margin"
         android:text="@string/number_question_to_ask" />
 
     <Spinner
         android:id="@+id/numberQuestionToAskSpinner"
+        style="@style/Body0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/numberQuestionToAskTextView"
@@ -28,10 +31,11 @@
 
     <TextView
         android:id="@+id/numberColumnToShowTextView"
-        style="@style/Text"
+        style="@style/Body0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/numberQuestionToAskSpinner"
+        android:layout_marginTop="@dimen/default_margin"
         android:text="@string/number_column_to_show" />
 
     <SeekBar
@@ -39,8 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/numberColumnToShowTextView"
-        android:layout_toStartOf="@id/numberColumnToShowSeekBarTextView"
-        android:layout_toLeftOf="@id/numberColumnToShowSeekBarTextView" />
+        android:layout_toStartOf="@id/numberColumnToShowSeekBarTextView" />
 
     <TextView
         android:id="@+id/numberColumnToShowSeekBarTextView"
@@ -49,7 +52,6 @@
         android:layout_alignTop="@id/numberColumnToShowSeekBar"
         android:layout_alignBottom="@id/numberColumnToShowSeekBar"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:text="@string/number_column_to_show_seekbar_textview" />
 
     <Button

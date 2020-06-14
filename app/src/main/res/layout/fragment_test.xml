@@ -22,7 +22,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/testTitle"
-        android:layout_above="@id/validButton">
+        android:layout_above="@id/validButton"
+        android:layout_margin="@dimen/default_margin">
 
         <LinearLayout
             android:id="@+id/answerListLinearLayout"
@@ -36,6 +37,7 @@
         android:id="@+id/validButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/default_margin"/>
 
 </RelativeLayout>

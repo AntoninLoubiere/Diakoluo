@@ -32,7 +32,7 @@ public class ViewTestPagerAdapterFragment extends FragmentPagerAdapter {
 
             case 0:
             default:
-                return new MainInformationsViewTestFragment();
+                return new MainInformationViewTestFragment();
         }
     }
 

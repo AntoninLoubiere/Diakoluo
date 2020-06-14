@@ -13,12 +13,12 @@
 
     <TextView
         android:id="@+id/scoreTextView"
+        style="@style/TextAppearance.MaterialComponents.Headline4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/titleTextView"
         android:textAlignment="center"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textColor="?android:textColorPrimary" />
 
     <ProgressBar
         android:id="@+id/scoreProgressBar"
@@ -29,34 +29,28 @@
 
     <TextView
         android:id="@+id/secondaryScoreTextView"
+        style="@style/TextAppearance.MaterialComponents.Headline5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/scoreProgressBar"
         android:textAlignment="center"
-        android:textSize="17sp" />
+        android:textColor="?android:textColorSecondary" />
 
     <LinearLayout
-        style="?android:buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
 
         <Button
-            style="?android:buttonBarButtonStyle"
-            android:id="@+id/restartButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/restart" />
-
-        <Button
-            style="?android:buttonBarButtonStyle"
             android:id="@+id/mainMenuButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            style="@style/buttonInBar.Outlined"
             android:text="@string/main_menu" />
+
+        <Button
+            android:id="@+id/restartButton"
+            style="@style/buttonInBar"
+            android:text="@string/restart" />
 
     </LinearLayout>
 

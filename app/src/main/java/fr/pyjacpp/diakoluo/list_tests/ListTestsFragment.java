@@ -2,7 +2,6 @@ package fr.pyjacpp.diakoluo.list_tests;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,10 +18,7 @@ import java.util.ArrayList;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
-import fr.pyjacpp.diakoluo.edit_test.EditTestActivity;
-import fr.pyjacpp.diakoluo.test_tests.TestSettingsActivity;
 import fr.pyjacpp.diakoluo.tests.Test;
-import fr.pyjacpp.diakoluo.view_test.ViewTestActivity;
 
 
 public class ListTestsFragment extends Fragment {
@@ -106,8 +101,8 @@ public class ListTestsFragment extends Fragment {
         testRecyclerView.setLayoutManager(testRecyclerViewLayoutManager);
         testRecyclerView.setAdapter(testRecyclerViewAdapter);
 
-        testRecyclerView.addItemDecoration(new DividerItemDecoration(testRecyclerView.getContext(),
-                testRecyclerViewLayoutManager.getOrientation()));
+//        testRecyclerView.addItemDecoration(new DividerItemDecoration(testRecyclerView.getContext(),
+//                testRecyclerViewLayoutManager.getOrientation()));
 
         return inflatedLayout;
     }

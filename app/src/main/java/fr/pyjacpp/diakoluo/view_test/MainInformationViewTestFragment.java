@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,7 +16,7 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-public class MainInformationsViewTestFragment extends Fragment {
+public class MainInformationViewTestFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private TextView title;
     private TextView description;
@@ -28,7 +27,7 @@ public class MainInformationsViewTestFragment extends Fragment {
     private View separator1;
     private View separator2;
 
-    public MainInformationsViewTestFragment() {
+    public MainInformationViewTestFragment() {
         // Required empty public constructor
     }
 
@@ -36,7 +35,7 @@ public class MainInformationsViewTestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflatedView = inflater.inflate(R.layout.fragment_view_main_informations_test, container, false);
+        View inflatedView = inflater.inflate(R.layout.fragment_view_main_information_test, container, false);
 
         title = inflatedView.findViewById(R.id.titleTextView);
         description = inflatedView.findViewById(R.id.descriptionTextView);
