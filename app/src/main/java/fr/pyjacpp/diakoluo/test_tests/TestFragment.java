@@ -44,15 +44,12 @@ public class TestFragment extends Fragment {
                              Bundle savedInstanceState) {
         inflatedView = inflater.inflate(R.layout.fragment_test, container, false);
 
-        TextView testTitle = inflatedView.findViewById(R.id.testTitle);
         Button validButton = inflatedView.findViewById(R.id.validButton);
         LinearLayout linearLayout = inflatedView.findViewById(R.id.answerListLinearLayout);
         ProgressBar progressBar = inflatedView.findViewById(R.id.progressBar);
 
         LinearLayout.LayoutParams params = new TableRow.LayoutParams();
         params.topMargin = 24;
-
-        testTitle.setText(testTestContext.getTest().getName());
 
         for (Column column : testTestContext.getTest().getListColumn()) {
             LinearLayout answerRow = new LinearLayout(inflatedView.getContext());

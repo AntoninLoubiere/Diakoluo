@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -72,6 +73,11 @@ public class EditTestActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_test);
+
+        TextView title = findViewById(R.id.title);
+        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(this);
+        title.setText(currentEditTest == null || currentEditTest.getName().equals("") ?
+                getString(R.string.app_name) : currentEditTest.getName());
 
         TabLayout tabLayout = findViewById(R.id.viewTestTabLayout);
         ViewPager viewPager = findViewById(R.id.viewTestViewPager);

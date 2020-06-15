@@ -1,6 +1,7 @@
 package fr.pyjacpp.diakoluo.view_test;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -8,6 +9,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
+import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 
 public class ViewTestActivity extends AppCompatActivity
@@ -24,6 +26,9 @@ public class ViewTestActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_test);
+
+        TextView title = findViewById(R.id.title);
+        title.setText(DiakoluoApplication.getCurrentTest(this).getName());
 
         TabLayout tabLayout = findViewById(R.id.viewTestTabLayout);
         ViewPager viewPager = findViewById(R.id.viewTestViewPager);

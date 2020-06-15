@@ -27,18 +27,15 @@ public class TestScoreFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View inflatedView = inflater.inflate(R.layout.fragment_test_score, container, false);
 
-        TextView title = inflatedView.findViewById(R.id.titleTextView);
         TextView primaryScoreTextView = inflatedView.findViewById(R.id.scoreTextView);
         TextView secondaryScoreTextView = inflatedView.findViewById(R.id.secondaryScoreTextView);
         ProgressBar scoreProgressBar = inflatedView.findViewById(R.id.scoreProgressBar);
         Button restartButton = inflatedView.findViewById(R.id.restartButton);
         Button mainMenuButton = inflatedView.findViewById(R.id.mainMenuButton);
-
-        title.setText(testTestContext.getTest().getName());
 
         scoreProgressBar.setMax(testTestContext.getMaxScore());
         scoreProgressBar.setProgress(testTestContext.getScore());

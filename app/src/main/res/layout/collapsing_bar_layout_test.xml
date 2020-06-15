@@ -25,6 +25,8 @@
             android:layout_height="?actionBarSize"
             android:layout_gravity="top"
             android:gravity="center"
+            android:maxLines="1"
+            android:singleLine="true"
             android:paddingStart="@dimen/appbar_padding"
             android:paddingEnd="@dimen/appbar_padding"
             android:text="@string/app_name"

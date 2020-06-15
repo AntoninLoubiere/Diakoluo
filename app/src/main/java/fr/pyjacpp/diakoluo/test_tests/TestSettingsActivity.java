@@ -3,6 +3,7 @@ package fr.pyjacpp.diakoluo.test_tests;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
@@ -15,6 +16,9 @@ public class TestSettingsActivity extends AppCompatActivity implements TestSetti
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_settings);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setTitle(DiakoluoApplication.getCurrentTest(this).getName());
     }
 
     @Override

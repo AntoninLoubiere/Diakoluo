@@ -11,17 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/testTitle"
-        style="@style/Text.Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/progressBar"/>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/testTitle"
+        android:layout_below="@id/progressBar"
         android:layout_above="@id/validButton"
         android:layout_margin="@dimen/default_margin">
 
