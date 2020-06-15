@@ -40,7 +40,7 @@ public class TestScoreFragment extends Fragment {
         scoreProgressBar.setMax(testTestContext.getMaxScore());
         scoreProgressBar.setProgress(testTestContext.getScore());
 
-        secondaryScoreTextView.setText(getString(R.string.score_presice, testTestContext.getScore(), testTestContext.getMaxScore()));
+        secondaryScoreTextView.setText(getString(R.string.score_precise, testTestContext.getScore(), testTestContext.getMaxScore()));
 
         primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20(testTestContext)));
 

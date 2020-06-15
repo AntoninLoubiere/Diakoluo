@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
@@ -34,7 +36,7 @@ public class ListTestsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflatedLayout = inflater.inflate(R.layout.fragment_recycler_list, container, false);
+        final View inflatedLayout = inflater.inflate(R.layout.fragment_recycler_list, container, true);
 
         testRecyclerView = inflatedLayout.findViewById(R.id.recyclerView);
         LinearLayoutManager testRecyclerViewLayoutManager = new LinearLayoutManager(getContext());
@@ -72,17 +74,7 @@ public class ListTestsFragment extends Fragment {
                         .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                testRecyclerView.removeViewAt(position);
-                                testRecyclerViewAdapter.notifyItemRemoved(position);
-                                testRecyclerViewAdapter.notifyItemRangeChanged(position, listTest.size());
-
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        DiakoluoApplication.removeTest(view.getContext(), position);
-                                    }
-                                }).start();
-
+                                deleteTest(inflatedLayout, position);
                                 dialogInterface.dismiss();
                             }
                         })
@@ -105,6 +97,26 @@ public class ListTestsFragment extends Fragment {
 //                testRecyclerViewLayoutManager.getOrientation()));
 
         return inflatedLayout;
+    }
+
+    private void deleteTest(final View view, final int position) {
+        final ArrayList<Test> listTest = DiakoluoApplication.getListTest(view.getContext());
+        testRecyclerView.removeViewAt(position);
+        testRecyclerViewAdapter.notifyItemRemoved(position);
+        testRecyclerViewAdapter.notifyItemRangeChanged(position, listTest.size());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final Test testToDelete = listTest.get(position);
+                DiakoluoApplication.removeTest(view.getContext(), position);
+
+                Snackbar.make(view, getString(R.string.test_deleted, testToDelete.getName()),
+                        Snackbar.LENGTH_LONG)
+                        .setDuration(getResources().getInteger(R.integer.snackbar_deleted_duration)).
+                        setAnchorView(R.id.addFloatingButton).show();
+            }
+        }).start();
     }
 
     @Override
