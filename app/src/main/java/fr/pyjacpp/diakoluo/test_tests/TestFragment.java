@@ -207,7 +207,7 @@ public class TestFragment extends Fragment {
                 if (dataCellString != null)
                     answer.setText(dataCellString.getValue());
 
-                answer.setTextColor(getResources().getColor(R.color.primaryText));
+                // TODO
 
                 row.addView(answer, params);
 
