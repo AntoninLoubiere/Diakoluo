@@ -1,16 +1,22 @@
 package fr.pyjacpp.diakoluo.test_tests;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import java.util.Random;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
@@ -23,6 +29,8 @@ public class TestScoreFragment extends Fragment {
 
     private TestTestContext testTestContext;
 
+    private ProgressBar scoreProgressBar;
+
     public TestScoreFragment() {
     }
 
@@ -33,12 +41,23 @@ public class TestScoreFragment extends Fragment {
 
         TextView primaryScoreTextView = inflatedView.findViewById(R.id.scoreTextView);
         TextView secondaryScoreTextView = inflatedView.findViewById(R.id.secondaryScoreTextView);
-        ProgressBar scoreProgressBar = inflatedView.findViewById(R.id.scoreProgressBar);
+        scoreProgressBar = inflatedView.findViewById(R.id.scoreProgressBar);
         Button restartButton = inflatedView.findViewById(R.id.restartButton);
         Button mainMenuButton = inflatedView.findViewById(R.id.mainMenuButton);
 
         scoreProgressBar.setMax(testTestContext.getMaxScore());
-        scoreProgressBar.setProgress(testTestContext.getScore());
+        testTestContext.addScore(new Random().nextInt(testTestContext.getMaxScore()));
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ObjectAnimator animation = ObjectAnimator.ofInt(scoreProgressBar, "progress", testTestContext.getProgressScore());
+                animation.setDuration(3000);
+                animation.setInterpolator(new DecelerateInterpolator());
+                animation.start();
+                scoreProgressBar.setProgress(testTestContext.getProgressScore());
+            }
+        }, 1000);
 
         secondaryScoreTextView.setText(getString(R.string.score_precise, testTestContext.getScore(), testTestContext.getMaxScore()));
 
@@ -71,6 +90,11 @@ public class TestScoreFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
         testTestContext = DiakoluoApplication.getTestTestContext(context);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override

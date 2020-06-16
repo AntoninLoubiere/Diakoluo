@@ -2,8 +2,10 @@ package fr.pyjacpp.diakoluo.view_test;
 
 import android.os.Bundle;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 
 public class ColumnDataViewActivity extends AppCompatActivity implements ColumnDataViewFragment.OnFragmentInteractionListener{
@@ -13,9 +15,16 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_column_data);
 
+        int columnIndex = getIntent().getIntExtra(ColumnDataViewFragment.ARG_COLUMN_INDEX, 0);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setTitle(DiakoluoApplication.getCurrentTest(this).getListColumn().get(columnIndex).getName());
+
         if (savedInstanceState == null) {
+
             ColumnDataViewFragment fragment = ColumnDataViewFragment.newInstance(
-                    getIntent().getIntExtra(ColumnDataViewFragment.ARG_COLUMN_INDEX, 0)
+                    columnIndex
             );
 
             getSupportFragmentManager().beginTransaction().replace(

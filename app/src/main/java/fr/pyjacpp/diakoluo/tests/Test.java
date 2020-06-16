@@ -3,6 +3,8 @@ package fr.pyjacpp.diakoluo.tests;
 import java.util.ArrayList;
 import java.util.Date;
 
+import fr.pyjacpp.diakoluo.tests.data.DataCell;
+
 public class Test {
     private String name;
     private String description;
@@ -176,5 +178,9 @@ public class Test {
 
     public String getFilename() {
         return filename;
+    }
+
+    public DataCell getFirstCell(int i) {
+        return listRow.get(i).getListCells().get(listColumn.get(0));
     }
 }
