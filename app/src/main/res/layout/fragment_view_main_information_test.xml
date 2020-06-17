@@ -7,7 +7,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_margin">
 
         <TextView
             android:id="@+id/noTestTextView"
@@ -15,7 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/no_test_selected"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/titleTextView"
@@ -33,16 +35,17 @@
 
         <TextView
             android:id="@+id/createdDateTextView"
-            style="@style/Text.Secondary"
+            style="@style/TextAppearance.MaterialComponents.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/titleTextView"
+            android:layout_marginTop="@dimen/default_margin"
             android:text="@string/created_date_test_format"
             android:textStyle="italic" />
 
         <TextView
             android:id="@+id/lastModificationTextView"
-            style="@style/Text.Secondary"
+            style="@style/TextAppearance.MaterialComponents.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="italic"
@@ -51,26 +54,29 @@
 
         <TextView
             android:id="@+id/descriptionTextView"
-            style="@style/Text"
+            style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/lastModificationTextView"
+            android:layout_marginTop="@dimen/default_margin"
+            android:layout_marginBottom="@dimen/default_margin"
             android:text="@string/very_long_description" />
 
         <View
             android:id="@+id/separator2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/dividerColor"
-            android:layout_below="@id/descriptionTextView"/>
+            android:layout_below="@id/descriptionTextView"
+            android:background="@color/dividerColor" />
 
         <TextView
             android:id="@+id/numberTestDid"
-            style="@style/Text"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/number_test_did_format"
-            android:layout_below="@id/descriptionTextView"/>
+            android:layout_below="@id/descriptionTextView"
+            android:layout_marginTop="@dimen/default_margin"
+            android:text="@string/number_test_did_format" />
 
     </RelativeLayout>
 

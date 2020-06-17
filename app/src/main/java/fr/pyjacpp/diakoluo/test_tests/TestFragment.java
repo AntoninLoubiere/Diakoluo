@@ -1,19 +1,16 @@
 package fr.pyjacpp.diakoluo.test_tests;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TableRow;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -24,7 +21,6 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
-import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 
 class TestFragment extends Fragment {
@@ -44,7 +40,6 @@ class TestFragment extends Fragment {
                              Bundle savedInstanceState) {
         inflatedView = inflater.inflate(R.layout.fragment_test, container, false);
 
-        TextView testTitle = inflatedView.findViewById(R.id.testTitle);
         Button validButton = inflatedView.findViewById(R.id.validButton);
         LinearLayout linearLayout = inflatedView.findViewById(R.id.answerListLinearLayout);
         ProgressBar progressBar = inflatedView.findViewById(R.id.progressBar);
@@ -52,19 +47,11 @@ class TestFragment extends Fragment {
         LinearLayout.LayoutParams params = new TableRow.LayoutParams();
         params.topMargin = 24;
 
-        testTitle.setText(testTestContext.getTest().getName());
-
         for (Column column : testTestContext.getTest().getListColumn()) {
             LinearLayout answerRow = new LinearLayout(inflatedView.getContext());
             answerRow.setOrientation(LinearLayout.HORIZONTAL);
 
-            TextView columnName = new TextView(inflatedView.getContext());
-            columnName.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-            columnName.setText(getString(R.string.column_name_format, column.getName()));
-
-            columnName.setTypeface(null, Typeface.BOLD);
-
-            linearLayout.addView(columnName, params);
+            linearLayout.addView(column.showColumnName(inflatedView.getContext()), params);
 
             linearLayout.addView(answerRow);
 
@@ -79,7 +66,7 @@ class TestFragment extends Fragment {
             }
         });
 
-        progressBar.setMax(testTestContext.getListRowToAsk().size());
+        progressBar.setMax(testTestContext.getListRowToAsk().size() * 100);
 
         updateAnswer();
 
@@ -101,8 +88,14 @@ class TestFragment extends Fragment {
             params.weight = 1;
 
             if (testTestContext.isAnswerGive()) {
+                // if the answer is give
+
                 validButton.setText(R.string.continue_text);
-                progressBar.setProgress(testTestContext.getCurrentIndex() + 1);
+                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", (testTestContext.getCurrentIndex() + 1) * TestTestContext.PROGRESS_BAR_PRECISION);
+                animation.setDuration(300);
+                animation.setInterpolator(new AccelerateDecelerateInterpolator());
+                animation.start();
+                progressBar.setProgress((testTestContext.getCurrentIndex() + 1) * TestTestContext.PROGRESS_BAR_PRECISION);
 
                 for (Column column : testTestContext.getTest().getListColumn()) {
                     LinearLayout answerRow = columnLinearLayoutHashMap.get(column);
@@ -119,43 +112,12 @@ class TestFragment extends Fragment {
                             } else {
                                 Object answer = testTestContext.getUserAnswer().get(column);
                                 if (answer != null) {
-                                    switch (column.getInputType()) {
-                                        case String:
-                                            String answerS = (String) answer;
-                                            DataCellString dataCellString = (DataCellString) dataCell;
+                                    DataCell.ShowValueResponse showValueResponse = dataCell.showValue(
+                                            inflatedView.getContext(), answer);
 
-                                            TextView answerTextView = new TextView(inflatedView.getContext());
-
-                                            answerRow.addView(answerTextView, params);
-
-                                            if (answerS.length() <= 0) {
-                                                answerS = getString(R.string.skip);
-
-                                                answerTextView.setTextColor(getResources().getColor(
-                                                        R.color.wrongAnswer
-                                                ));
-
-                                                answerTextView.setTypeface(null, Typeface.ITALIC);
-                                                addAnswer(column, answerRow, params);
-
-                                            } else if (dataCellString.getValue().equalsIgnoreCase(answerS)) {
-                                                answerTextView.setTextColor(getResources().getColor(
-                                                        R.color.trueAnswer
-                                                ));
-
-                                            } else {
-                                                answerTextView.setTextColor(getResources().getColor(
-                                                        R.color.wrongAnswer
-                                                ));
-                                                answerTextView.setPaintFlags(answerTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                                                addAnswer(column, answerRow, params);
-                                            }
-
-                                            answerTextView.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-                                            answerTextView.setText(answerS);
-
-                                            columnViewHashMap.put(column, answerTextView);
-                                            break;
+                                    answerRow.addView(showValueResponse.getValueView(), params);
+                                    if (!showValueResponse.isAnswerTrue()) {
+                                        addAnswer(column, answerRow, params);
                                     }
                                 }
                             }
@@ -163,8 +125,10 @@ class TestFragment extends Fragment {
                     }
                 }
             } else {
+                // if the user need to enter the answer
+
                 validButton.setText(R.string.valid);
-                progressBar.setProgress(testTestContext.getCurrentIndex());
+                progressBar.setProgress(testTestContext.getCurrentIndex() * 100);
 
                 for (Column column : testTestContext.getTest().getListColumn()) {
                     LinearLayout answerRow = columnLinearLayoutHashMap.get(column);
@@ -177,22 +141,13 @@ class TestFragment extends Fragment {
                         if (columnShow != null && columnShow) {
                             addAnswer(column, answerRow, params);
                         } else {
-                            switch (column.getInputType()) {
-                                case String:
-                                    EditText answer = new EditText(inflatedView.getContext());
-                                    answer.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-                                    answer.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
-                                    answer.setHint(column.getName());
+                            View answerEdit = column.showColumnEditValue(
+                                    inflatedView.getContext(),
+                                    testTestContext.getUserAnswer().get(column));
 
-                                    Object answerGiven = testTestContext.getUserAnswer().get(column);
-                                    if (answerGiven != null)
-                                        answer.setText((String) answerGiven);
+                            answerRow.addView(answerEdit, params);
 
-                                    answerRow.addView(answer, params);
-
-                                    columnViewHashMap.put(column, answer);
-                                    break;
-                            }
+                            columnViewHashMap.put(column, answerEdit);
                         }
                     }
                 }
@@ -201,21 +156,11 @@ class TestFragment extends Fragment {
     }
 
     private void addAnswer(Column column, LinearLayout row, LinearLayout.LayoutParams params) {
-        switch (column.getInputType()) {
-            case String:
-                TextView answer = new TextView(inflatedView.getContext());
-                answer.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-
-                DataCellString dataCellString = (DataCellString) testTestContext.getCurrentRow().getListCells().get(column);
-                if (dataCellString != null)
-                    answer.setText(dataCellString.getValue());
-
-                answer.setTextColor(getResources().getColor(R.color.primaryText));
-
-                row.addView(answer, params);
-
-                columnViewHashMap.put(column, answer);
-                break;
+        DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
+        if (dataCell != null) {
+            View answer = dataCell.showValue(row.getContext());
+            row.addView(answer, params);
+            columnViewHashMap.put(column, answer);
         }
     }
 
@@ -242,33 +187,21 @@ class TestFragment extends Fragment {
             Boolean columnShow = testTestContext.getShowColumn().get(column);
             Object answer = testTestContext.getUserAnswer().get(column);
             DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
-            if (columnShow != null && answer != null && dataCell != null && !columnShow) {
-                switch (column.getInputType()) {
-                    case String:
-                        String answerS = (String) answer;
-                        DataCellString dataCellString = (DataCellString) dataCell;
 
-                        if (answerS.equalsIgnoreCase(dataCellString.getValue())) {
-                            testTestContext.addScore(1);
-                        }
-                }
+            if (columnShow != null && answer != null && dataCell != null && !columnShow) {
+                dataCell.verifyAndScoreAnswer(testTestContext, answer);
             }
         }
     }
 
     private void saveAnswer() {
         for (Column column : testTestContext.getTest().getListColumn()) {
-            View columnView = columnViewHashMap.get(column);
-            DataCell currentCell = testTestContext.getCurrentRow().getListCells().get(column);
             Boolean columnShow = testTestContext.getShowColumn().get(column);
+            View valueView = columnViewHashMap.get(column);
+            DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
 
-            if (columnShow != null && columnView != null && currentCell != null && !columnShow) {
-                switch (column.getInputType()) {
-                    case String:
-                        EditText editText = (EditText) columnView;
-                        testTestContext.getUserAnswer().put(column, editText.getText().toString());
-                        break;
-                }
+            if (columnShow != null && valueView != null && dataCell != null && !columnShow) {
+                testTestContext.getUserAnswer().put(column, dataCell.getValueFromView(valueView));
             }
         }
     }

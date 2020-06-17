@@ -1,34 +1,71 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
-        <item name="colorAccent">@color/secondary</item>
+        <item name="colorOnPrimary">@color/primaryText</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondaryDark</item>
+        <item name="colorOnSecondary">@color/secondaryText</item>
+        <item name="colorAccent">@color/primary</item>
+
     </style>
 
-    <style name="AppThemeNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppThemeNoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
-        <item name="colorAccent">@color/secondary</item>
+        <item name="colorOnPrimary">@color/primaryText</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondaryDark</item>
+        <item name="colorOnSecondary">@color/primaryText</item>
+        <item name="colorAccent">@color/primary</item>
     </style>
 
     <style name="Text">
-        <item name="android:textColor">@color/primaryText</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
 
-    <style name="Text.Title">
-        <item name="android:textColor">@color/secondary</item>
-        <item name="android:textSize">30sp</item>
+    <style name="Text.Title" parent="TextAppearance.MaterialComponents.Headline4">
+        <item name="android:textColor">?android:attr/colorPrimary</item>
+        <item name="android:layout_marginStart">@dimen/default_margin</item>
+        <item name="android:layout_marginEnd">@dimen/default_margin</item>
+        <item name="android:layout_marginTop">@dimen/default_margin</item>
         <item name="android:gravity">center</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Text.Secondary">
-        <item name="android:textColor">@color/secondaryText</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
+    <style name="buttonInBar" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">@dimen/default_margin</item>
+    </style>
+
+    <style name="buttonInBar.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">@dimen/default_margin</item>
+    </style>
+
+    <style name="Body0" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+    </style>
+
+
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="BoldHeadline5" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="android:textStyle">bold</item>
+    </style>
+
 
 </resources>

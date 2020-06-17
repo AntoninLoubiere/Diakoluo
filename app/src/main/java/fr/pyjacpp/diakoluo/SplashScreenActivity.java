@@ -21,11 +21,17 @@ public class SplashScreenActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-
-                    startActivity(
-                            new Intent(SplashScreenActivity.this, ListTestActivity.class)
-                    );
-                    finish();
+                startActivity(
+                        new Intent(SplashScreenActivity.this, ListTestActivity.class)
+                );
+                finish();
+                }
+            }, LOADING_TIME_SPLASH_SCREEN);
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                finish();
                 }
             }, LOADING_TIME_SPLASH_SCREEN);
         }
