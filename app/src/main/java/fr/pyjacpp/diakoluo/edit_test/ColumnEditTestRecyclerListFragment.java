@@ -22,7 +22,7 @@ import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-public class ColumnEditTestRecyclerListFragment extends Fragment {
+class ColumnEditTestRecyclerListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private RecyclerView.Adapter columnRecyclerViewAdapter;
 

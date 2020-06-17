@@ -29,7 +29,7 @@ public class EditTestActivity extends AppCompatActivity
         AnswerEditTestRecyclerListFragment.OnFragmentInteractionListener,
         ColumnEditTestFragment.OnFragmentInteractionListener,
         ColumnEditTestRecyclerListFragment.OnFragmentInteractionListener,
-        MainInformationsEditTestFragment.OnFragmentInteractionListener {
+        MainInformationEditTestFragment.OnFragmentInteractionListener {
 
     private ArrayDeque<EditTestValidator> errorValidatorDeque;
     private boolean errorInDeque;
@@ -37,28 +37,28 @@ public class EditTestActivity extends AppCompatActivity
     class EditTestValidator {
         private final boolean error;
         private final boolean warning;
-        private final Integer errorMessageRessourceId;
+        private final Integer errorMessageResourceId;
 
         EditTestValidator() {
-            errorMessageRessourceId = null;
+            errorMessageResourceId = null;
             warning = false;
             error = false;
         }
 
-        EditTestValidator(Integer errorMessageRessourceId) {
-            this.errorMessageRessourceId = errorMessageRessourceId;
+        EditTestValidator(Integer errorMessageResourceId) {
+            this.errorMessageResourceId = errorMessageResourceId;
             warning = false;
             error = true;
         }
 
-        EditTestValidator(Integer errorMessageRessourceId, boolean warning) {
-            this.errorMessageRessourceId = errorMessageRessourceId;
+        EditTestValidator(Integer errorMessageResourceId, boolean warning) {
+            this.errorMessageResourceId = errorMessageResourceId;
             this.warning = warning;
             error = true;
         }
 
-        Integer getErrorMessageRessourceId() {
-            return errorMessageRessourceId;
+        Integer getErrorMessageResourceId() {
+            return errorMessageResourceId;
         }
 
         boolean isError() {
@@ -196,7 +196,7 @@ public class EditTestActivity extends AppCompatActivity
             if (validator.isError() && !validator.isWarning()) {
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.error)
-                        .setMessage(validator.getErrorMessageRessourceId())
+                        .setMessage(validator.getErrorMessageResourceId())
                         .setIcon(R.drawable.ic_error_red_24dp)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
@@ -210,7 +210,7 @@ public class EditTestActivity extends AppCompatActivity
             } else if (validator.isWarning() && !errorInDeque) {
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.warning)
-                        .setMessage(validator.getErrorMessageRessourceId())
+                        .setMessage(validator.getErrorMessageResourceId())
                         .setIcon(R.drawable.ic_warning_yellow_24dp)
                         .setPositiveButton(R.string.continue_text, new DialogInterface.OnClickListener() {
                             @Override

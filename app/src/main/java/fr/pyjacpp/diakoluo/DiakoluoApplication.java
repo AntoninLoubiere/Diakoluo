@@ -53,9 +53,7 @@ public class DiakoluoApplication extends Application {
                 test.setFilename(null);
                 listTest.add(test);
                 saveTest();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (XmlPullParserException e) {
+            } catch (IOException | XmlPullParserException e) {
                 e.printStackTrace();
             }
         }

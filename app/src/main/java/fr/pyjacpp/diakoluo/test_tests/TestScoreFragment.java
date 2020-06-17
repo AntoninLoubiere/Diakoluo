@@ -23,7 +23,7 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.ScoreUtils;
 
 
-public class TestScoreFragment extends Fragment {
+class TestScoreFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
@@ -58,7 +58,6 @@ public class TestScoreFragment extends Fragment {
                 scoreProgressBar.setProgress(testTestContext.getProgressScore());
             }
         }, 1000);
-
         secondaryScoreTextView.setText(getString(R.string.score_precise, testTestContext.getScore(), testTestContext.getMaxScore()));
 
         primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20(testTestContext)));

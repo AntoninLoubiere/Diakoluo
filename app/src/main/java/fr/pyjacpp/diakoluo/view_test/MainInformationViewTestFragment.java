@@ -22,7 +22,7 @@ public class MainInformationViewTestFragment extends Fragment {
     private TextView description;
     private TextView createdDate;
     private TextView lastModification;
-    private TextView numberTedtDid;
+    private TextView numberTestDid;
     private TextView noTestTextView;
     private View separator1;
     private View separator2;
@@ -41,7 +41,7 @@ public class MainInformationViewTestFragment extends Fragment {
         description = inflatedView.findViewById(R.id.descriptionTextView);
         createdDate = inflatedView.findViewById(R.id.createdDateTextView);
         lastModification = inflatedView.findViewById(R.id.lastModificationTextView);
-        numberTedtDid = inflatedView.findViewById(R.id.numberTestDid);
+        numberTestDid = inflatedView.findViewById(R.id.numberTestDid);
         noTestTextView = inflatedView.findViewById(R.id.noTestTextView);
 
         separator1 = inflatedView.findViewById(R.id.separator1);
@@ -86,8 +86,8 @@ public class MainInformationViewTestFragment extends Fragment {
                     )
             );
 
-            numberTedtDid.setVisibility(View.VISIBLE);
-            numberTedtDid.setText(
+            numberTestDid.setVisibility(View.VISIBLE);
+            numberTestDid.setText(
                     String.format(
                             getString(R.string.number_test_did_format),
                             currentTest.getNumberTestDid()
@@ -102,7 +102,7 @@ public class MainInformationViewTestFragment extends Fragment {
             description.setVisibility(View.GONE);
             createdDate.setVisibility(View.GONE);
             lastModification.setVisibility(View.GONE);
-            numberTedtDid.setVisibility(View.GONE);
+            numberTestDid.setVisibility(View.GONE);
             separator1.setVisibility(View.GONE);
             separator2.setVisibility(View.GONE);
         }

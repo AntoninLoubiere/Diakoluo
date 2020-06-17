@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import fr.pyjacpp.diakoluo.R;
 
 
-public class EditTestPagerAdapterFragment extends FragmentPagerAdapter {
+class EditTestPagerAdapterFragment extends FragmentPagerAdapter {
     private static final int NUMBER_VIEW_TEST_TAB = 3;
     private final Context context;
 
@@ -32,7 +32,7 @@ public class EditTestPagerAdapterFragment extends FragmentPagerAdapter {
 
             case 0:
             default:
-                return new MainInformationsEditTestFragment();
+                return new MainInformationEditTestFragment();
         }
     }
 

@@ -39,7 +39,7 @@ public class DataCell {
                 return DataCellString.class;
 
             default:
-                throw new RuntimeException("Unknow inputType !");
+                throw new RuntimeException("Unknown inputType !");
         }
     }
 

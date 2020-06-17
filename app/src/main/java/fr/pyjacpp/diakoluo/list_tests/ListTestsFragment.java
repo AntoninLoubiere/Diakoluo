@@ -23,7 +23,7 @@ import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 
-public class ListTestsFragment extends Fragment {
+class ListTestsFragment extends Fragment {
     private OnFragmentInteractionListener listener;
     private RecyclerView testRecyclerView;
     private RecyclerView.Adapter testRecyclerViewAdapter;
