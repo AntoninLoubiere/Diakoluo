@@ -16,8 +16,12 @@ public class TestActivity extends AppCompatActivity implements TestFragment.OnFr
         super.onCreate(savedInstanceState);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
+        if (actionBar != null) {
             actionBar.setTitle(DiakoluoApplication.getCurrentTest(this).getName());
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        }
 
         setContentView(R.layout.activity_test);
     }

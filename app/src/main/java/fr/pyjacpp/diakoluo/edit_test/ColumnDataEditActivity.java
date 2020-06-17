@@ -21,6 +21,9 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
         if (actionBar != null) {
             String stringValue = DiakoluoApplication.getCurrentEditTest(this).getListColumn().get(columnIndex).getName();
             actionBar.setTitle(stringValue.equals("") ? getString(R.string.app_name) : stringValue);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
         }
 
         if (savedInstanceState == null) {
@@ -31,6 +34,12 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
                     R.id.columnDataEditFragmentContainer,
                     fragment).commit();
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
 }

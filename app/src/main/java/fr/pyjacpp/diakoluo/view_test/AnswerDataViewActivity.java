@@ -18,8 +18,12 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
         int answerIndex = getIntent().getIntExtra(AnswerDataViewFragment.ARG_ANSWER_INDEX, 0);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
+        if (actionBar != null) {
             actionBar.setTitle(DiakoluoApplication.getCurrentTest(this).getFirstCell(answerIndex).getStringValue());
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
+        }
 
         if (savedInstanceState == null) {
             AnswerDataViewFragment fragment = AnswerDataViewFragment.newInstance(
@@ -30,5 +34,11 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
                     R.id.answerDataViewFragmentContainer,
                     fragment).commit();
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

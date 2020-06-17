@@ -18,8 +18,12 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
         int columnIndex = getIntent().getIntExtra(ColumnDataViewFragment.ARG_COLUMN_INDEX, 0);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
+        if (actionBar != null) {
             actionBar.setTitle(DiakoluoApplication.getCurrentTest(this).getListColumn().get(columnIndex).getName());
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
+        }
 
         if (savedInstanceState == null) {
 
@@ -31,6 +35,12 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
                     R.id.columnDataEditFragmentContainer,
                     fragment).commit();
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
 }

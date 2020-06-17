@@ -17,8 +17,12 @@ public class TestSettingsActivity extends AppCompatActivity implements TestSetti
         setContentView(R.layout.activity_test_settings);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
+        if (actionBar != null) {
             actionBar.setTitle(DiakoluoApplication.getCurrentTest(this).getName());
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        }
     }
 
     @Override
@@ -29,5 +33,11 @@ public class TestSettingsActivity extends AppCompatActivity implements TestSetti
 
         startActivity(new Intent(this, TestActivity.class));
         finish();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

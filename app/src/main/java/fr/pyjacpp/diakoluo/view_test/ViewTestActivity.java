@@ -1,6 +1,8 @@
 package fr.pyjacpp.diakoluo.view_test;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +30,14 @@ public class ViewTestActivity extends AppCompatActivity
         setContentView(R.layout.activity_view_test);
 
         TextView title = findViewById(R.id.title);
+        ImageButton navigation = findViewById(R.id.navigationIcon);
         title.setText(DiakoluoApplication.getCurrentTest(this).getName());
+        navigation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onSupportNavigateUp();
+            }
+        });
 
         TabLayout tabLayout = findViewById(R.id.viewTestTabLayout);
         ViewPager viewPager = findViewById(R.id.viewTestViewPager);
@@ -42,5 +51,11 @@ public class ViewTestActivity extends AppCompatActivity
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, this
         ));
 
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

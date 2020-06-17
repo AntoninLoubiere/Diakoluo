@@ -17,8 +17,12 @@ public class TestScoreActivity extends AppCompatActivity implements TestScoreFra
         setContentView(R.layout.activity_test_score);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
+        if (actionBar != null) {
             actionBar.setTitle(DiakoluoApplication.getCurrentTest(this).getName());
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        }
     }
 
     @Override
@@ -33,5 +37,11 @@ public class TestScoreActivity extends AppCompatActivity implements TestScoreFra
         testTestContext.selectShowColumn();
         startActivity(new Intent(this, TestActivity.class));
         finish();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

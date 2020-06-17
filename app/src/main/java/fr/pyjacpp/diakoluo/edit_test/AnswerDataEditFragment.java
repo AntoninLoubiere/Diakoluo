@@ -74,11 +74,14 @@ public class AnswerDataEditFragment extends Fragment {
 
             layout.addView(columnTitle);
 
-            if (dataCell != null) {
-                View columnValue = dataCell.showEditValue(inflatedView.getContext(), column);
-                columnAnswerEditHashMap.put(column, columnValue);
-                layout.addView(columnValue);
+            if (dataCell == null) {
+                dataCell = DataCell.getDefaultValueCell(column);
+                row.getListCells().put(column, dataCell);
             }
+
+            View columnValue = dataCell.showEditValue(inflatedView.getContext(), column);
+            columnAnswerEditHashMap.put(column, columnValue);
+            layout.addView(columnValue);
         }
 
         return inflatedView;
