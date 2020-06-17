@@ -3,24 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".test_tests.TestSettingsActivity" >
-
-    <TextView
-        android:id="@+id/testTitle"
-        style="@style/Text.Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    tools:context=".test_tests.TestSettingsActivity"
+    android:layout_margin="@dimen/default_margin">
 
     <TextView
         android:id="@+id/numberQuestionToAskTextView"
-        style="@style/Text"
+        style="@style/Body0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/testTitle"
+        android:layout_marginTop="@dimen/default_margin"
         android:text="@string/number_question_to_ask" />
 
     <Spinner
         android:id="@+id/numberQuestionToAskSpinner"
+        style="@style/Body0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/numberQuestionToAskTextView"
@@ -28,10 +24,11 @@
 
     <TextView
         android:id="@+id/numberColumnToShowTextView"
-        style="@style/Text"
+        style="@style/Body0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/numberQuestionToAskSpinner"
+        android:layout_marginTop="@dimen/default_margin"
         android:text="@string/number_column_to_show" />
 
     <SeekBar

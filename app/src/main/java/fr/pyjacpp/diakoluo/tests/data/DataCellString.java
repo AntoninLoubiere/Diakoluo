@@ -16,4 +16,14 @@ public class DataCellString extends DataCell {
     public void setValue(Object object) {
         value = (String) object;
     }
+
+    @Override
+    public String getStringValue() {
+        return value;
+    }
+
+    @Override
+    public boolean verifyAnswer(Object answer) {
+        return ((String) answer).equalsIgnoreCase(value);
+    }
 }

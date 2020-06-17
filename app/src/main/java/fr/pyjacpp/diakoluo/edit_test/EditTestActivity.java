@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,6 +75,19 @@ public class EditTestActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_test);
 
+        TextView title = findViewById(R.id.title);
+        ImageButton navigation = findViewById(R.id.navigationIcon);
+
+        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(this);
+        title.setText(currentEditTest == null || currentEditTest.getName().equals("") ?
+                getString(R.string.app_name) : currentEditTest.getName());
+        navigation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onSupportNavigateUp();
+            }
+        });
+
         TabLayout tabLayout = findViewById(R.id.viewTestTabLayout);
         ViewPager viewPager = findViewById(R.id.viewTestViewPager);
         Button cancelButton = findViewById(R.id.cancelButton);
@@ -113,6 +128,12 @@ public class EditTestActivity extends AppCompatActivity
                 verifyAndAsk();
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private void addValidator(EditTestValidator testValidator) {

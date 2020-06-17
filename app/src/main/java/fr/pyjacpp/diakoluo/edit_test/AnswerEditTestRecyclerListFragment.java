@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -98,8 +97,8 @@ class AnswerEditTestRecyclerListFragment extends Fragment {
 
         itemTouchHelper.attachToRecyclerView(answerRecyclerView);
 
-        answerRecyclerView.addItemDecoration(new DividerItemDecoration(answerRecyclerView.getContext(),
-                answerRecyclerViewLayout.getOrientation()));
+//        answerRecyclerView.addItemDecoration(new DividerItemDecoration(answerRecyclerView.getContext(),
+//                answerRecyclerViewLayout.getOrientation()));
 
         return inflatedView;
     }

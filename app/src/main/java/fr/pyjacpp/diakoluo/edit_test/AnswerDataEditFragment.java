@@ -2,14 +2,11 @@ package fr.pyjacpp.diakoluo.edit_test;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -22,7 +19,6 @@ import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
-import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 public class AnswerDataEditFragment extends Fragment {
     static final String ARG_ANSWER_INDEX = "answer_index";
@@ -71,38 +67,20 @@ public class AnswerDataEditFragment extends Fragment {
             Column column = listColumn.get(i);
 
             DataCell dataCell = row.getListCells().get(column);
-            TextView columnTitle = new TextView(inflatedView.getContext());
-
-            columnTitle.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
+            View columnTitle = column.showColumnName(inflatedView.getContext());
 
             if (i > 0)
                 columnTitle.setLayoutParams(params);
 
-            columnTitle.setTypeface(null, Typeface.BOLD);
+            layout.addView(columnTitle);
 
-            columnTitle.setText(getString(R.string.column_name_format, column.getName()));
-            View columnValue;
-            switch (column.getInputType()) {
-                case String:
-                    DataCellString dataCellString = (DataCellString) dataCell;
-                    if (dataCellString == null) {
-                        dataCellString = new DataCellString((String) column.getDefaultValue());
-                        row.getListCells().put(column, dataCellString);
-                    }
-                    EditText _columnValue = new EditText(inflatedView.getContext());
-                    _columnValue.setText(dataCellString.getValue());
-                    _columnValue.setHint(column.getName());
-                    _columnValue.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-                    columnValue = _columnValue;
-                    break;
-
-                default:
-                    throw new IllegalStateException("Unexpected value: " + column.getInputType());
+            if (dataCell == null) {
+                dataCell = DataCell.getDefaultValueCell(column);
+                row.getListCells().put(column, dataCell);
             }
 
+            View columnValue = dataCell.showEditValue(inflatedView.getContext(), column);
             columnAnswerEditHashMap.put(column, columnValue);
-
-            layout.addView(columnTitle);
             layout.addView(columnValue);
         }
 
@@ -137,20 +115,14 @@ public class AnswerDataEditFragment extends Fragment {
             View answerEdit = columnAnswerEditHashMap.get(column);
 
             DataCell dataCell = row.getListCells().get(column);
-            switch (column.getInputType()) {
-                case String:
-                    EditText answerEditText = (EditText) answerEdit;
-                    DataCellString dataCellString = (DataCellString) dataCell;
 
-                    if (answerEditText != null) {
-                        if (dataCellString == null) {
-                            row.getListCells().put(column, new DataCellString(answerEditText.getText().toString()));
-                        } else {
-                            dataCellString.setValue(answerEditText.getText().toString());
-                        }
-                    }
+            if (answerEdit != null) {
+                if (dataCell == null) {
+                    DataCell.setDefaultCellFromView(answerEdit, row, column);
+                } else {
+                    dataCell.setValueFromView(answerEdit);
+                }
             }
-
         }
 
         RecyclerViewChange recyclerViewChange = DiakoluoApplication.getAnswerListChanged(

@@ -3,6 +3,7 @@ package fr.pyjacpp.diakoluo.test_tests;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
@@ -14,6 +15,14 @@ public class TestScoreActivity extends AppCompatActivity implements TestScoreFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_score);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(DiakoluoApplication.getCurrentTest(this).getName());
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        }
     }
 
     @Override
@@ -28,5 +37,11 @@ public class TestScoreActivity extends AppCompatActivity implements TestScoreFra
         testTestContext.selectShowColumn();
         startActivity(new Intent(this, TestActivity.class));
         finish();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }
