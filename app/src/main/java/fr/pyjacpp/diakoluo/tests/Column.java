@@ -1,5 +1,15 @@
 package fr.pyjacpp.diakoluo.tests;
 
+import android.content.Context;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
+import fr.pyjacpp.diakoluo.R;
+
 public class Column {
     private String name;
     private String description;
@@ -58,5 +68,32 @@ public class Column {
                 description == null ||
                 inputType == null ||
                 defaultValue == null);
+    }
+
+    public View showColumnName(Context context) {
+        TextView columnNameTextView = new TextView(context);
+        columnNameTextView.setTextAppearance(context, R.style.BoldHeadline5);
+        columnNameTextView.setText(context.getString(R.string.column_name_format, name));
+        return columnNameTextView;
+    }
+
+    private View showColumnEditValue(Context context) {
+        TextInputLayout inputLayout = new TextInputLayout(context, null, R.style.Widget_MaterialComponents_TextInputLayout_OutlinedBox);
+        TextInputEditText inputField = new TextInputEditText(context);
+        inputLayout.setHint(name);
+
+        inputLayout.addView(inputField);
+
+        return inputLayout;
+    }
+
+
+    public View showColumnEditValue(Context context, Object defaultValue) {
+        TextInputLayout inputLayout = (TextInputLayout) showColumnEditValue(context);
+        EditText inputField = inputLayout.getEditText();
+        if (inputField != null && defaultValue != null)
+            inputField.setText((String) defaultValue);
+
+        return inputLayout;
     }
 }

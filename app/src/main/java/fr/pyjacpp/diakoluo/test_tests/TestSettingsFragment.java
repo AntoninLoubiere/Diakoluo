@@ -50,7 +50,6 @@ class TestSettingsFragment extends Fragment {
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.fragment_test_settings, container, false);
 
-        TextView testTitle = inflatedView.findViewById(R.id.testTitle);
         final TextView numberColumnToShowSeekBarTextView = inflatedView.findViewById(R.id.numberColumnToShowSeekBarTextView);
         final SeekBar numberColumnToShowSeekBar = inflatedView.findViewById(R.id.numberColumnToShowSeekBar);
         final Spinner numberQuestionToAskSpinner = inflatedView.findViewById(R.id.numberQuestionToAskSpinner);
@@ -58,8 +57,6 @@ class TestSettingsFragment extends Fragment {
         Button validButton = inflatedView.findViewById(R.id.validButton);
 
         final Test currentTest = DiakoluoApplication.getCurrentTest(inflatedView.getContext());
-
-        testTitle.setText(currentTest.getName());
 
         ArrayList<TestQuestionPossibility> listOfPossibility = new ArrayList<>();
 
