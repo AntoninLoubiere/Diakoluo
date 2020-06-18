@@ -69,7 +69,7 @@ public class FileManager {
     }
 
     public static void getAvailableFilename(Context context, Test test) {
-        String extension = ".dkl";
+        String fileExtension = ".dkl";
         String name = test.getName()
                 .replace(' ', '_')
                 .replace('/', '_')
@@ -82,10 +82,10 @@ public class FileManager {
             index++;
 
             if (index > 0) {
-                extension = "_" + index + ".dkl";
+                fileExtension = "_" + index + ".dkl";
             }
 
-            currentFileName = name + extension;
+            currentFileName = name + fileExtension;
         } while (filenameExist(context, currentFileName) && (test.getFilename() == null || !test.getFilename().equals(currentFileName)));
         test.setFilename(currentFileName);
     }
