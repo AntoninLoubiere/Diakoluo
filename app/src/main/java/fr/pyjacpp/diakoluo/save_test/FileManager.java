@@ -85,7 +85,7 @@ public class FileManager {
                 extension = "_" + index + ".dkl";
             }
 
-            currentFileName = name + extention;
+            currentFileName = name + extension;
         } while (filenameExist(context, currentFileName) && (test.getFilename() == null || !test.getFilename().equals(currentFileName)));
         test.setFilename(currentFileName);
     }
