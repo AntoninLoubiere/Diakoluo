@@ -2,9 +2,9 @@
     <string name="app_name">Diakôluô</string>
     <string name="information_line">Version 0.1.0 - Antonin LOUBIÈRE - GPL 3</string>
     <string name="title">Titre</string>
-    <string name="very_long_description">Phrase très très longue traduite de la version anglaise pour simuler une description, du coup j'éssaye de garder la touche humoristique de la version anglaise alors qu'en réalité je ne suis qu'en train de décrire que mon manque d'humour. </string>
-    <string name="created_date_test_format">Créé le %s à %s</string>
-    <string name="last_modification_test_format">Dernière modification le %s à %s</string>
+    <string name="very_long_description">"Phrase très très longue traduite de la version anglaise pour simuler une description, du coup j\'éssaye de garder la touche humoristique de la version anglaise alors qu\'en réalité je ne suis qu\'en train de décrire que mon manque d\'humour. "</string>
+    <string name="created_date_test_format">Créé le %1$s à %2$s</string>
+    <string name="last_modification_test_format">Dernière modification le %1$s à %2$s</string>
     <string name="number_test_did_format">Tu as fais %d tests</string>
     <string name="view_test_title_main_fragment">General</string>
     <string name="view_test_title_column_fragment">Colonnes</string>
@@ -12,12 +12,9 @@
     <string name="play_test_button_content_description">Lancer</string>
     <string name="number_question_to_ask">Sélectionne le nombre de questions:</string>
     <string name="number_column_to_show">Sélectionne le nombre de colonnes à montrer:</string>
-    <string name="number_column_to_show_seekbar_textview">%d/%d</string>
     <string name="valid">valider</string>
     <string name="continue_text">Continuer</string>
     <string name="skip">(Passer)</string>
-    <string name="score_20">%.2f/20</string>
-    <string name="score_precise">%d/%d</string>
     <string name="restart">Rejouer</string>
     <string name="main_menu">Menu principal</string>
     <string name="description">Description</string>
