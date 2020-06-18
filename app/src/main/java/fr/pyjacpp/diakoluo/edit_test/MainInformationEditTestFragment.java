@@ -20,7 +20,7 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-class MainInformationEditTestFragment extends Fragment {
+public class MainInformationEditTestFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private View inflatedView;
 

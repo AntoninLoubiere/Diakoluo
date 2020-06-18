@@ -21,7 +21,7 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 
-class TestSettingsFragment extends Fragment {
+public class TestSettingsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private class TestQuestionPossibility {

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerItemClickListener;
 
-class AnswerViewTestRecyclerListFragment extends Fragment {
+public class AnswerViewTestRecyclerListFragment extends Fragment {
     private OnFragmentInteractionListener listener;
     private OnFragmentInteractionParentListener parentListener;
 

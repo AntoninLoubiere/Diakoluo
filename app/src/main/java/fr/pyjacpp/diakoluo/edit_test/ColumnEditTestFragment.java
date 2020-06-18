@@ -23,7 +23,7 @@ import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 
-class ColumnEditTestFragment extends Fragment {
+public class ColumnEditTestFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public ColumnEditTestFragment() {

@@ -19,7 +19,7 @@ import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 
 
-class AnswerEditTestFragment extends Fragment {
+public class AnswerEditTestFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public AnswerEditTestFragment() {

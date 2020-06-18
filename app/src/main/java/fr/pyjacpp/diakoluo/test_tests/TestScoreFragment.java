@@ -16,14 +16,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import java.util.Random;
-
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.ScoreUtils;
 
 
-class TestScoreFragment extends Fragment {
+public class TestScoreFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
