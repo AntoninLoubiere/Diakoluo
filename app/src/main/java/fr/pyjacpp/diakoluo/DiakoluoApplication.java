@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -24,6 +25,11 @@ public class DiakoluoApplication extends Application {
     private static final String PREFERENCES_NUMBER_TEST_CREATED_FILENAMES = "numberTestCreated";
     private static final String DEFAULT_TEST = "default.dkl";
     private static final String USER_PROPERTY_NUMBER_TEST_CREATED = "number_test";
+
+    private static final String ANALYTICS_ENABLE = "analytics";
+    private static final int ANALYTIC = 1 << 1;
+    private static final int CRASHLYTICS = 1 << 2;
+    private static final int ANALYTICS_SET = 1;
 
     private ArrayList<Test> listTest;
     private Test currentTest;
@@ -57,6 +63,11 @@ public class DiakoluoApplication extends Application {
                 e.printStackTrace();
             }
         }
+
+        FirebaseCrashlytics firebaseCrashlytics = FirebaseCrashlytics.getInstance();
+        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        firebaseAnalytics.setAnalyticsCollectionEnabled(getAnalyticsEnable());
+        firebaseCrashlytics.setCrashlyticsCollectionEnabled(getCrashlyticsEnable());
 
         loadTest();
     }
@@ -193,6 +204,62 @@ public class DiakoluoApplication extends Application {
         this.columnListChanged = columnListChanged;
     }
 
+    private boolean getAnalyticsEnable() {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        if ((i & ANALYTICS_SET) == 0) {
+            return false;
+        } else {
+            return (i & ANALYTIC) == ANALYTIC;
+        }
+    }
+
+    private boolean getCrashlyticsEnable() {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        if ((i & ANALYTICS_SET) == 0) {
+            return false;
+        } else {
+            return (i & CRASHLYTICS) == CRASHLYTICS;
+        }
+    }
+
+    private boolean getAnalyticsSet() {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        return (i & ANALYTICS_SET) == ANALYTICS_SET;
+    }
+
+    private void setAnalyticsEnable(boolean b) {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        int set_i = b ? i | ANALYTIC : i & (~ANALYTIC);
+
+        sharedPreferences.edit().putInt(ANALYTICS_ENABLE, set_i).apply();
+
+        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        firebaseAnalytics.setAnalyticsCollectionEnabled(b);
+    }
+
+    private void setCrashlyticsEnable(boolean b) {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        int set_i = b ? i | CRASHLYTICS : i & (~CRASHLYTICS);
+
+        sharedPreferences.edit().putInt(ANALYTICS_ENABLE, set_i).apply();
+
+        FirebaseCrashlytics firebaseCrashlytics = FirebaseCrashlytics.getInstance();
+        firebaseCrashlytics.setCrashlyticsCollectionEnabled(b);
+    }
+
+    private void setAnalyticsSet(boolean b) {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        int set_i = b ? i | ANALYTICS_SET : i & (~ANALYTICS_SET);
+
+        sharedPreferences.edit().putInt(ANALYTICS_ENABLE, set_i).apply();
+    }
+
     // static
 
     public static void setCurrentTest(Context context, Test currentTest) {
@@ -262,5 +329,30 @@ public class DiakoluoApplication extends Application {
     public static void removeTest(Context context, int position) {
         ((DiakoluoApplication) context.getApplicationContext()).removeTest(position);
     }
+
+    public static boolean getAnalyticsEnable(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getAnalyticsEnable();
+    }
+
+    public static boolean getCrashlyticsEnable(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getCrashlyticsEnable();
+    }
+
+    public static boolean getAnalyticsSet(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getAnalyticsSet();
+    }
+
+    public static void setAnalyticsEnable(Context context, boolean b) {
+        ((DiakoluoApplication) context.getApplicationContext()).setAnalyticsEnable(b);
+    }
+
+    public static void setCrashlyticsEnable(Context context, boolean b) {
+        ((DiakoluoApplication) context.getApplicationContext()).setCrashlyticsEnable(b);
+    }
+
+    public static void setAnalyticsSet(Context context, boolean b) {
+        ((DiakoluoApplication) context.getApplicationContext()).setAnalyticsSet(b);
+    }
+
     
 }
