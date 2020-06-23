@@ -207,7 +207,7 @@ public class DiakoluoApplication extends Application {
     private boolean getAnalyticsEnable() {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
-        if ((i & ANALYTICS_SET) == ANALYTICS_SET) {
+        if ((i & ANALYTICS_SET) == 0) {
             return false;
         } else {
             return (i & ANALYTIC) == ANALYTIC;
@@ -217,7 +217,7 @@ public class DiakoluoApplication extends Application {
     private boolean getCrashlyticsEnable() {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
-        if ((i & ANALYTICS_SET) == ANALYTICS_SET) {
+        if ((i & ANALYTICS_SET) == 0) {
             return false;
         } else {
             return (i & CRASHLYTICS) == CRASHLYTICS;

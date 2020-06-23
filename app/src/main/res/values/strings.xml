@@ -44,4 +44,7 @@
     <string name="data_caption">Note: you can change this in settings at any point</string>
     <string name="check_box_crash">Allow the send of crash report for development purpose only.</string>
     <string name="check_box_analytics">Allow the send of anonymous non-sensible data for development purpose only.</string>
+    <string name="settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="privacy">Privacy</string>
 </resources>

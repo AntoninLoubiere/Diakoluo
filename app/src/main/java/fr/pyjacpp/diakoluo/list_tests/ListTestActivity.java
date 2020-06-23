@@ -2,6 +2,9 @@ package fr.pyjacpp.diakoluo.list_tests;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.ActionBar;
@@ -58,6 +61,25 @@ public class ListTestActivity extends AppCompatActivity
             }
         } else {
             onSeeButtonClick(view, position);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_list_test, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settingsAction:
+                startActivity(new Intent(ListTestActivity.this, SettingsActivity.class));
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
