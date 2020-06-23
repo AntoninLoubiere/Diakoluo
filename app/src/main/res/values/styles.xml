@@ -77,5 +77,15 @@
         <item name="android:background">@color/dividerColor</item>
     </style>
 
+    <style name="NavigationBottomButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?colorOnPrimarySurface</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="rippleColor">@color/mtrl_btn_ripple_color</item>
+    </style>
+
 
 </resources>
