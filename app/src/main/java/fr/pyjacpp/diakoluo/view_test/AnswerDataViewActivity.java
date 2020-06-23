@@ -1,5 +1,6 @@
 package fr.pyjacpp.diakoluo.view_test;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,14 +15,17 @@ import fr.pyjacpp.diakoluo.tests.Test;
 
 public class AnswerDataViewActivity extends AppCompatActivity implements AnswerDataViewFragment.OnFragmentInteractionListener{
 
-    private int answerIndex;
     private Button previousButton;
     private Button nextButton;
     private TextView navigationTextView;
-    private Test currentTest;
     private ActionBar actionBar;
 
+    private int answerIndex;
+    private Test currentTest;
 
+
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,22 +56,14 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (answerIndex > 0) {
-                    answerIndex -= 1;
-                    createFragment();
-                    getIntent().putExtra(AnswerDataViewFragment.ARG_ANSWER_INDEX, answerIndex);
-                }
+                onSwipeRight();
             }
         });
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (answerIndex < currentTest.getNumberRow() - 1) {
-                    answerIndex += 1;
-                    createFragment();
-                    getIntent().putExtra(AnswerDataViewFragment.ARG_ANSWER_INDEX, answerIndex);
-                }
+                onSwipeLeft();
             }
         });
     }
@@ -120,5 +116,23 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public void onSwipeRight() {
+        if (answerIndex > 0) {
+            answerIndex -= 1;
+            createFragment();
+            getIntent().putExtra(AnswerDataViewFragment.ARG_ANSWER_INDEX, answerIndex);
+        }
+    }
+
+    @Override
+    public void onSwipeLeft() {
+        if (answerIndex < currentTest.getNumberRow() - 1) {
+            answerIndex += 1;
+            createFragment();
+            getIntent().putExtra(AnswerDataViewFragment.ARG_ANSWER_INDEX, answerIndex);
+        }
     }
 }
