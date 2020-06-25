@@ -23,12 +23,19 @@ import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 
-public class ColumnEditTestFragment extends Fragment {
+public class ColumnEditTestFragment extends Fragment implements
+        ColumnEditTestRecyclerListFragment.OnParentFragmentInteractionListener,
+        ColumnDataEditFragment.OnParentFragmentInteractionListener{
     private OnFragmentInteractionListener mListener;
+
+    private boolean columnDetail;
+    private ColumnDataEditFragment columnDataEditFragment = null;
+    private ColumnEditTestRecyclerListFragment columnEditTestRecyclerListFragment;
 
     public ColumnEditTestFragment() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -36,6 +43,10 @@ public class ColumnEditTestFragment extends Fragment {
 
         View inflatedView = inflater.inflate(R.layout.fragment_edit_column_test, container, false);
 
+        columnDetail = inflatedView.findViewById(R.id.columnDataEditFragmentContainer) != null;
+
+        columnEditTestRecyclerListFragment = (ColumnEditTestRecyclerListFragment)
+                getChildFragmentManager().findFragmentById(R.id.columnEditTestRecyclerListFragment);
 
         Button addColumnButton = inflatedView.findViewById(R.id.addColumnButton);
         addColumnButton.setOnClickListener(new View.OnClickListener() {
@@ -50,7 +61,7 @@ public class ColumnEditTestFragment extends Fragment {
                         RecyclerViewChange.ItemInserted
                 );
                 columnListChanged.setPosition(listColumn.size() - 1);
-                DiakoluoApplication.setColumnListChanged(view.getContext(), columnListChanged);
+                columnEditTestRecyclerListFragment.applyRecyclerChanges(columnListChanged);
 
                 RecyclerViewChange recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.ItemRangeChanged);
                 recyclerViewChange.setPositionStart(0);
@@ -67,6 +78,7 @@ public class ColumnEditTestFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
         return inflatedView;
     }
 
@@ -85,6 +97,28 @@ public class ColumnEditTestFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        if (columnDetail) {
+            if (columnDataEditFragment == null || columnDataEditFragment.getColumnIndex() != position) {
+                columnDataEditFragment = ColumnDataEditFragment.newInstance(position);
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.columnDataEditFragmentContainer,
+                                columnDataEditFragment)
+                        .commit();
+            }
+        } else {
+            Intent intent = new Intent(view.getContext(), ColumnDataEditActivity.class);
+            intent.putExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, position);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void updateItem(int position) {
+        columnEditTestRecyclerListFragment.updateItem(position);
     }
 
     public interface OnFragmentInteractionListener {

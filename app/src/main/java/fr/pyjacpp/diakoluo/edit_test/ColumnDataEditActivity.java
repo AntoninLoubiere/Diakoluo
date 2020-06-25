@@ -18,7 +18,7 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
                     getIntent().getIntExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, 0)
             );
 
-            getFragmentManager().beginTransaction().replace(
+            getSupportFragmentManager().beginTransaction().replace(
                     R.id.columnDataEditFragmentContainer,
                     fragment).commit();
         }

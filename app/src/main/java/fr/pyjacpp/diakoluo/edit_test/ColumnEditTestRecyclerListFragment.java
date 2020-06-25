@@ -1,7 +1,6 @@
 package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +24,8 @@ import fr.pyjacpp.diakoluo.tests.Test;
 
 public class ColumnEditTestRecyclerListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
+    private OnParentFragmentInteractionListener parentListener;
+
     private RecyclerView.Adapter columnRecyclerViewAdapter;
 
     public ColumnEditTestRecyclerListFragment() {
@@ -42,9 +43,7 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
                 int position = columnRecyclerView.getChildAdapterPosition(itemView);
 
                 if (position >= 0) {
-                    Intent intent = new Intent(view.getContext(), ColumnDataEditActivity.class);
-                    intent.putExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, position);
-                    startActivity(intent);
+                    parentListener.onItemClick(view, position);
                 }
             }
 
@@ -131,20 +130,17 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+        if (getParentFragment() instanceof OnParentFragmentInteractionListener) {
+            parentListener = (OnParentFragmentInteractionListener) getParentFragment();
+        } else {
+            throw new RuntimeException("Parent listener must implement OnParentFragmentInteractionListener");
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        Context context = getContext();
-        if (context != null) {
-            RecyclerViewChange testListChanged = DiakoluoApplication.getColumnListChanged(context);
-            if (testListChanged != null) {
-                testListChanged.apply(columnRecyclerViewAdapter);
-                DiakoluoApplication.setColumnListChanged(context, null);
-            }
-        }
     }
 
     @Override
@@ -153,6 +149,18 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
         mListener = null;
     }
 
+    void updateItem(int position) {
+        columnRecyclerViewAdapter.notifyItemChanged(position);
+    }
+
+    void applyRecyclerChanges(RecyclerViewChange columnListChanged) {
+        columnListChanged.apply(columnRecyclerViewAdapter);
+    }
+
     public interface OnFragmentInteractionListener {
+    }
+
+    public interface OnParentFragmentInteractionListener {
+        void onItemClick(View view, int position);
     }
 }

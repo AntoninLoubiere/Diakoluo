@@ -1,6 +1,5 @@
 package fr.pyjacpp.diakoluo.edit_test;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,10 +11,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
@@ -28,6 +27,8 @@ public class ColumnDataEditFragment extends Fragment {
     private int columnIndex;
 
     private OnFragmentInteractionListener mListener;
+    private OnParentFragmentInteractionListener parentListener;
+
     private View inflatedView;
     private EditText titleEditText;
     private EditText descriptionEditText;
@@ -68,6 +69,19 @@ public class ColumnDataEditFragment extends Fragment {
 
         titleEditText.setText(column.getName());
         descriptionEditText.setText(column.getDescription());
+
+        View.OnFocusChangeListener editTextFocusListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b) {
+                    saveChanges();
+                    parentListener.updateItem(columnIndex);
+                }
+            }
+        };
+
+        titleEditText.setOnFocusChangeListener(editTextFocusListener);
+        descriptionEditText.setOnFocusChangeListener(editTextFocusListener);
 
 
         ArrayAdapter<ColumnInputType> adapter = new ArrayAdapter<>(inflatedView.getContext(),
@@ -116,6 +130,12 @@ public class ColumnDataEditFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+        if (getParentFragment() instanceof OnParentFragmentInteractionListener) {
+            parentListener = (OnParentFragmentInteractionListener) getParentFragment();
+        } else {
+            throw new RuntimeException("Parent listener must implement OnParentFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -126,28 +146,31 @@ public class ColumnDataEditFragment extends Fragment {
 
     @Override
     public void onPause() {
+        saveChanges();
+        super.onPause();
+    }
 
+    private void saveChanges() {
         Column column = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext())
                 .getListColumn().get(columnIndex);
 
         column.setName(titleEditText.getText().toString());
         column.setDescription(descriptionEditText.getText().toString());
+        parentListener.updateItem(columnIndex);
+    }
 
-        RecyclerViewChange recyclerViewChange = DiakoluoApplication.getColumnListChanged(
-                inflatedView.getContext());
-        if (recyclerViewChange == null) {
-            recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.None);
-        }
-        recyclerViewChange.setChanges(recyclerViewChange.getChanges() | RecyclerViewChange.ItemChanged);
-        recyclerViewChange.setPosition(columnIndex);
-
-        DiakoluoApplication.setColumnListChanged(inflatedView.getContext(), recyclerViewChange);
-
-        super.onPause();
+    int getColumnIndex() {
+        return columnIndex;
     }
 
     interface OnFragmentInteractionListener {
     }
+
+    public interface OnParentFragmentInteractionListener {
+        void updateItem(int position);
+    }
+
+
 }
 
 

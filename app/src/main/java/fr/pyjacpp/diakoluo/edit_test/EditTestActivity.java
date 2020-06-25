@@ -26,6 +26,7 @@ public class EditTestActivity extends AppCompatActivity
         AnswerEditTestFragment.OnFragmentInteractionListener,
         AnswerEditTestRecyclerListFragment.OnFragmentInteractionListener,
         ColumnEditTestFragment.OnFragmentInteractionListener,
+        ColumnDataEditFragment.OnFragmentInteractionListener,
         ColumnEditTestRecyclerListFragment.OnFragmentInteractionListener,
         MainInformationsEditTestFragment.OnFragmentInteractionListener {
 
