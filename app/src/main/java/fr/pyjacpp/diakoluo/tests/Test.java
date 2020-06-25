@@ -1,5 +1,7 @@
 package fr.pyjacpp.diakoluo.tests;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -180,7 +182,21 @@ public class Test {
         return filename;
     }
 
-    public DataCell getFirstCell(int i) {
-        return listRow.get(i).getListCells().get(listColumn.get(0));
+    @Nullable
+    public DataCell getRowFirstCell(int rowPosition) {
+        if (listColumn.size() > 0) {
+            return listRow.get(rowPosition).getListCells().get(listColumn.get(0));
+        } else {
+            return null;
+        }
+    }
+
+    public String getRowFirstCellString(int rowPosition) {
+        DataCell firstCell = getRowFirstCell(rowPosition);
+        if (firstCell == null) {
+            return String.valueOf(rowPosition);
+        } else {
+            return firstCell.getStringValue();
+        }
     }
 }

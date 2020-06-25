@@ -20,12 +20,16 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            DataCell dataCell = DiakoluoApplication.getCurrentEditTest(this).getFirstCell(answerIndex);
+            DataCell dataCell = DiakoluoApplication.getCurrentEditTest(this).getRowFirstCell(answerIndex);
             String stringValue = "";
             if (dataCell != null)
                 stringValue = dataCell.getStringValue();
 
-            actionBar.setTitle(stringValue.equals("") ? getString(R.string.app_name) : stringValue);
+            if (stringValue.equals(""))
+                actionBar.setTitle(R.string.app_name);
+            else
+                actionBar.setTitle(stringValue);
+
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);

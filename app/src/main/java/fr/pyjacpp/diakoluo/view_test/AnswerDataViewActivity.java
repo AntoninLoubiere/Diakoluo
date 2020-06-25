@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
+import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public class AnswerDataViewActivity extends AppCompatActivity implements AnswerDataViewFragment.OnFragmentInteractionListener{
 
@@ -41,7 +42,6 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
 
         actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(currentTest.getFirstCell(answerIndex).getStringValue());
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
@@ -82,8 +82,13 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
     }
 
     private void updateNavigation() {
-        if (actionBar != null)
-            actionBar.setTitle(currentTest.getFirstCell(answerIndex).getStringValue());
+        if (actionBar != null) {
+            DataCell firstCell = currentTest.getRowFirstCell(answerIndex);
+            if (firstCell == null)
+                actionBar.setTitle(R.string.app_name);
+            else
+                actionBar.setTitle(firstCell.getStringValue());
+        }
 
         navigationTextView.setText(getString(R.string.navigation_info, answerIndex + 1,
                 currentTest.getNumberRow()));
@@ -94,7 +99,11 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
                 previousButton.setVisibility(View.VISIBLE);
                 previousButton.setEnabled(true);
             }
-            previousButton.setText(currentTest.getFirstCell(answerIndex - 1).getStringValue());
+            DataCell firstCell = currentTest.getRowFirstCell(answerIndex - 1);
+            if (firstCell == null)
+                previousButton.setText(R.string.previous);
+            else
+                previousButton.setText(firstCell.getStringValue());
         } else {
             previousButton.setEnabled(false);
             previousButton.setVisibility(View.GONE);
@@ -105,7 +114,11 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
                 nextButton.setVisibility(View.VISIBLE);
                 nextButton.setEnabled(true);
             }
-            nextButton.setText(currentTest.getFirstCell(answerIndex + 1).getStringValue());
+            DataCell firstCell = currentTest.getRowFirstCell(answerIndex + 1);
+            if (firstCell == null)
+                nextButton.setText(R.string.next);
+            else
+                nextButton.setText(firstCell.getStringValue());
         } else {
             nextButton.setEnabled(false);
             nextButton.setVisibility(View.GONE);
