@@ -2,6 +2,7 @@ package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,8 +69,7 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
                         );
                         setAnswerListChanged.setPositionStart(0);
                         setAnswerListChanged.setPositionEnd(currentEditTest.getNumberRow() - 1);
-                        DiakoluoApplication.setAnswerListChanged(view.getContext(),
-                                setAnswerListChanged);
+                        mListener.updateAnswerRecycler(setAnswerListChanged);
                     }
                 }
             }
@@ -84,6 +84,10 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
                 columnRecyclerViewLayoutManager.getOrientation()));
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+
+            private int dragFrom = -1;
+            private int dragTo = -1;
+
             @Override
             public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
                 return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
@@ -93,26 +97,52 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
 
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(recyclerView.getContext());
-                Collections.swap(currentEditTest.getListColumn(), viewHolder.getAdapterPosition(),
-                        target.getAdapterPosition());
-                columnRecyclerViewAdapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                int dragFrom = viewHolder.getAdapterPosition();
+                dragTo = target.getAdapterPosition();
 
-                if (viewHolder.getAdapterPosition() == 0) {
-                    RecyclerViewChange setAnswerListChanged = new RecyclerViewChange(
-                            RecyclerViewChange.ItemRangeChanged
-                    );
-                    setAnswerListChanged.setPositionStart(0);
-                    setAnswerListChanged.setPositionEnd(currentEditTest.getNumberRow());
-                    DiakoluoApplication.setAnswerListChanged(recyclerView.getContext(),
-                            setAnswerListChanged);
+                if (this.dragFrom == -1) {
+                    this.dragFrom = dragFrom;
                 }
+
+                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(recyclerView.getContext());
+
+                Collections.swap(currentEditTest.getListColumn(), dragFrom,
+                        dragTo);
+
+                columnRecyclerViewAdapter.notifyItemMoved(dragFrom, dragTo);
                 return true;
             }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             }
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+
+                Log.d("Test", dragFrom + " to " + dragTo);
+
+                if (dragFrom != dragTo && (dragFrom == 0 || dragTo == 0)) {
+                    Log.d("Test", "update");
+                    updateAnswerRecycler(recyclerView);
+                }
+
+                dragFrom = -1;
+                dragTo = -1;
+            }
+
+            private void updateAnswerRecycler(@NonNull RecyclerView recyclerView) {
+                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(recyclerView.getContext());
+                RecyclerViewChange setAnswerListChanged = new RecyclerViewChange(
+                        RecyclerViewChange.ItemRangeChanged
+                );
+                setAnswerListChanged.setPositionStart(0);
+                setAnswerListChanged.setPositionEnd(currentEditTest.getNumberRow());
+                mListener.updateAnswerRecycler(setAnswerListChanged);
+
+            }
+
         });
 
         itemTouchHelper.attachToRecyclerView(columnRecyclerView);
@@ -158,6 +188,7 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
+        void updateAnswerRecycler(RecyclerViewChange recyclerViewChange);
     }
 
     public interface OnParentFragmentInteractionListener {

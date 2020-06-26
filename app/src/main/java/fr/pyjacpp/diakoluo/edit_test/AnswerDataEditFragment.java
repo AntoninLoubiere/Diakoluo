@@ -1,6 +1,5 @@
 package fr.pyjacpp.diakoluo.edit_test;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -12,13 +11,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
@@ -27,12 +26,13 @@ import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 public class AnswerDataEditFragment extends Fragment {
     static final String ARG_ANSWER_INDEX = "answer_index";
 
-    HashMap<Column, View> columnAnswerEditHashMap = new HashMap<>();
-
-    private int answerIndex;
+    private HashMap<Column, View> columnAnswerEditHashMap = new HashMap<>();
 
     private OnFragmentInteractionListener mListener;
+    private OnParentFragmentInteractionListener parentListener;
+
     private View inflatedView;
+    private int answerIndex;
 
     public AnswerDataEditFragment() {
     }
@@ -59,6 +59,7 @@ public class AnswerDataEditFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         inflatedView = inflater.inflate(R.layout.fragment_edit_answer_data, container, false);
+
         LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
 
         DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
@@ -81,6 +82,9 @@ public class AnswerDataEditFragment extends Fragment {
             columnTitle.setTypeface(null, Typeface.BOLD);
 
             columnTitle.setText(getString(R.string.column_name_format, column.getName()));
+
+            // TODO add focus to save
+
             View columnValue;
             switch (column.getInputType()) {
                 case String:
@@ -118,6 +122,12 @@ public class AnswerDataEditFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+        if (getParentFragment() instanceof OnParentFragmentInteractionListener) {
+            parentListener = (OnParentFragmentInteractionListener) getParentFragment();
+        } else {
+            throw new RuntimeException("Parent fragment must implement OnParentFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -128,6 +138,11 @@ public class AnswerDataEditFragment extends Fragment {
 
     @Override
     public void onPause() {
+        saveChanges();
+        super.onPause();
+    }
+
+    private void saveChanges() {
         DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
 
         ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
@@ -152,21 +167,18 @@ public class AnswerDataEditFragment extends Fragment {
             }
 
         }
+        parentListener.updateItem(answerIndex);
+    }
 
-        RecyclerViewChange recyclerViewChange = DiakoluoApplication.getAnswerListChanged(
-                inflatedView.getContext());
-        if (recyclerViewChange == null) {
-            recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.None);
-        }
-        recyclerViewChange.setChanges(recyclerViewChange.getChanges() | RecyclerViewChange.ItemChanged);
-        recyclerViewChange.setPosition(answerIndex);
-
-        DiakoluoApplication.setAnswerListChanged(inflatedView.getContext(), recyclerViewChange);
-
-        super.onPause();
+    int getAnswerIndex() {
+        return answerIndex;
     }
 
     interface OnFragmentInteractionListener {
+    }
+
+    interface OnParentFragmentInteractionListener {
+        void updateItem(int position);
     }
 }
 

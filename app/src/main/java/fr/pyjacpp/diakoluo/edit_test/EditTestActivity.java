@@ -8,6 +8,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -25,6 +26,7 @@ public class EditTestActivity extends AppCompatActivity
         implements
         AnswerEditTestFragment.OnFragmentInteractionListener,
         AnswerEditTestRecyclerListFragment.OnFragmentInteractionListener,
+        AnswerDataEditFragment.OnFragmentInteractionListener,
         ColumnEditTestFragment.OnFragmentInteractionListener,
         ColumnDataEditFragment.OnFragmentInteractionListener,
         ColumnEditTestRecyclerListFragment.OnFragmentInteractionListener,
@@ -32,6 +34,8 @@ public class EditTestActivity extends AppCompatActivity
 
     private ArrayDeque<EditTestValidator> errorValidatorDeque;
     private boolean errorInDeque;
+
+    private EditTestPagerAdapterFragment adapter;
 
     class EditTestValidator {
         private final boolean error;
@@ -83,10 +87,11 @@ public class EditTestActivity extends AppCompatActivity
 
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        viewPager.setAdapter(new EditTestPagerAdapterFragment(
+        adapter = new EditTestPagerAdapterFragment(
                 getSupportFragmentManager(),
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, this
-        ));
+        );
+        viewPager.setAdapter(adapter);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -243,5 +248,19 @@ public class EditTestActivity extends AppCompatActivity
     @Override
     public EditTestValidator descriptionEditTestValidator(String text) {
         return new EditTestValidator();
+    }
+
+    @Override
+    public void updateAnswerRecycler(final RecyclerViewChange recyclerViewChange) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Fragment answerEditTestFragment  = adapter.getFragmentAtPosition(2);
+
+                if (answerEditTestFragment != null) {
+                    ((AnswerEditTestFragment) answerEditTestFragment).updateAnswerRecycler(recyclerViewChange);
+                }
+            }
+        }).start();
     }
 }

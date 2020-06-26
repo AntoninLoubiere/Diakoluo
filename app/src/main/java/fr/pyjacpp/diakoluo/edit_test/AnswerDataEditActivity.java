@@ -18,7 +18,7 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
                     getIntent().getIntExtra(AnswerDataEditFragment.ARG_ANSWER_INDEX, 0)
             );
 
-            getFragmentManager().beginTransaction().replace(
+            getSupportFragmentManager().beginTransaction().replace(
                     R.id.answerDataEditFragmentContainer,
                     fragment).commit();
         }

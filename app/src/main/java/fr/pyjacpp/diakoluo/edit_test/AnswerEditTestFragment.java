@@ -19,8 +19,14 @@ import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 
 
-public class AnswerEditTestFragment extends Fragment {
+public class AnswerEditTestFragment extends Fragment implements
+        AnswerEditTestRecyclerListFragment.OnParentFragmentInteractionListener,
+        AnswerDataEditFragment.OnParentFragmentInteractionListener {
     private OnFragmentInteractionListener mListener;
+
+    private boolean answerDetail;
+    private AnswerDataEditFragment answerDataEditFragment;
+    private AnswerEditTestRecyclerListFragment answerEditTestRecyclerListFragment;
 
     public AnswerEditTestFragment() {
         // Required empty public constructor
@@ -31,6 +37,10 @@ public class AnswerEditTestFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.fragment_edit_answer_test, container, false);
+
+        answerDetail = inflatedView.findViewById(R.id.answerDataEditFragmentContainer) != null;
+        answerEditTestRecyclerListFragment = (AnswerEditTestRecyclerListFragment)
+                getChildFragmentManager().findFragmentById(R.id.answerEditTestRecyclerListFragment);
 
         Button addAnswerButton = inflatedView.findViewById(R.id.addAnswerButton);
         addAnswerButton.setOnClickListener(new View.OnClickListener() {
@@ -43,7 +53,7 @@ public class AnswerEditTestFragment extends Fragment {
                         RecyclerViewChange.ItemInserted
                 );
                 answerListChanged.setPosition(listRow.size() - 1);
-                DiakoluoApplication.setAnswerListChanged(view.getContext(), answerListChanged);
+                answerEditTestRecyclerListFragment.applyRecyclerChanges(answerListChanged);
 
                 Intent intent = new Intent(view.getContext(), AnswerDataEditActivity.class);
                 intent.putExtra(AnswerDataEditFragment.ARG_ANSWER_INDEX, listRow.size() - 1);
@@ -69,6 +79,32 @@ public class AnswerEditTestFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void itemClick(View view, int position) {
+        if (answerDetail) {
+            if (answerDataEditFragment == null || answerDataEditFragment.getAnswerIndex() != position) {
+                answerDataEditFragment = AnswerDataEditFragment.newInstance(position);
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.answerDataEditFragmentContainer,
+                                answerDataEditFragment)
+                        .commit();
+            } else {
+                Intent intent = new Intent(view.getContext(), AnswerDataEditActivity.class);
+                intent.putExtra(AnswerDataEditFragment.ARG_ANSWER_INDEX, position);
+                startActivity(intent);
+            }
+        }
+    }
+
+    @Override
+    public void updateItem(int position) {
+        answerEditTestRecyclerListFragment.updateItem(position);
+    }
+
+    void updateAnswerRecycler(RecyclerViewChange recyclerViewChange) {
+        answerEditTestRecyclerListFragment.applyRecyclerChanges(recyclerViewChange);
     }
 
     public interface OnFragmentInteractionListener {

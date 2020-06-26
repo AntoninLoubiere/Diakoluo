@@ -32,7 +32,6 @@ public class DiakoluoApplication extends Application {
     private Integer currentIndexEditTest;
     
     private RecyclerViewChange testListChanged;
-    private RecyclerViewChange answerListChanged;
 
     private SharedPreferences sharedPreferences;
 
@@ -177,14 +176,6 @@ public class DiakoluoApplication extends Application {
     private void setTestListChanged(RecyclerViewChange testListChanged) {
         this.testListChanged = testListChanged;
     }
-    
-    private RecyclerViewChange getAnswerListChanged() {
-        return answerListChanged;
-    }
-
-    private void setAnswerListChanged(RecyclerViewChange answerListChanged) {
-        this.answerListChanged = answerListChanged;
-    }
 
     // static
 
@@ -230,14 +221,6 @@ public class DiakoluoApplication extends Application {
 
     public static RecyclerViewChange getTestListChanged(Context context) {
         return ((DiakoluoApplication) context.getApplicationContext()).getTestListChanged();
-    }
-
-    public static void setAnswerListChanged(Context context, RecyclerViewChange setAnswerListChanged) {
-        ((DiakoluoApplication) context.getApplicationContext()).setAnswerListChanged(setAnswerListChanged);
-    }
-
-    public static RecyclerViewChange getAnswerListChanged(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getAnswerListChanged();
     }
 
     public static void saveTest(Context context) {

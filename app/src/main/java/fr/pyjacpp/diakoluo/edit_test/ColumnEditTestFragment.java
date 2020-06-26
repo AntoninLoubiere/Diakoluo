@@ -63,10 +63,12 @@ public class ColumnEditTestFragment extends Fragment implements
                 columnListChanged.setPosition(listColumn.size() - 1);
                 columnEditTestRecyclerListFragment.applyRecyclerChanges(columnListChanged);
 
-                RecyclerViewChange recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.ItemRangeChanged);
-                recyclerViewChange.setPositionStart(0);
-                recyclerViewChange.setPositionEnd(currentEditTest.getNumberRow() - 1);
-                DiakoluoApplication.setAnswerListChanged(view.getContext(), recyclerViewChange);
+                if (listColumn.size() <= 1) {
+                    RecyclerViewChange recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.ItemRangeChanged);
+                    recyclerViewChange.setPositionStart(0);
+                    recyclerViewChange.setPositionEnd(currentEditTest.getNumberRow() - 1);
+                    mListener.updateAnswerRecycler(recyclerViewChange);
+                }
 
                 for (DataRow row : currentEditTest.getListRow()) {
                     // TODO: improve
@@ -122,5 +124,6 @@ public class ColumnEditTestFragment extends Fragment implements
     }
 
     public interface OnFragmentInteractionListener {
+        void updateAnswerRecycler(RecyclerViewChange recyclerViewChange);
     }
 }
