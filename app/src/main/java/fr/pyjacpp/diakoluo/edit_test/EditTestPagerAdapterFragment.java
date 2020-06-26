@@ -54,7 +54,7 @@ public class EditTestPagerAdapterFragment extends FragmentPagerAdapter {
 
             case 0:
             default:
-                return new MainInformationsEditTestFragment();
+                return new MainInformationEditTestFragment();
         }
     }
 

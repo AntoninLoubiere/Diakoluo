@@ -3,21 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primaryColorLight"
     tools:context=".SplashScreenActivity">
 
     <TextView
         android:id="@+id/applicationName"
+        style="@style/TextAppearance.AppCompat.Display3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="@string/app_name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
-        android:textColor="@color/colorAccent"
-        android:textStyle="bold" />
+        android:textColor="?attr/colorPrimary" />
 
     <ProgressBar
-        style="Spinner"
+        style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/applicationName"
@@ -28,11 +26,11 @@
 
     <TextView
         android:id="@+id/informationLine"
+        style="@style/TextAppearance.MaterialComponents.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/information_line"
-        android:textColor="@color/secondaryText" />
+        android:text="@string/information_line" />
 
 </RelativeLayout>

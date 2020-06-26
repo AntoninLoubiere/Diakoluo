@@ -6,12 +6,12 @@ public class RecyclerViewChange {
     public static final short None = 0;              // 00000000
     public static final short ItemChanged = 1;       // 00000001
     public static final short ItemInserted = 2;      // 00000010
-    public static final short ItemMoved = 4;         // 00000100
+    private static final short ItemMoved = 4;         // 00000100
     public static final short ItemRangeChanged = 8;  // 00001000
-    public static final short ItemRangeInserted = 16;// 00010000
-    public static final short ItemRangeRemoved = 32; // 00100000
-    public static final short ItemRemoved = 64;      // 01000000
-    public static final short DataSetChanged = 128;  // 10000000
+    private static final short ItemRangeInserted = 16;// 00010000
+    private static final short ItemRangeRemoved = 32; // 00100000
+    private static final short ItemRemoved = 64;      // 01000000
+    private static final short DataSetChanged = 128;  // 10000000
 
     private int changes;
     private Integer position = null;
@@ -22,7 +22,7 @@ public class RecyclerViewChange {
         this.changes = changes;
     }
 
-    public boolean changeIsIn(int change) {
+    private boolean changeIsIn(int change) {
         return (changes & change) == change;
     }
 

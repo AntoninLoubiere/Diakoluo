@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -80,8 +79,8 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
         columnRecyclerView.setLayoutManager(columnRecyclerViewLayoutManager);
         columnRecyclerView.setAdapter(columnRecyclerViewAdapter);
 
-        columnRecyclerView.addItemDecoration(new DividerItemDecoration(columnRecyclerView.getContext(),
-                columnRecyclerViewLayoutManager.getOrientation()));
+//        columnRecyclerView.addItemDecoration(new DividerItemDecoration(columnRecyclerView.getContext(),
+//                columnRecyclerViewLayoutManager.getOrientation()));
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
 

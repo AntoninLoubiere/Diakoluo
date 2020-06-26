@@ -2,8 +2,12 @@ package fr.pyjacpp.diakoluo.list_tests;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -13,12 +17,12 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.edit_test.EditTestActivity;
 import fr.pyjacpp.diakoluo.test_tests.TestSettingsActivity;
 import fr.pyjacpp.diakoluo.tests.Test;
-import fr.pyjacpp.diakoluo.view_test.MainInformationsViewTestFragment;
+import fr.pyjacpp.diakoluo.view_test.MainInformationViewTestFragment;
 import fr.pyjacpp.diakoluo.view_test.ViewTestActivity;
 
 public class ListTestActivity extends AppCompatActivity
         implements ListTestsFragment.OnFragmentInteractionListener,
-        MainInformationsViewTestFragment.OnFragmentInteractionListener {
+        MainInformationViewTestFragment.OnFragmentInteractionListener {
 
     private boolean detailMainInformationTest;
 
@@ -26,6 +30,10 @@ public class ListTestActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_test);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setTitle(R.string.list_test);
 
         detailMainInformationTest = findViewById(R.id.testMainInformationFragment) != null;
 
@@ -42,17 +50,36 @@ public class ListTestActivity extends AppCompatActivity
     @Override
     public void onItemClick(View view, int position) {
         if (detailMainInformationTest) {
-            MainInformationsViewTestFragment mainInformationsViewTestFragment =(MainInformationsViewTestFragment)
+            MainInformationViewTestFragment mainInformationViewTestFragment =(MainInformationViewTestFragment)
                     getSupportFragmentManager().findFragmentById(R.id.testMainInformationFragment);
 
-            if (mainInformationsViewTestFragment != null) {
+            if (mainInformationViewTestFragment != null) {
                 DiakoluoApplication.setCurrentTest(view.getContext(),
                         DiakoluoApplication.getListTest(view.getContext()).get(position));
 
-                mainInformationsViewTestFragment.updateContent(this);
+                mainInformationViewTestFragment.updateContent(this);
             }
         } else {
             onSeeButtonClick(view, position);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_list_test, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settingsAction:
+                startActivity(new Intent(ListTestActivity.this, SettingsActivity.class));
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

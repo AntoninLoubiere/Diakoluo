@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,8 +35,8 @@ public class AnswerViewTestRecyclerListFragment extends Fragment {
         answerRecyclerView.setLayoutManager(answerRecyclerViewLayout);
         answerRecyclerView.setAdapter(answerRecyclerViewAdapter);
 
-        answerRecyclerView.addItemDecoration(new DividerItemDecoration(answerRecyclerView.getContext(),
-                answerRecyclerViewLayout.getOrientation()));
+//        answerRecyclerView.addItemDecoration(new DividerItemDecoration(answerRecyclerView.getContext(),
+//                answerRecyclerViewLayout.getOrientation()));
 
         answerRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(
                 answerRecyclerView,

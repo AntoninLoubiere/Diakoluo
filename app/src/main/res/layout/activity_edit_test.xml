@@ -7,52 +7,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="vertical"
-    tools:context=".view_test.ViewTestActivity">
+    tools:context=".edit_test.EditTestActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/buttonBar">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?actionBarSize"
-            android:theme="@style/AppTheme.AppBarOverlay">
-
-            <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/collapsing_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="110dp"
-                android:fitsSystemWindows="true"
-                app:contentScrim="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:titleEnabled="false">
-
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:gravity="center"
-                android:padding="@dimen/appbar_padding"
-                android:text="@string/app_name"
-                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-                android:textColor="@color/appNameTitleColor"
-                app:layout_collapseMode="parallax" />
-
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/viewTestTabLayout"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:layout_gravity="bottom"
-                app:layout_collapseMode="parallax" />
-
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-        </com.google.android.material.appbar.AppBarLayout>
-
+        <include layout="@layout/collapsing_bar_layout_test"/>
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewTestViewPager"
@@ -71,7 +33,6 @@
 
     <LinearLayout
         android:id="@+id/buttonBar"
-        style="?attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -79,19 +40,13 @@
 
         <Button
             android:id="@+id/cancelButton"
-            style="?attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            style="@style/buttonInBar.Outlined"
             android:text="@string/cancel"/>
 
         <Button
             android:id="@+id/validButton"
-            style="?attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/valid"/>
+            style="@style/buttonInBar"
+            android:text="@string/valid" />
 
     </LinearLayout>
 

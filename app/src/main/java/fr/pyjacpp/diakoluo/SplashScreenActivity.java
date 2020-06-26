@@ -7,6 +7,7 @@ import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
 import fr.pyjacpp.diakoluo.list_tests.ListTestActivity;
+import fr.pyjacpp.diakoluo.test_tests.StarterActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -17,15 +18,29 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                startActivity(
-                        new Intent(SplashScreenActivity.this, ListTestActivity.class)
-                );
+        if (savedInstanceState == null) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (DiakoluoApplication.getAnalyticsSet(SplashScreenActivity.this))
+                        startActivity(
+                                new Intent(SplashScreenActivity.this, ListTestActivity.class)
+                        );
+                    else {
+                        startActivity(
+                                new Intent(SplashScreenActivity.this, StarterActivity.class)
+                        );
+                    }
+                        finish();
+                }
+            }, LOADING_TIME_SPLASH_SCREEN);
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
                 finish();
-            }
-        }, LOADING_TIME_SPLASH_SCREEN);
+                }
+            }, LOADING_TIME_SPLASH_SCREEN);
+        }
     }
 }
