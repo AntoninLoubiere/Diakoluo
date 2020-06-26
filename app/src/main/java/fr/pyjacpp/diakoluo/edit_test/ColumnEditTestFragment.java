@@ -106,7 +106,9 @@ public class ColumnEditTestFragment extends Fragment implements
         if (columnDetail) {
             if (columnDataEditFragment == null || columnDataEditFragment.getColumnIndex() != position) {
                 columnDataEditFragment = ColumnDataEditFragment.newInstance(position);
-                getChildFragmentManager().beginTransaction()
+                getChildFragmentManager()
+                        .beginTransaction()
+                        .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
                         .replace(R.id.columnDataEditFragmentContainer,
                                 columnDataEditFragment)
                         .commit();

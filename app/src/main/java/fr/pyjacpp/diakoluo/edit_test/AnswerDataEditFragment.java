@@ -2,6 +2,7 @@ package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,7 +117,13 @@ public class AnswerDataEditFragment extends Fragment {
         if (getParentFragment() instanceof OnParentFragmentInteractionListener) {
             parentListener = (OnParentFragmentInteractionListener) getParentFragment();
         } else {
-            throw new RuntimeException("Parent fragment must implement OnParentFragmentInteractionListener");
+            Log.w("DiakoluoEdit", "Parent fragment must implement OnParentFragmentInteractionListener");
+            parentListener = new OnParentFragmentInteractionListener() {
+                @Override
+                public void updateItem(int position) {
+
+                }
+            };
         }
     }
 

@@ -86,7 +86,9 @@ public class AnswerEditTestFragment extends Fragment implements
         if (answerDetail) {
             if (answerDataEditFragment == null || answerDataEditFragment.getAnswerIndex() != position) {
                 answerDataEditFragment = AnswerDataEditFragment.newInstance(position);
-                getChildFragmentManager().beginTransaction()
+                getChildFragmentManager()
+                        .beginTransaction()
+                        .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
                         .replace(R.id.answerDataEditFragmentContainer,
                                 answerDataEditFragment)
                         .commit();
