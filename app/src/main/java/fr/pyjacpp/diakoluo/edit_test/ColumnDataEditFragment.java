@@ -75,7 +75,6 @@ public class ColumnDataEditFragment extends Fragment {
             public void onFocusChange(View view, boolean b) {
                 if (!b) {
                     saveChanges();
-                    parentListener.updateItem(columnIndex);
                 }
             }
         };

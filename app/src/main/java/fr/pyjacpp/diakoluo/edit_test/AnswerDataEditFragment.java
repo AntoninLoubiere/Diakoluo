@@ -5,10 +5,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,10 +91,12 @@ public class AnswerDataEditFragment extends Fragment {
                 row.getListCells().put(column, dataCell);
             }
 
-            View columnValue = dataCell.showEditValue(inflatedView.getContext(), column);
-            columnValue.setOnFocusChangeListener(onFocusChangeListener);
-
+            TextInputLayout columnValue = dataCell.showEditValue(inflatedView.getContext(), column);
             columnAnswerEditHashMap.put(column, columnValue);
+            EditText editText = columnValue.getEditText();
+            if (editText != null) {
+                editText.setOnFocusChangeListener(onFocusChangeListener);
+            }
             layout.addView(columnValue);
         }
 

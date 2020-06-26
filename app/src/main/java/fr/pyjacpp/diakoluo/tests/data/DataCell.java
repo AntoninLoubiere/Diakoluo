@@ -73,7 +73,7 @@ public class DataCell {
         return new ShowValueResponse(valueTextView, answerIsTrue);
     }
 
-    public View showEditValue(Context context, Column column) {
+    public TextInputLayout showEditValue(Context context, Column column) {
         return column.showColumnEditValue(context, getStringValue());
     }
 
