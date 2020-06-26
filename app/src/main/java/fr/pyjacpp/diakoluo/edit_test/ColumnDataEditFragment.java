@@ -49,7 +49,6 @@ public class ColumnDataEditFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             columnIndex = getArguments().getInt(ARG_COLUMN_INDEX);
-
         }
     }
 
@@ -160,6 +159,13 @@ public class ColumnDataEditFragment extends Fragment {
 
     int getColumnIndex() {
         return columnIndex;
+    }
+
+    void setColumnIndex(int i) {
+        columnIndex = i;
+        if (getArguments() != null) {
+            getArguments().putInt(ARG_COLUMN_INDEX, i);
+        }
     }
 
     interface OnFragmentInteractionListener {

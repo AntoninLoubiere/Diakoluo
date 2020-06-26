@@ -119,6 +119,31 @@ public class ColumnEditTestFragment extends Fragment implements
     }
 
     @Override
+    public void onSwap(int dragFrom, int dragTo) {
+        // detect if fragment need to update index due to a swap
+        if (columnDataEditFragment != null) {
+            int i = columnDataEditFragment.getColumnIndex();
+            if (dragFrom < dragTo) {
+                if (dragFrom < i) {
+                    if (i <= dragTo) {
+                        columnDataEditFragment.setColumnIndex(i - 1);
+                    }
+                } else if (i == dragFrom) {
+                    columnDataEditFragment.setColumnIndex(dragTo);
+                }
+            } else {
+                if (dragTo <= i) {
+                    if (i < dragFrom) {
+                        columnDataEditFragment.setColumnIndex(i + 1);
+                    } else if (i == dragFrom) {
+                        columnDataEditFragment.setColumnIndex(dragTo);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public void updateItem(int position) {
         columnEditTestRecyclerListFragment.updateItem(position);
     }

@@ -99,6 +99,31 @@ public class AnswerEditTestFragment extends Fragment implements
     }
 
     @Override
+    public void onSwap(int dragFrom, int dragTo) {
+        // detect if fragment need to update index due to a swap
+        if (answerDataEditFragment != null) {
+            int i = answerDataEditFragment.getAnswerIndex();
+            if (dragFrom < dragTo) {
+                if (dragFrom < i) {
+                    if (i <= dragTo) {
+                        answerDataEditFragment.setAnswerIndex(i - 1);
+                    }
+                } else if (i == dragFrom) {
+                    answerDataEditFragment.setAnswerIndex(dragTo);
+                }
+            } else {
+                if (dragTo <= i) {
+                    if (i < dragFrom) {
+                        answerDataEditFragment.setAnswerIndex(i + 1);
+                    } else if (i == dragFrom) {
+                        answerDataEditFragment.setAnswerIndex(dragTo);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public void updateItem(int position) {
         answerEditTestRecyclerListFragment.updateItem(position);
     }

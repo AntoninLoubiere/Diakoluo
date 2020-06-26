@@ -158,6 +158,13 @@ public class AnswerDataEditFragment extends Fragment {
         return answerIndex;
     }
 
+    void setAnswerIndex(int i) {
+        answerIndex = i;
+        if (getArguments() != null) {
+            getArguments().putInt(ARG_ANSWER_INDEX, i);
+        }
+    }
+
     interface OnFragmentInteractionListener {
     }
 

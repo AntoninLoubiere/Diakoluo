@@ -2,7 +2,6 @@ package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,11 +119,11 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
             public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
                 super.clearView(recyclerView, viewHolder);
 
-                Log.d("Test", dragFrom + " to " + dragTo);
-
-                if (dragFrom != dragTo && (dragFrom == 0 || dragTo == 0)) {
-                    Log.d("Test", "update");
-                    updateAnswerRecycler(recyclerView);
+                if (dragFrom != dragTo) {
+                    if (dragFrom == 0 || dragTo == 0) {
+                        updateAnswerRecycler(recyclerView);
+                    }
+                    parentListener.onSwap(dragFrom, dragTo);
                 }
 
                 dragFrom = -1;
@@ -192,5 +191,6 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
 
     public interface OnParentFragmentInteractionListener {
         void onItemClick(View view, int position);
+        void onSwap(int dragFrom, int dragTo);
     }
 }

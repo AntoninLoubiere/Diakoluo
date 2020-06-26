@@ -66,6 +66,9 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
         answerRecyclerView.setAdapter(answerRecyclerViewAdapter);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            int dragFrom = -1;
+            int dragTo = -1;
+
             @Override
             public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
                 return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
@@ -75,20 +78,40 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
 
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int dragFrom = viewHolder.getAdapterPosition();
+                dragTo = target.getAdapterPosition();
+
+                if (this.dragFrom <= -1)
+                    this.dragFrom = dragFrom;
+
                 Test currentEditTest = DiakoluoApplication.getCurrentEditTest(recyclerView.getContext());
-                Collections.swap(currentEditTest.getListRow(), viewHolder.getAdapterPosition(),
-                        target.getAdapterPosition());
-                answerRecyclerViewAdapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+
+                Collections.swap(currentEditTest.getListRow(), dragFrom,
+                        dragTo);
+
+                answerRecyclerViewAdapter.notifyItemMoved(dragFrom, dragTo);
                 if (currentEditTest.getNumberColumn() <= 0) {
                     // if the text depends of position, we need to refresh all next elements
-                    answerRecyclerViewAdapter.notifyItemRangeChanged(viewHolder.getAdapterPosition() - 1,
-                            currentEditTest.getNumberRow() - viewHolder.getAdapterPosition());
+                    answerRecyclerViewAdapter.notifyItemRangeChanged(dragFrom - 1,
+                            currentEditTest.getNumberRow() - dragFrom);
                 }
                 return true;
             }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            }
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+
+                if (dragFrom != dragTo) {
+                    parentListener.onSwap(dragFrom, dragTo);
+                }
+
+                dragFrom = -1;
+                dragTo = -1;
             }
         });
 
@@ -136,5 +159,6 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
 
     interface OnParentFragmentInteractionListener {
         void itemClick(View view, int position);
+        void onSwap(int dragFrom, int dragTo);
     }
 }
