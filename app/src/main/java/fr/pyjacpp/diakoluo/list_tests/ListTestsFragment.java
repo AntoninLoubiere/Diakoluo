@@ -75,6 +75,7 @@ public class ListTestsFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 deleteTest(inflatedLayout, position);
+                                listener.onDeleteTest(position);
                                 dialogInterface.dismiss();
                             }
                         })
@@ -145,11 +146,9 @@ public class ListTestsFragment extends Fragment {
 
     public interface OnFragmentInteractionListener{
         void onItemClick(View view, int position);
-
         void onPlayButtonClick(View view, int position);
-
         void onSeeButtonClick(View view, int position);
-
         void onEditMenuItemClick(View view, int position);
+        void onDeleteTest(int position);
     }
 }
