@@ -15,7 +15,7 @@ import fr.pyjacpp.diakoluo.R;
 
 
 public class ColumnViewTestFragment extends Fragment implements
-        ColumnViewTestRecyclerListFragment.OnFragmentInteractionParentListener {
+        ColumnViewTestRecyclerListFragment.OnParentFragmentInteractionListener {
     private OnFragmentInteractionListener mListener;
 
     private boolean columnDetail;

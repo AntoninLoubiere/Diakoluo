@@ -2,7 +2,6 @@ package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +9,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -29,6 +29,7 @@ public class AnswerDataEditFragment extends Fragment {
     private HashMap<Column, View> columnAnswerEditHashMap = new HashMap<>();
 
     private OnFragmentInteractionListener mListener;
+    @Nullable
     private OnParentFragmentInteractionListener parentListener;
 
     private View inflatedView;
@@ -117,13 +118,7 @@ public class AnswerDataEditFragment extends Fragment {
         if (getParentFragment() instanceof OnParentFragmentInteractionListener) {
             parentListener = (OnParentFragmentInteractionListener) getParentFragment();
         } else {
-            Log.w("DiakoluoEdit", "Parent fragment must implement OnParentFragmentInteractionListener");
-            parentListener = new OnParentFragmentInteractionListener() {
-                @Override
-                public void updateItem(int position) {
-
-                }
-            };
+            parentListener = null;
         }
     }
 
@@ -158,7 +153,8 @@ public class AnswerDataEditFragment extends Fragment {
                 }
             }
         }
-        parentListener.updateItem(answerIndex);
+        if (parentListener != null)
+            parentListener.updateItem(answerIndex);
     }
 
     int getAnswerIndex() {

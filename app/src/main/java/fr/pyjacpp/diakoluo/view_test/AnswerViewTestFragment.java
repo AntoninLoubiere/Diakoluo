@@ -14,7 +14,7 @@ import fr.pyjacpp.diakoluo.R;
 
 
 public class AnswerViewTestFragment extends Fragment implements
-        AnswerViewTestRecyclerListFragment.OnFragmentInteractionParentListener {
+        AnswerViewTestRecyclerListFragment.OnParentFragmentInteractionListener {
 
     private OnFragmentInteractionListener mListener;
 

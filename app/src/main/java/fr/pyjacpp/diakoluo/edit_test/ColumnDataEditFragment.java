@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
@@ -27,6 +28,7 @@ public class ColumnDataEditFragment extends Fragment {
     private int columnIndex;
 
     private OnFragmentInteractionListener mListener;
+    @Nullable
     private OnParentFragmentInteractionListener parentListener;
 
     private View inflatedView;
@@ -132,7 +134,7 @@ public class ColumnDataEditFragment extends Fragment {
         if (getParentFragment() instanceof OnParentFragmentInteractionListener) {
             parentListener = (OnParentFragmentInteractionListener) getParentFragment();
         } else {
-            throw new RuntimeException("Parent listener must implement OnParentFragmentInteractionListener");
+            parentListener = null;
         }
     }
 
@@ -154,7 +156,8 @@ public class ColumnDataEditFragment extends Fragment {
 
         column.setName(titleEditText.getText().toString());
         column.setDescription(descriptionEditText.getText().toString());
-        parentListener.updateItem(columnIndex);
+        if (parentListener != null)
+            parentListener.updateItem(columnIndex);
     }
 
     int getColumnIndex() {
