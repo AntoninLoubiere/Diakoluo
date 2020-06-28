@@ -6,45 +6,40 @@
     android:orientation="horizontal"
     tools:context=".view_test.ColumnViewTestFragment">
 
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <Button
+            android:id="@+id/addColumnButton"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_margin"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:drawableEnd="@drawable/ic_add_accent_color_24dp"
+            android:text="@string/add_column" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/dividerColor" />
+
+        <fragment
+            android:id="@+id/columnEditTestRecyclerListFragment"
+            class="fr.pyjacpp.diakoluo.edit_test.ColumnEditTestRecyclerListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            tools:layout="@layout/fragment_recycler_list" />
 
-            <Button
-                android:id="@+id/addColumnButton"
-                style="?attr/buttonBarButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableEnd="@drawable/ic_add_accent_color_24dp"
-                android:text="@string/add_column" />
+    </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/dividerColor" />
-
-            <fragment
-                android:id="@+id/columnEditTestRecyclerListFragment"
-                class="fr.pyjacpp.diakoluo.edit_test.ColumnEditTestRecyclerListFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:layout="@layout/fragment_recycler_list" />
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
 
     <View
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin"
         android:background="@color/dividerColor" />
 
     <androidx.core.widget.NestedScrollView
