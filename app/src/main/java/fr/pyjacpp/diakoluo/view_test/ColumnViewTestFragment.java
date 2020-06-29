@@ -15,7 +15,7 @@ import fr.pyjacpp.diakoluo.R;
 
 
 public class ColumnViewTestFragment extends Fragment implements
-        ColumnViewTestRecyclerListFragment.OnFragmentInteractionParentListener {
+        ColumnViewTestRecyclerListFragment.OnParentFragmentInteractionListener {
     private OnFragmentInteractionListener mListener;
 
     private boolean columnDetail;
@@ -53,10 +53,12 @@ public class ColumnViewTestFragment extends Fragment implements
     @Override
     public void onItemClick(View view, int position) {
         if (columnDetail) {
-            getChildFragmentManager().beginTransaction()
+            getChildFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
                     .replace(R.id.columnDataViewFragmentContainer,
                             ColumnDataViewFragment.newInstance(position))
-            .commit();
+                    .commit();
         } else {
             Intent intent = new Intent(view.getContext(), ColumnDataViewActivity.class);
             intent.putExtra(ColumnDataViewFragment.ARG_COLUMN_INDEX, position);

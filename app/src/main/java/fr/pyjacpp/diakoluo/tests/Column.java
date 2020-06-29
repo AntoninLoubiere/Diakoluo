@@ -77,7 +77,7 @@ public class Column {
         return columnNameTextView;
     }
 
-    private View showColumnEditValue(Context context) {
+    private TextInputLayout showColumnEditValue(Context context) {
         TextInputLayout inputLayout = new TextInputLayout(context, null, R.style.Widget_MaterialComponents_TextInputLayout_OutlinedBox);
         TextInputEditText inputField = new TextInputEditText(context);
         inputLayout.setHint(name);
@@ -88,8 +88,8 @@ public class Column {
     }
 
 
-    public View showColumnEditValue(Context context, Object defaultValue) {
-        TextInputLayout inputLayout = (TextInputLayout) showColumnEditValue(context);
+    public TextInputLayout showColumnEditValue(Context context, Object defaultValue) {
+        TextInputLayout inputLayout = showColumnEditValue(context);
         EditText inputField = inputLayout.getEditText();
         if (inputField != null && defaultValue != null)
             inputField.setText((String) defaultValue);

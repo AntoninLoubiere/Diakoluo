@@ -36,7 +36,7 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
                     answerIndex
             );
 
-            getFragmentManager().beginTransaction().replace(
+            getSupportFragmentManager().beginTransaction().replace(
                     R.id.answerDataEditFragmentContainer,
                     fragment).commit();
         }

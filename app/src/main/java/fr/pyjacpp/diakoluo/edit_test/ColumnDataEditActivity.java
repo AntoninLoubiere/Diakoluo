@@ -30,7 +30,7 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
             ColumnDataEditFragment fragment = ColumnDataEditFragment.newInstance(columnIndex
             );
 
-            getFragmentManager().beginTransaction().replace(
+            getSupportFragmentManager().beginTransaction().replace(
                     R.id.columnDataEditFragmentContainer,
                     fragment).commit();
         }
