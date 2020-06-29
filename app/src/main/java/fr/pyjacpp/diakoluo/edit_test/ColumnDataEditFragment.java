@@ -161,6 +161,9 @@ public class ColumnDataEditFragment extends Fragment {
             column.setDescription(descriptionEditText.getText().toString());
             if (parentListener != null)
                 parentListener.updateItem(columnIndex);
+            else {
+                mListener.updateColumnRecyclerItem(columnIndex);
+            }
         }
     }
 
@@ -176,6 +179,7 @@ public class ColumnDataEditFragment extends Fragment {
     }
 
     interface OnFragmentInteractionListener {
+        void updateColumnRecyclerItem(int position);
     }
 
     public interface OnParentFragmentInteractionListener {
