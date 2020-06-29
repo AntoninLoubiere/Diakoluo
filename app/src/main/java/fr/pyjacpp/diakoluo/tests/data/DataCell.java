@@ -15,6 +15,20 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 
 public class DataCell {
+    public DataCell(DataCell dataCell) {
+    }
+
+    public DataCell() {
+    }
+
+    public static DataCell copyDataCell(DataCell dataCell) {
+        if (dataCell instanceof DataCellString) {
+            return new DataCellString((DataCellString) dataCell);
+        } else {
+            throw new IllegalStateException("Unexpected value: " + dataCell.getClass());
+        }
+    }
+
     public static DataCell getDefaultValueCell(Column currentColumn) {
         switch (currentColumn.getInputType()) {
             case String:

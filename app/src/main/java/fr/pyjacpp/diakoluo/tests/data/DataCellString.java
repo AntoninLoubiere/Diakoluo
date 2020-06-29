@@ -3,6 +3,11 @@ package fr.pyjacpp.diakoluo.tests.data;
 public class DataCellString extends DataCell {
     private String value;
 
+    DataCellString(DataCellString dataCellString) {
+        super(dataCellString);
+        value = dataCellString.value;
+    }
+
     public DataCellString(String value) {
         this.value = value;
     }
