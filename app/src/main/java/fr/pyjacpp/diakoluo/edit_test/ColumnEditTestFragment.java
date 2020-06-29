@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ public class ColumnEditTestFragment extends Fragment implements
     private OnFragmentInteractionListener mListener;
 
     private boolean columnDetail;
+
+    @Nullable
     private ColumnDataEditFragment columnDataEditFragment = null;
     private ColumnEditTestRecyclerListFragment columnEditTestRecyclerListFragment;
 
@@ -74,10 +77,7 @@ public class ColumnEditTestFragment extends Fragment implements
                     // TODO: improve
                     row.getListCells().put(column, new DataCellString((String) column.getDefaultValue()));
                 }
-
-                Intent intent = new Intent(view.getContext(), ColumnDataEditActivity.class);
-                intent.putExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, listColumn.size() - 1);
-                startActivity(intent);
+                onItemClick(view, listColumn.size() - 1);
             }
         });
 
@@ -103,15 +103,29 @@ public class ColumnEditTestFragment extends Fragment implements
 
     @Override
     public void onItemClick(View view, int position) {
+        onItemClick(view, position, false);
+    }
+
+    public void onItemClick(View view, int position, boolean forceUpdate) {
         if (columnDetail) {
-            if (columnDataEditFragment == null || columnDataEditFragment.getColumnIndex() != position) {
-                columnDataEditFragment = ColumnDataEditFragment.newInstance(position);
-                getChildFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
-                        .replace(R.id.columnDataEditFragmentContainer,
-                                columnDataEditFragment)
-                        .commit();
+            if (columnDataEditFragment == null || columnDataEditFragment.getColumnIndex() != position || forceUpdate) {
+                if (position >= 0) {
+                    columnDataEditFragment = ColumnDataEditFragment.newInstance(position);
+
+                    getChildFragmentManager()
+                            .beginTransaction()
+                            .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
+                            .replace(R.id.columnDataEditFragmentContainer,
+                                    columnDataEditFragment)
+                            .commit();
+                } else if (columnDataEditFragment != null) {
+                    getChildFragmentManager()
+                            .beginTransaction()
+                            .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
+                            .remove(columnDataEditFragment)
+                            .commit();
+                    columnDataEditFragment = null;
+                }
             }
         } else {
             Intent intent = new Intent(view.getContext(), ColumnDataEditActivity.class);
@@ -141,6 +155,27 @@ public class ColumnEditTestFragment extends Fragment implements
                         columnDataEditFragment.setColumnIndex(dragTo);
                     }
                 }
+            }
+        }
+    }
+
+    @Override
+    public void onDeleteItem(View view, int position) {
+        if (columnDetail && columnDataEditFragment != null) {
+            int columnIndex = columnDataEditFragment.getColumnIndex();
+            if (position == columnIndex) {
+                columnDataEditFragment.setColumnIndex(-1);
+
+                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
+                if (position < currentEditTest.getNumberColumn()) {
+                    onItemClick(view, position, true);
+                } else if (currentEditTest.getNumberColumn() > 0) {
+                    onItemClick(view, currentEditTest.getNumberColumn() - 1, true);
+                } else {
+                    onItemClick(view, -1, true);
+                }
+            } else if (position > columnIndex) {
+                columnDataEditFragment.setColumnIndex(columnIndex - 1);
             }
         }
     }

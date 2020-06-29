@@ -54,12 +54,16 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
 
                     Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
                     Column columnRemoved = currentEditTest.getListColumn().remove(position);
-                    columnRecyclerViewAdapter.notifyItemRemoved(position);
 
                     // remove all column in memory
                     for (DataRow row : currentEditTest.getListRow()) {
                         row.getListCells().remove(columnRemoved);
                     }
+
+                    parentListener.onDeleteItem(view, position);
+                    columnRecyclerViewAdapter.notifyItemRemoved(position);
+                    // update buttons callbacks
+                    columnRecyclerViewAdapter.notifyItemRangeChanged(position, currentEditTest.getNumberColumn());
 
                     if (position == 0) {
                         RecyclerViewChange setAnswerListChanged = new RecyclerViewChange(
@@ -192,5 +196,6 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
     public interface OnParentFragmentInteractionListener {
         void onItemClick(View view, int position);
         void onSwap(int dragFrom, int dragTo);
+        void onDeleteItem(View view, int position);
     }
 }

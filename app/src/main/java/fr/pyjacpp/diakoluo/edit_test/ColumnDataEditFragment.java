@@ -38,6 +38,7 @@ public class ColumnDataEditFragment extends Fragment {
     public ColumnDataEditFragment() {
     }
 
+    @NonNull
     public static ColumnDataEditFragment newInstance(int columnIndex) {
         ColumnDataEditFragment fragment = new ColumnDataEditFragment();
         Bundle args = new Bundle();
@@ -60,64 +61,65 @@ public class ColumnDataEditFragment extends Fragment {
 
         inflatedView = inflater.inflate(R.layout.fragment_edit_column_data, container, false);
 
-        titleEditText = inflatedView.findViewById(R.id.titleEditText);
-        descriptionEditText = inflatedView.findViewById(R.id.descriptionEditText);
-        Spinner columnTypeSpinner = inflatedView.findViewById(R.id.columnTypeSpinner);
+        if (columnIndex >= 0) {
 
-        final Test currentEditTest = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext());
-        final Column column = currentEditTest
-                .getListColumn().get(columnIndex);
+            titleEditText = inflatedView.findViewById(R.id.titleEditText);
+            descriptionEditText = inflatedView.findViewById(R.id.descriptionEditText);
+            Spinner columnTypeSpinner = inflatedView.findViewById(R.id.columnTypeSpinner);
 
-        titleEditText.setText(column.getName());
-        descriptionEditText.setText(column.getDescription());
+            final Test currentEditTest = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext());
+            final Column column = currentEditTest
+                    .getListColumn().get(columnIndex);
 
-        View.OnFocusChangeListener editTextFocusListener = new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (!b) {
-                    saveChanges();
+            titleEditText.setText(column.getName());
+            descriptionEditText.setText(column.getDescription());
+
+            View.OnFocusChangeListener editTextFocusListener = new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    if (!b) {
+                        saveChanges();
+                    }
                 }
-            }
-        };
+            };
 
-        titleEditText.setOnFocusChangeListener(editTextFocusListener);
-        descriptionEditText.setOnFocusChangeListener(editTextFocusListener);
+            titleEditText.setOnFocusChangeListener(editTextFocusListener);
+            descriptionEditText.setOnFocusChangeListener(editTextFocusListener);
 
 
-        ArrayAdapter<ColumnInputType> adapter = new ArrayAdapter<>(inflatedView.getContext(),
-                R.layout.support_simple_spinner_dropdown_item, ColumnInputType.values());
-        columnTypeSpinner.setAdapter(adapter);
+            ArrayAdapter<ColumnInputType> adapter = new ArrayAdapter<>(inflatedView.getContext(),
+                    R.layout.support_simple_spinner_dropdown_item, ColumnInputType.values());
+            columnTypeSpinner.setAdapter(adapter);
 
-        columnTypeSpinner.setSelection(column.getInputType().ordinal());
+            columnTypeSpinner.setSelection(column.getInputType().ordinal());
 
-        columnTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                // TODO warning
-                ColumnInputType inputType = ColumnInputType.values()[position];
-                if (column.getInputType() != inputType) {
-                    column.setInputType(inputType);
-                    // update all cells
+            columnTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                    // TODO warning
+                    ColumnInputType inputType = ColumnInputType.values()[position];
+                    if (column.getInputType() != inputType) {
+                        column.setInputType(inputType);
+                        // update all cells
 
-                    for (DataRow row : currentEditTest.getListRow()) {
-                        switch (inputType) {
-                            case String:
-                                row.getListCells().put(column, new DataCellString(""));
-                                break;
+                        for (DataRow row : currentEditTest.getListRow()) {
+                            switch (inputType) {
+                                case String:
+                                    row.getListCells().put(column, new DataCellString(""));
+                                    break;
 
-                            default:
-                                throw new IllegalStateException("Unexpected value: " + column.getInputType());
+                                default:
+                                    throw new IllegalStateException("Unexpected value: " + column.getInputType());
+                            }
                         }
                     }
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-
-
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                }
+            });
+        }
         return inflatedView;
     }
 
@@ -151,13 +153,15 @@ public class ColumnDataEditFragment extends Fragment {
     }
 
     private void saveChanges() {
-        Column column = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext())
-                .getListColumn().get(columnIndex);
+        if (columnIndex >= 0) {
+            Column column = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext())
+                    .getListColumn().get(columnIndex);
 
-        column.setName(titleEditText.getText().toString());
-        column.setDescription(descriptionEditText.getText().toString());
-        if (parentListener != null)
-            parentListener.updateItem(columnIndex);
+            column.setName(titleEditText.getText().toString());
+            column.setDescription(descriptionEditText.getText().toString());
+            if (parentListener != null)
+                parentListener.updateItem(columnIndex);
+        }
     }
 
     int getColumnIndex() {
