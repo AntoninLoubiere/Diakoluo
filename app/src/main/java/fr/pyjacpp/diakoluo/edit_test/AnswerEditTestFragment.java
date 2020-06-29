@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.DataRow;
+import fr.pyjacpp.diakoluo.tests.Test;
 
 
 public class AnswerEditTestFragment extends Fragment implements
@@ -25,6 +27,7 @@ public class AnswerEditTestFragment extends Fragment implements
     private OnFragmentInteractionListener mListener;
 
     private boolean answerDetail;
+    @Nullable
     private AnswerDataEditFragment answerDataEditFragment;
     private AnswerEditTestRecyclerListFragment answerEditTestRecyclerListFragment;
 
@@ -82,21 +85,33 @@ public class AnswerEditTestFragment extends Fragment implements
     }
 
     @Override
-    public void itemClick(View view, int position) {
+    public void onItemClick(View view, int position) {
+        onItemClick(view, position, false);
+    }
+
+    public void onItemClick(View view, int position, boolean forceUpdate) {
         if (answerDetail) {
-            if (answerDataEditFragment == null || answerDataEditFragment.getAnswerIndex() != position) {
-                answerDataEditFragment = AnswerDataEditFragment.newInstance(position);
-                getChildFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
-                        .replace(R.id.answerDataEditFragmentContainer,
-                                answerDataEditFragment)
-                        .commit();
-            } else {
-                Intent intent = new Intent(view.getContext(), AnswerDataEditActivity.class);
-                intent.putExtra(AnswerDataEditFragment.ARG_ANSWER_INDEX, position);
-                startActivity(intent);
+            if (answerDataEditFragment == null || answerDataEditFragment.getAnswerIndex() != position | forceUpdate) {
+                if (position >= 0) {
+                    answerDataEditFragment = AnswerDataEditFragment.newInstance(position);
+                    getChildFragmentManager()
+                            .beginTransaction()
+                            .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
+                            .replace(R.id.answerDataEditFragmentContainer,
+                                    answerDataEditFragment)
+                            .commit();
+                } else if (answerDataEditFragment != null) {
+                    getChildFragmentManager()
+                            .beginTransaction()
+                            .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
+                            .remove(answerDataEditFragment);
+                    answerDataEditFragment = null;
+                }
             }
+        } else {
+            Intent intent = new Intent(view.getContext(), AnswerDataEditActivity.class);
+            intent.putExtra(AnswerDataEditFragment.ARG_ANSWER_INDEX, position);
+            startActivity(intent);
         }
     }
 
@@ -121,6 +136,27 @@ public class AnswerEditTestFragment extends Fragment implements
                         answerDataEditFragment.setAnswerIndex(dragTo);
                     }
                 }
+            }
+        }
+    }
+
+    @Override
+    public void onDelete(View view, int position) {
+        if (answerDetail && answerDataEditFragment != null) {
+            int answerIndex = answerDataEditFragment.getAnswerIndex();
+            if (position == answerIndex) {
+                answerDataEditFragment.setAnswerIndex(-1);
+
+                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
+                if (position < currentEditTest.getNumberColumn()) {
+                    onItemClick(view, position, true);
+                } else if (currentEditTest.getNumberColumn() > 0) {
+                    onItemClick(view, currentEditTest.getNumberColumn() - 1, true);
+                } else {
+                    onItemClick(view, -1, true);
+                }
+            } else if (position > answerIndex) {
+                answerDataEditFragment.setAnswerIndex(answerIndex - 1);
             }
         }
     }

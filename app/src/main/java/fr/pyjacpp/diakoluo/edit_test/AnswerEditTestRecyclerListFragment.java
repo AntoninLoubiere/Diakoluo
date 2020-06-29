@@ -38,7 +38,7 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
             public void onItemClick(View view, View itemView) {
                 int position = answerRecyclerView.getChildAdapterPosition(itemView);
                 if (position >= 0) {
-                    parentListener.itemClick(view, position);
+                    parentListener.onItemClick(view, position);
                 }
             }
 
@@ -50,11 +50,15 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
 
                     Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
                     currentEditTest.getListRow().remove(position);
+                    parentListener.onDelete(view, position);
                     answerRecyclerViewAdapter.notifyItemRemoved(position);
+                    // update buttons callbacks
+                    answerRecyclerViewAdapter.notifyItemRangeChanged(position, currentEditTest.getNumberRow());
+
 
                     if (currentEditTest.getNumberColumn() <= 0) {
                         // if the text depends of position, we need to refresh all next elements
-                        answerRecyclerViewAdapter.notifyItemRangeChanged(position, currentEditTest.getNumberRow() - 1);
+                        answerRecyclerViewAdapter.notifyItemRangeChanged(position, currentEditTest.getNumberRow());
                     }
                 }
             }
@@ -158,7 +162,8 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
     }
 
     interface OnParentFragmentInteractionListener {
-        void itemClick(View view, int position);
+        void onItemClick(View view, int position);
         void onSwap(int dragFrom, int dragTo);
+        void onDelete(View view, int position);
     }
 }

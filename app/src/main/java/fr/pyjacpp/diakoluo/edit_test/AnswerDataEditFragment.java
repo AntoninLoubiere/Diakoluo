@@ -38,6 +38,7 @@ public class AnswerDataEditFragment extends Fragment {
     public AnswerDataEditFragment() {
     }
 
+    @NonNull
     public static AnswerDataEditFragment newInstance(int answerIndex) {
         AnswerDataEditFragment fragment = new AnswerDataEditFragment();
         Bundle args = new Bundle();
@@ -51,7 +52,6 @@ public class AnswerDataEditFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             answerIndex = getArguments().getInt(ARG_ANSWER_INDEX);
-
         }
     }
 
@@ -61,45 +61,47 @@ public class AnswerDataEditFragment extends Fragment {
 
         inflatedView = inflater.inflate(R.layout.fragment_edit_answer_data, container, false);
 
-        LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
+        if (answerIndex >= 0) {
+            LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
 
-        DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
+            DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(layout.getLayoutParams());
-        params.topMargin = 24;
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(layout.getLayoutParams());
+            params.topMargin = 24;
 
-        View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (!b)
-                    saveChanges();
+            View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    if (!b)
+                        saveChanges();
+                }
+            };
+
+            ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
+            for (int i = 0; i < listColumn.size(); i++) {
+                Column column = listColumn.get(i);
+
+                DataCell dataCell = row.getListCells().get(column);
+                View columnTitle = column.showColumnName(inflatedView.getContext());
+
+                if (i > 0)
+                    columnTitle.setLayoutParams(params);
+
+                layout.addView(columnTitle);
+
+                if (dataCell == null) {
+                    dataCell = DataCell.getDefaultValueCell(column);
+                    row.getListCells().put(column, dataCell);
+                }
+
+                TextInputLayout columnValue = dataCell.showEditValue(inflatedView.getContext(), column);
+                columnAnswerEditHashMap.put(column, columnValue);
+                EditText editText = columnValue.getEditText();
+                if (editText != null) {
+                    editText.setOnFocusChangeListener(onFocusChangeListener);
+                }
+                layout.addView(columnValue);
             }
-        };
-
-        ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
-        for (int i = 0; i < listColumn.size(); i++) {
-            Column column = listColumn.get(i);
-
-            DataCell dataCell = row.getListCells().get(column);
-            View columnTitle = column.showColumnName(inflatedView.getContext());
-
-            if (i > 0)
-                columnTitle.setLayoutParams(params);
-
-            layout.addView(columnTitle);
-
-            if (dataCell == null) {
-                dataCell = DataCell.getDefaultValueCell(column);
-                row.getListCells().put(column, dataCell);
-            }
-
-            TextInputLayout columnValue = dataCell.showEditValue(inflatedView.getContext(), column);
-            columnAnswerEditHashMap.put(column, columnValue);
-            EditText editText = columnValue.getEditText();
-            if (editText != null) {
-                editText.setOnFocusChangeListener(onFocusChangeListener);
-            }
-            layout.addView(columnValue);
         }
 
         return inflatedView;
@@ -135,26 +137,28 @@ public class AnswerDataEditFragment extends Fragment {
     }
 
     private void saveChanges() {
-        DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
+        if (answerIndex >= 0) {
+            DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
 
-        ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
-        for (int i = 0; i < listColumn.size(); i++) {
-            Column column = listColumn.get(i);
+            ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
+            for (int i = 0; i < listColumn.size(); i++) {
+                Column column = listColumn.get(i);
 
-            View answerEdit = columnAnswerEditHashMap.get(column);
+                View answerEdit = columnAnswerEditHashMap.get(column);
 
-            DataCell dataCell = row.getListCells().get(column);
+                DataCell dataCell = row.getListCells().get(column);
 
-            if (answerEdit != null) {
-                if (dataCell == null) {
-                    DataCell.setDefaultCellFromView(answerEdit, row, column);
-                } else {
-                    dataCell.setValueFromView(answerEdit);
+                if (answerEdit != null) {
+                    if (dataCell == null) {
+                        DataCell.setDefaultCellFromView(answerEdit, row, column);
+                    } else {
+                        dataCell.setValueFromView(answerEdit);
+                    }
                 }
             }
+            if (parentListener != null)
+                parentListener.updateItem(answerIndex);
         }
-        if (parentListener != null)
-            parentListener.updateItem(answerIndex);
     }
 
     int getAnswerIndex() {
