@@ -47,9 +47,7 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
 
         if (currentTest.getNumberColumn() >= 1) {
             holder.textView.setText(
-                    (String) currentTest.getListRow().get(position).getListCells().get(
-                    currentTest.getListColumn().get(0)
-                    ).getValue()
+                    currentTest.getRowFirstCellString(position)
             );
         } else {
             holder.textView.setText(String.valueOf(position + 1));

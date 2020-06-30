@@ -1,14 +1,12 @@
 package fr.pyjacpp.diakoluo.view_test;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -16,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
+import fr.pyjacpp.diakoluo.OnSwipeTouchListener;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
@@ -49,11 +48,13 @@ public class AnswerDataViewFragment extends Fragment {
         }
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View inflatedView = inflater.inflate(R.layout.fragment_view_answer_data, container, false);
+        final View inflatedView = inflater.inflate(R.layout.fragment_view_answer_data, container, false);
         LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
 
         DataRow row = DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getListRow().get(answerIndex);
@@ -67,26 +68,27 @@ public class AnswerDataViewFragment extends Fragment {
 
             DataCell dataCell = row.getListCells().get(column);
             if (dataCell != null) {
-                TextView columnTitle = new TextView(inflatedView.getContext());
-                TextView columnValue = new TextView(inflatedView.getContext());
+                View columnTitle = column.showColumnName(inflatedView.getContext());
 
-                columnTitle.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-                columnValue.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-                
                 if (i > 0)
                     columnTitle.setLayoutParams(params);
 
-                columnTitle.setTypeface(null, Typeface.BOLD);
-
-                columnTitle.setText(getString(R.string.column_name_format, column.getName()));
-                if (column.getInputType() == ColumnInputType.String) {
-                    columnValue.setText((String) dataCell.getValue());
-                }
-
                 layout.addView(columnTitle);
-                layout.addView(columnValue);
+                layout.addView(dataCell.showValue(inflatedView.getContext()));
             }
         }
+
+        inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
+            @Override
+            public void onSwipeRight() {
+                mListener.onSwipeRight();
+            }
+
+            @Override
+            public void onSwipeLeft() {
+                mListener.onSwipeLeft();
+            }
+        });
 
         return inflatedView;
     }
@@ -109,6 +111,8 @@ public class AnswerDataViewFragment extends Fragment {
     }
 
     interface OnFragmentInteractionListener {
+        void onSwipeRight();
+        void onSwipeLeft();
     }
 }
 

@@ -3,18 +3,14 @@
     <color name="primary">#009688</color>
     <color name="primaryDark">#00675b</color>
     <color name="primaryLight">#52c7b8</color>
-    <color name="textPrimary">#000000</color>
-    <color name="textSecondary">#000000</color>
+    <color name="primaryText">#ffffff</color>
+    <color name="secondaryText">#ffffff</color>
     <color name="secondary">#f4511e</color>
     <color name="secondaryDark">#b91400</color>
     <color name="secondaryLight">#ff844b</color>
 
 
-    <!--<color name="colorAccent">#00675b</color>-->
-    <color name="primaryText">#212121</color>
-    <color name="secondaryText">#757575</color>
-    <color name="dividerColor">#BDBDBD</color>
-    <color name="appNameTitleColor">#FFF</color>
-    <color name="trueAnswer">#3ae93a</color>
-    <color name="wrongAnswer">#e93a3a</color>
+    <color name="dividerColor">#80808080</color>
+    <color name="trueAnswer">#8bc34a</color>
+    <color name="wrongAnswer">#f44336</color>
 </resources>

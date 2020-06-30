@@ -1,7 +1,11 @@
 package fr.pyjacpp.diakoluo.tests;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Date;
+
+import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.tests.column.Column;
@@ -38,8 +42,14 @@ public class Test {
         createdDate = new Date(test.createdDate.getTime());
         lastModification = new Date(test.lastModification.getTime());
         numberTestDid = test.numberTestDid;
-        listColumn = new ArrayList<>(test.listColumn);
-        listRow = new ArrayList<>(test.listRow);
+        listColumn = new ArrayList<>();
+        for (Column column : test.listColumn) {
+            listColumn.add(new Column(column));
+        }
+        listRow = new ArrayList<>();
+        for (DataRow dataRow : test.listRow) {
+            listRow.add(new DataRow(dataRow, listColumn, test.listColumn));
+        }
         filename = test.filename;
     }
 
@@ -179,6 +189,24 @@ public class Test {
 
     public String getFilename() {
         return filename;
+    }
+
+    @Nullable
+    public DataCell getRowFirstCell(int rowPosition) {
+        if (listColumn.size() > 0) {
+            return listRow.get(rowPosition).getListCells().get(listColumn.get(0));
+        } else {
+            return null;
+        }
+    }
+
+    public String getRowFirstCellString(int rowPosition) {
+        DataCell firstCell = getRowFirstCell(rowPosition);
+        if (firstCell == null) {
+            return String.valueOf(rowPosition);
+        } else {
+            return firstCell.getStringValue();
+        }
     }
 
     public String getDefaultFilename(boolean useExtension) {

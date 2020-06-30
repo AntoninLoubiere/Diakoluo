@@ -13,6 +13,8 @@ import fr.pyjacpp.diakoluo.tests.Test;
 
 public class TestTestContext {
 
+    static int PROGRESS_BAR_PRECISION = 100;
+
     private int score = 0;
     private int maxScore;
 
@@ -62,7 +64,15 @@ public class TestTestContext {
         return score;
     }
 
-    void addScore(int score) {
+    public int getProgressScore() {
+        return score * PROGRESS_BAR_PRECISION;
+    }
+
+    public int getMaxProgressScore() {
+        return maxScore * PROGRESS_BAR_PRECISION;
+    }
+
+    public void addScore(int score) {
         this.score += score;
     }
 

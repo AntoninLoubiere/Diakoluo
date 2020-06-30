@@ -9,6 +9,11 @@ import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 public class DataCellString extends DataCell {
     private String value;
 
+    DataCellString(DataCellString dataCellString) {
+        super(dataCellString);
+        value = dataCellString.value;
+    }
+
     public DataCellString(String value) {
         this.value = value;
     }
@@ -24,7 +29,17 @@ public class DataCellString extends DataCell {
     }
 
     @Override
+    public String getStringValue() {
+        return value;
+    }
+
+    @Override
+    public boolean verifyAnswer(Object answer) {
+        return ((String) answer).equalsIgnoreCase(value);
+    }
+
+    @Override
     public void writeXml(OutputStream fileOutputStream) throws IOException {
-        fileOutputStream.write(XmlSaver.getCoupleBalise(FileManager.TAG_CELL, value).getBytes());
+        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_CELL, value).getBytes());
     }
 }

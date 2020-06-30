@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view_test.MainInformationsViewTestFragment">
+    tools:context=".view_test.MainInformationViewTestFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -11,8 +11,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/titleTextInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/titleEditText"
@@ -20,40 +22,37 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/title"
                 android:importantForAutofill="no"
-                android:inputType="text|textAutoComplete|textCapWords"
-                />
+                android:inputType="text|textAutoComplete|textCapWords" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/dividerColor"
-            android:layout_below="@id/titleTextInputLayout"/>
-
         <TextView
             android:id="@+id/createdDateTextView"
-            style="@style/Text.Secondary"
+            style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/titleTextInputLayout"
+            android:layout_marginStart="@dimen/default_margin"
             android:text="@string/created_date_test_format"
             android:textStyle="italic" />
 
         <TextView
             android:id="@+id/lastModificationTextView"
-            style="@style/Text.Secondary"
+            style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="italic"
+            android:layout_below="@id/createdDateTextView"
+            android:layout_marginStart="@dimen/default_margin"
             android:text="@string/last_modification_test_format"
-            android:layout_below="@id/createdDateTextView"/>
+            android:textStyle="italic" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/descriptionTextInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/lastModificationTextView">
+            android:layout_below="@id/lastModificationTextView"
+            android:layout_margin="@dimen/default_margin">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/descriptionEditText"
@@ -65,20 +64,14 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <View
-            android:id="@+id/separator2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/dividerColor"
-            android:layout_below="@id/descriptionTextInputLayout"/>
-
         <TextView
             android:id="@+id/numberTestDid"
-            style="@style/Text"
+            style="@style/TextAppearance.MaterialComponents.Body2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/number_test_did_format"
-            android:layout_below="@id/descriptionTextInputLayout"/>
+            android:layout_below="@id/descriptionTextInputLayout"
+            android:layout_marginStart="@dimen/default_margin"
+            android:text="@string/number_test_did_format" />
 
     </RelativeLayout>
 

@@ -74,7 +74,7 @@ public class FileManager {
     }
 
     public static void getAvailableFilename(Context context, Test test) {
-        String extention = extension;
+        String fileExtension = ".dkl";
         String name = test.getDefaultFilename(false);
         int index = -1;
 
@@ -84,11 +84,11 @@ public class FileManager {
             index++;
 
             if (index > 0) {
-                extention = "_" + index + ".dkl";
+                fileExtension = "_" + index + ".dkl";
             }
 
-            currentFileName = name + extention;
-        } while (filenameExist(context, currentFileName) && !test.getFilename().equals(currentFileName));
+            currentFileName = name + fileExtension;
+        } while (filenameExist(context, currentFileName) && (test.getFilename() == null || !test.getFilename().equals(currentFileName)));
         test.setFilename(currentFileName);
     }
 
@@ -113,13 +113,13 @@ public class FileManager {
             currentTestPosition = position;
 
             Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-            // TODO: intent.setType(MIME_TYPE);
+            intent.setType(MIME_TYPE);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.putExtra(Intent.EXTRA_TITLE, testToSave.getDefaultFilename(true));
 
             activity.startActivityForResult(intent, CREATE_DOCUMENT_REQUEST_CODE);
         } else {
-            Log.w("FileManager", "Can't export test, already wainting result");
+            Log.w("FileManager", "Can't export test, already waiting result");
         }
     }
 

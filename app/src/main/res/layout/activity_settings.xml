@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".list_tests.SettingsActivity"
+    android:layout_margin="@dimen/default_margin">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/privacyTitle"
+        style="@style/SettingsSubTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy"
+        />
+
+    <CheckBox
+        android:id="@+id/analyticsCheckBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/privacyTitle"
+        android:layout_marginTop="@dimen/default_margin"
+        android:text="@string/check_box_analytics" />
+
+    <CheckBox
+        android:id="@+id/crashCheckBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/analyticsCheckBox"
+        android:text="@string/check_box_crash" />
+
+</RelativeLayout>

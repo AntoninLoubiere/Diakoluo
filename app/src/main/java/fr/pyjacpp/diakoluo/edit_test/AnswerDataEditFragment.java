@@ -1,42 +1,46 @@
 package fr.pyjacpp.diakoluo.edit_test;
 
-import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
+import fr.pyjacpp.diakoluo.OnSwipeTouchListener;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
-import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 public class AnswerDataEditFragment extends Fragment {
     static final String ARG_ANSWER_INDEX = "answer_index";
 
-    HashMap<Column, View> columnAnswerEditHashMap = new HashMap<>();
-
-    private int answerIndex;
+    private HashMap<Column, View> columnAnswerEditHashMap = new HashMap<>();
 
     private OnFragmentInteractionListener mListener;
+    @Nullable
+    private OnParentFragmentInteractionListener parentListener;
+
     private View inflatedView;
+    private int answerIndex;
 
     public AnswerDataEditFragment() {
     }
 
+    @NonNull
     public static AnswerDataEditFragment newInstance(int answerIndex) {
         AnswerDataEditFragment fragment = new AnswerDataEditFragment();
         Bundle args = new Bundle();
@@ -50,7 +54,6 @@ public class AnswerDataEditFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             answerIndex = getArguments().getInt(ARG_ANSWER_INDEX);
-
         }
     }
 
@@ -59,52 +62,61 @@ public class AnswerDataEditFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         inflatedView = inflater.inflate(R.layout.fragment_edit_answer_data, container, false);
-        LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
 
-        DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
+        if (answerIndex >= 0) {
+            LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(layout.getLayoutParams());
-        params.topMargin = 24;
+            DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
 
-        ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
-        for (int i = 0; i < listColumn.size(); i++) {
-            Column column = listColumn.get(i);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(layout.getLayoutParams());
+            params.topMargin = 24;
 
-            DataCell dataCell = row.getListCells().get(column);
-            TextView columnTitle = new TextView(inflatedView.getContext());
+            View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    if (!b)
+                        saveChanges();
+                }
+            };
 
-            columnTitle.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
+            ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
+            for (int i = 0; i < listColumn.size(); i++) {
+                Column column = listColumn.get(i);
 
-            if (i > 0)
-                columnTitle.setLayoutParams(params);
+                DataCell dataCell = row.getListCells().get(column);
+                View columnTitle = column.showColumnName(inflatedView.getContext());
 
-            columnTitle.setTypeface(null, Typeface.BOLD);
+                if (i > 0)
+                    columnTitle.setLayoutParams(params);
 
-            columnTitle.setText(getString(R.string.column_name_format, column.getName()));
-            View columnValue;
-            switch (column.getInputType()) {
-                case String:
-                    DataCellString dataCellString = (DataCellString) dataCell;
-                    if (dataCellString == null) {
-                        dataCellString = new DataCellString((String) column.getDefaultValue());
-                        row.getListCells().put(column, dataCellString);
-                    }
-                    EditText _columnValue = new EditText(inflatedView.getContext());
-                    _columnValue.setText(dataCellString.getValue());
-                    _columnValue.setHint(column.getName());
-                    _columnValue.setTextSize(getResources().getDimension(R.dimen.textAnswerSize));
-                    columnValue = _columnValue;
-                    break;
+                layout.addView(columnTitle);
 
-                default:
-                    throw new IllegalStateException("Unexpected value: " + column.getInputType());
+                if (dataCell == null) {
+                    dataCell = DataCell.getDefaultValueCell(column);
+                    row.getListCells().put(column, dataCell);
+                }
+
+                TextInputLayout columnValue = dataCell.showEditValue(inflatedView.getContext(), column);
+                columnAnswerEditHashMap.put(column, columnValue);
+                EditText editText = columnValue.getEditText();
+                if (editText != null) {
+                    editText.setOnFocusChangeListener(onFocusChangeListener);
+                }
+                layout.addView(columnValue);
+            }
+        }
+
+        inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
+            @Override
+            public void onSwipeRight() {
+                mListener.onSwipeRight();
             }
 
-            columnAnswerEditHashMap.put(column, columnValue);
-
-            layout.addView(columnTitle);
-            layout.addView(columnValue);
-        }
+            @Override
+            public void onSwipeLeft() {
+                mListener.onSwipeLeft();
+            }
+        });
 
         return inflatedView;
     }
@@ -118,6 +130,12 @@ public class AnswerDataEditFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+        if (getParentFragment() instanceof OnParentFragmentInteractionListener) {
+            parentListener = (OnParentFragmentInteractionListener) getParentFragment();
+        } else {
+            parentListener = null;
+        }
     }
 
     @Override
@@ -128,45 +146,58 @@ public class AnswerDataEditFragment extends Fragment {
 
     @Override
     public void onPause() {
-        DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
-
-        ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
-        for (int i = 0; i < listColumn.size(); i++) {
-            Column column = listColumn.get(i);
-
-            View answerEdit = columnAnswerEditHashMap.get(column);
-
-            DataCell dataCell = row.getListCells().get(column);
-            switch (column.getInputType()) {
-                case String:
-                    EditText answerEditText = (EditText) answerEdit;
-                    DataCellString dataCellString = (DataCellString) dataCell;
-
-                    if (answerEditText != null) {
-                        if (dataCellString == null) {
-                            row.getListCells().put(column, new DataCellString(answerEditText.getText().toString()));
-                        } else {
-                            dataCellString.setValue(answerEditText.getText().toString());
-                        }
-                    }
-            }
-
-        }
-
-        RecyclerViewChange recyclerViewChange = DiakoluoApplication.getAnswerListChanged(
-                inflatedView.getContext());
-        if (recyclerViewChange == null) {
-            recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.None);
-        }
-        recyclerViewChange.setChanges(recyclerViewChange.getChanges() | RecyclerViewChange.ItemChanged);
-        recyclerViewChange.setPosition(answerIndex);
-
-        DiakoluoApplication.setAnswerListChanged(inflatedView.getContext(), recyclerViewChange);
-
+        saveChanges();
         super.onPause();
     }
 
+    private void saveChanges() {
+        if (answerIndex >= 0) {
+            DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
+
+            ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
+            for (int i = 0; i < listColumn.size(); i++) {
+                Column column = listColumn.get(i);
+
+                View answerEdit = columnAnswerEditHashMap.get(column);
+
+                DataCell dataCell = row.getListCells().get(column);
+
+                if (answerEdit != null) {
+                    if (dataCell == null) {
+                        DataCell.setDefaultCellFromView(answerEdit, row, column);
+                    } else {
+                        dataCell.setValueFromView(answerEdit);
+                    }
+                }
+            }
+            if (parentListener != null)
+                parentListener.updateItem(answerIndex);
+            else {
+                mListener.updateAnswerRecyclerItem(answerIndex);
+            }
+
+        }
+    }
+
+    int getAnswerIndex() {
+        return answerIndex;
+    }
+
+    void setAnswerIndex(int i) {
+        answerIndex = i;
+        if (getArguments() != null) {
+            getArguments().putInt(ARG_ANSWER_INDEX, i);
+        }
+    }
+
     interface OnFragmentInteractionListener {
+        void updateAnswerRecyclerItem(int position);
+        void onSwipeRight();
+        void onSwipeLeft();
+    }
+
+    interface OnParentFragmentInteractionListener {
+        void updateItem(int position);
     }
 }
 

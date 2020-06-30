@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,7 +16,7 @@ import fr.pyjacpp.diakoluo.RecyclerItemClickListener;
 
 public class ColumnViewTestRecyclerListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
-    private OnFragmentInteractionParentListener parentListener;
+    private OnParentFragmentInteractionListener parentListener;
 
     public ColumnViewTestRecyclerListFragment() {
         // Required empty public constructor
@@ -35,8 +34,8 @@ public class ColumnViewTestRecyclerListFragment extends Fragment {
         columnRecyclerView.setLayoutManager(columnRecyclerViewLayoutManager);
         columnRecyclerView.setAdapter(columnRecyclerViewAdapter);
 
-        columnRecyclerView.addItemDecoration(new DividerItemDecoration(columnRecyclerView.getContext(),
-                columnRecyclerViewLayoutManager.getOrientation()));
+//        columnRecyclerView.addItemDecoration(new DividerItemDecoration(columnRecyclerView.getContext(),
+//                columnRecyclerViewLayoutManager.getOrientation()));
         
         columnRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(columnRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
@@ -62,8 +61,8 @@ public class ColumnViewTestRecyclerListFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
 
-        if (getParentFragment() instanceof OnFragmentInteractionParentListener) {
-            parentListener = (OnFragmentInteractionParentListener) getParentFragment();
+        if (getParentFragment() instanceof OnParentFragmentInteractionListener) {
+            parentListener = (OnParentFragmentInteractionListener) getParentFragment();
         } else {
             throw new RuntimeException("Parent fragment must implement OnFragmentInteractionListener");
         }
@@ -78,7 +77,7 @@ public class ColumnViewTestRecyclerListFragment extends Fragment {
     public interface OnFragmentInteractionListener {
     }
 
-    public interface OnFragmentInteractionParentListener {
+    public interface OnParentFragmentInteractionListener {
         void onItemClick(View view, int position);
     }
 }
