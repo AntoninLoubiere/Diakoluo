@@ -42,6 +42,7 @@ public class EditTestActivity extends AppCompatActivity
     public static final String ACTION_BROADCAST_UPDATE_COLUMN_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.UPDATE_COLUMN_RECYCLER";
     public static final String ACTION_BROADCAST_UPDATE_ANSWER_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.UPDATE_ANSWER_RECYCLER";
     public static final String ACTION_BROADCAST_NEW_COLUMN_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.NEW_COLUMN_RECYCLER";
+    public static final String ACTION_BROADCAST_NEW_ANSWER_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.NEW_ANSWER_RECYCLER";
     public static final String EXTRA_INT_POSITION = "position";
 
     private ArrayDeque<EditTestValidator> errorValidatorDeque;
@@ -166,6 +167,13 @@ public class EditTestActivity extends AppCompatActivity
                 updateNewColumn();
             }
         }, new IntentFilter(ACTION_BROADCAST_NEW_COLUMN_RECYCLER));
+
+        localBroadcastManager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                updateNewAnswer();
+            }
+        }, new IntentFilter(ACTION_BROADCAST_NEW_ANSWER_RECYCLER));
     }
 
     @Override
@@ -341,6 +349,14 @@ public class EditTestActivity extends AppCompatActivity
 
         if (columnEditTestFragment != null) {
             ((ColumnEditTestFragment) columnEditTestFragment).updateNewItem(this);
+        }
+    }
+
+    private void updateNewAnswer() {
+        Fragment answerEditTestFragment  = adapter.getFragmentAtPosition(2);
+
+        if (answerEditTestFragment != null) {
+            ((AnswerEditTestFragment) answerEditTestFragment).updateNewItem(this);
         }
     }
 }

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
+import fr.pyjacpp.diakoluo.OnSwipeTouchListener;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
@@ -104,6 +105,18 @@ public class AnswerDataEditFragment extends Fragment {
             }
         }
 
+        inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
+            @Override
+            public void onSwipeRight() {
+                mListener.onSwipeRight();
+            }
+
+            @Override
+            public void onSwipeLeft() {
+                mListener.onSwipeLeft();
+            }
+        });
+
         return inflatedView;
     }
 
@@ -178,6 +191,8 @@ public class AnswerDataEditFragment extends Fragment {
 
     interface OnFragmentInteractionListener {
         void updateAnswerRecyclerItem(int position);
+        void onSwipeRight();
+        void onSwipeLeft();
     }
 
     interface OnParentFragmentInteractionListener {
