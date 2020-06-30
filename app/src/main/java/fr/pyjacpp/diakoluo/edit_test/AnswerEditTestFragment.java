@@ -64,6 +64,10 @@ public class AnswerEditTestFragment extends Fragment implements
             }
         });
 
+        if (answerDetail && DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getNumberRow() > 0) {
+            onItemClick(inflatedView, 0); // show first element
+        }
+
         return inflatedView;
     }
 

@@ -81,6 +81,10 @@ public class ColumnEditTestFragment extends Fragment implements
             }
         });
 
+        if (columnDetail && DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getNumberColumn() > 0) {
+            onItemClick(inflatedView, 0); // show first element
+        }
+
         return inflatedView;
     }
 

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 
 
@@ -29,6 +30,10 @@ public class ColumnViewTestFragment extends Fragment implements
         View inflatedView = inflater.inflate(R.layout.fragment_view_column_test, container, false);
 
         columnDetail = inflatedView.findViewById(R.id.columnDataViewFragmentContainer) != null;
+
+        if (columnDetail && DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getNumberColumn() > 0) {
+            onItemClick(inflatedView, 0); // show first element
+        }
 
         return inflatedView;
     }
