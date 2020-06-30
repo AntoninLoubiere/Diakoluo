@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
+import fr.pyjacpp.diakoluo.OnSwipeTouchListener;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
@@ -46,11 +47,13 @@ public class AnswerDataViewFragment extends Fragment {
         }
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View inflatedView = inflater.inflate(R.layout.fragment_view_answer_data, container, false);
+        final View inflatedView = inflater.inflate(R.layout.fragment_view_answer_data, container, false);
         LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
 
         DataRow row = DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getListRow().get(answerIndex);
@@ -74,6 +77,18 @@ public class AnswerDataViewFragment extends Fragment {
             }
         }
 
+        inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
+            @Override
+            public void onSwipeRight() {
+                mListener.onSwipeRight();
+            }
+
+            @Override
+            public void onSwipeLeft() {
+                mListener.onSwipeLeft();
+            }
+        });
+
         return inflatedView;
     }
 
@@ -95,6 +110,8 @@ public class AnswerDataViewFragment extends Fragment {
     }
 
     interface OnFragmentInteractionListener {
+        void onSwipeRight();
+        void onSwipeLeft();
     }
 }
 

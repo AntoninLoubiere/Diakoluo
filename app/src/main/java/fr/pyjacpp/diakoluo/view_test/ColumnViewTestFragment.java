@@ -31,7 +31,7 @@ public class ColumnViewTestFragment extends Fragment implements
 
         columnDetail = inflatedView.findViewById(R.id.columnDataViewFragmentContainer) != null;
 
-        if (columnDetail && DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getNumberColumn() > 0) {
+        if (columnDetail && DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getNumberColumn() > 0) {
             onItemClick(inflatedView, 0); // show first element
         }
 

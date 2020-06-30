@@ -55,29 +55,8 @@ public class ColumnEditTestFragment extends Fragment implements
         addColumnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
-                ArrayList<Column> listColumn = currentEditTest.getListColumn();
-                Column column = new Column("", "", ColumnInputType.DEFAULT_INPUT_TYPE);
-                listColumn.add(column);
-
-                RecyclerViewChange columnListChanged = new RecyclerViewChange(
-                        RecyclerViewChange.ItemInserted
-                );
-                columnListChanged.setPosition(listColumn.size() - 1);
-                columnEditTestRecyclerListFragment.applyRecyclerChanges(columnListChanged);
-
-                if (listColumn.size() <= 1) {
-                    RecyclerViewChange recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.ItemRangeChanged);
-                    recyclerViewChange.setPositionStart(0);
-                    recyclerViewChange.setPositionEnd(currentEditTest.getNumberRow() - 1);
-                    mListener.updateAnswerRecycler(recyclerViewChange);
-                }
-
-                for (DataRow row : currentEditTest.getListRow()) {
-                    // TODO: improve
-                    row.getListCells().put(column, new DataCellString((String) column.getDefaultValue()));
-                }
-                onItemClick(view, listColumn.size() - 1);
+                updateNewItem(view.getContext());
+                onItemClick(view, DiakoluoApplication.getCurrentEditTest(view.getContext()).getNumberColumn());
             }
         });
 
@@ -86,6 +65,30 @@ public class ColumnEditTestFragment extends Fragment implements
         }
 
         return inflatedView;
+    }
+
+    void updateNewItem(Context context) {
+        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(context);
+        ArrayList<Column> listColumn = currentEditTest.getListColumn();
+        Column column = new Column("", "", ColumnInputType.DEFAULT_INPUT_TYPE);
+        listColumn.add(column);
+
+        for (DataRow row : currentEditTest.getListRow()) {
+            // TODO: improve
+            row.getListCells().put(column, new DataCellString((String) column.getDefaultValue()));
+        }
+        RecyclerViewChange columnListChanged = new RecyclerViewChange(
+                RecyclerViewChange.ItemInserted
+        );
+        columnListChanged.setPosition(currentEditTest.getNumberColumn() - 1);
+        columnEditTestRecyclerListFragment.applyRecyclerChanges(columnListChanged);
+
+        if (currentEditTest.getNumberColumn() <= 1) {
+            RecyclerViewChange recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.ItemRangeChanged);
+            recyclerViewChange.setPositionStart(0);
+            recyclerViewChange.setPositionEnd(currentEditTest.getNumberRow() - 1);
+            mListener.updateAnswerRecycler(recyclerViewChange);
+        }
     }
 
     @Override
