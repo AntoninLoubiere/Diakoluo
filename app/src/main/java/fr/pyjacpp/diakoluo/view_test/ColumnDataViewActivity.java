@@ -26,6 +26,7 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_column_data);
 
+        currentTest = DiakoluoApplication.getCurrentTest(this);
         columnIndex = getIntent().getIntExtra(ColumnDataViewFragment.ARG_COLUMN_INDEX, 0);
 
         previousButton = findViewById(R.id.previousButton);
@@ -75,7 +76,6 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
 
     private void updateNavigation() {
         if (actionBar != null) {
-            currentTest = DiakoluoApplication.getCurrentTest(this);
             actionBar.setTitle(currentTest.getListColumn().get(columnIndex).getName());
         }
 

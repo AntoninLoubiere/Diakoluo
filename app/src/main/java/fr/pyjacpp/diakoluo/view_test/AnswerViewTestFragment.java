@@ -31,7 +31,7 @@ public class AnswerViewTestFragment extends Fragment implements
 
         detailAnswer = inflatedView.findViewById(R.id.answerDataViewFragmentContainer) != null;
 
-        if (detailAnswer && DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getNumberRow() > 0) {
+        if (detailAnswer && DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getNumberRow() > 0) {
             onItemClick(inflatedView, 0); // show first element
         }
 

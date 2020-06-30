@@ -33,7 +33,6 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
         setContentView(R.layout.activity_view_answer_data);
 
         answerIndex = getIntent().getIntExtra(AnswerDataViewFragment.ARG_ANSWER_INDEX, 0);
-
         currentTest = DiakoluoApplication.getCurrentTest(this);
 
         previousButton = findViewById(R.id.previousButton);
