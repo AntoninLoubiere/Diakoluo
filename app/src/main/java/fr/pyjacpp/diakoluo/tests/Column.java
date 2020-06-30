@@ -15,7 +15,7 @@ public class Column {
     private String description;
 
     private ColumnInputType inputType;
-    private Object defaultValue;
+    private Object defaultValue;  // should be immutable
 
     public Column() {
         this.name = null;
@@ -29,6 +29,13 @@ public class Column {
         this.description = description;
         this.inputType = inputType;
         this.defaultValue = "";
+    }
+
+    public Column(Column column) {
+        name = column.name;
+        description = column.description;
+        inputType = column.inputType;
+        defaultValue = column.defaultValue;
     }
 
     public String getName() {

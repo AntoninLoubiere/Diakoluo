@@ -62,8 +62,6 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
 
                     parentListener.onDeleteItem(view, position);
                     columnRecyclerViewAdapter.notifyItemRemoved(position);
-                    // update buttons callbacks
-                    columnRecyclerViewAdapter.notifyItemRangeChanged(position, currentEditTest.getNumberColumn());
 
                     if (position == 0) {
                         RecyclerViewChange setAnswerListChanged = new RecyclerViewChange(

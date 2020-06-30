@@ -1,9 +1,11 @@
 package fr.pyjacpp.diakoluo.edit_test;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
@@ -42,4 +44,12 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
         return true;
     }
 
+    @Override
+    public void updateColumnRecyclerItem(int position) {
+        Intent intent = new Intent();
+        intent.setAction(EditTestActivity.ACTION_BROADCAST_UPDATE_COLUMN_RECYCLER);
+        intent.putExtra(EditTestActivity.EXTRA_INT_POSITION, position);
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager.sendBroadcast(intent);
+    }
 }

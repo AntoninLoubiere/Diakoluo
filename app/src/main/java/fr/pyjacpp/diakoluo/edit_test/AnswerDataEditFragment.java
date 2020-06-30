@@ -158,6 +158,10 @@ public class AnswerDataEditFragment extends Fragment {
             }
             if (parentListener != null)
                 parentListener.updateItem(answerIndex);
+            else {
+                mListener.updateAnswerRecyclerItem(answerIndex);
+            }
+
         }
     }
 
@@ -173,6 +177,7 @@ public class AnswerDataEditFragment extends Fragment {
     }
 
     interface OnFragmentInteractionListener {
+        void updateAnswerRecyclerItem(int position);
     }
 
     interface OnParentFragmentInteractionListener {

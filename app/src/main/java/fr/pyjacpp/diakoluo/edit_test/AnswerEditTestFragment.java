@@ -64,6 +64,10 @@ public class AnswerEditTestFragment extends Fragment implements
             }
         });
 
+        if (answerDetail && DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getNumberRow() > 0) {
+            onItemClick(inflatedView, 0); // show first element
+        }
+
         return inflatedView;
     }
 
@@ -104,7 +108,8 @@ public class AnswerEditTestFragment extends Fragment implements
                     getChildFragmentManager()
                             .beginTransaction()
                             .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
-                            .remove(answerDataEditFragment);
+                            .remove(answerDataEditFragment)
+                            .commit();
                     answerDataEditFragment = null;
                 }
             }
@@ -148,14 +153,14 @@ public class AnswerEditTestFragment extends Fragment implements
                 answerDataEditFragment.setAnswerIndex(-1);
 
                 Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
-                if (position < currentEditTest.getNumberColumn()) {
+                if (position < currentEditTest.getNumberRow()) {
                     onItemClick(view, position, true);
-                } else if (currentEditTest.getNumberColumn() > 0) {
-                    onItemClick(view, currentEditTest.getNumberColumn() - 1, true);
+                } else if (currentEditTest.getNumberRow() > 0) {
+                    onItemClick(view, currentEditTest.getNumberRow() - 1, true);
                 } else {
                     onItemClick(view, -1, true);
                 }
-            } else if (position > answerIndex) {
+            } else if (position < answerIndex) {
                 answerDataEditFragment.setAnswerIndex(answerIndex - 1);
             }
         }

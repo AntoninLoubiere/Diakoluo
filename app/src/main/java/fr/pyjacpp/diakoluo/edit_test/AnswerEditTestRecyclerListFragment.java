@@ -52,14 +52,6 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
                     currentEditTest.getListRow().remove(position);
                     parentListener.onDelete(view, position);
                     answerRecyclerViewAdapter.notifyItemRemoved(position);
-                    // update buttons callbacks
-                    answerRecyclerViewAdapter.notifyItemRangeChanged(position, currentEditTest.getNumberRow());
-
-
-                    if (currentEditTest.getNumberColumn() <= 0) {
-                        // if the text depends of position, we need to refresh all next elements
-                        answerRecyclerViewAdapter.notifyItemRangeChanged(position, currentEditTest.getNumberRow());
-                    }
                 }
             }
         });
