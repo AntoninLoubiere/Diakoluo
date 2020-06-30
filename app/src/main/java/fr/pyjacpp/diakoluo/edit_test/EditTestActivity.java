@@ -41,6 +41,7 @@ public class EditTestActivity extends AppCompatActivity
 
     public static final String ACTION_BROADCAST_UPDATE_COLUMN_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.UPDATE_COLUMN_RECYCLER";
     public static final String ACTION_BROADCAST_UPDATE_ANSWER_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.UPDATE_ANSWER_RECYCLER";
+    public static final String ACTION_BROADCAST_NEW_COLUMN_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.NEW_COLUMN_RECYCLER";
     public static final String EXTRA_INT_POSITION = "position";
 
     private ArrayDeque<EditTestValidator> errorValidatorDeque;
@@ -158,6 +159,13 @@ public class EditTestActivity extends AppCompatActivity
                 updateAnswerRecyclerItem(intent.getIntExtra(EXTRA_INT_POSITION, 0));
             }
         }, new IntentFilter(ACTION_BROADCAST_UPDATE_ANSWER_RECYCLER));
+
+        localBroadcastManager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                updateNewColumn();
+            }
+        }, new IntentFilter(ACTION_BROADCAST_NEW_COLUMN_RECYCLER));
     }
 
     @Override
@@ -297,16 +305,11 @@ public class EditTestActivity extends AppCompatActivity
 
     @Override
     public void updateAnswerRecycler(final RecyclerViewChange recyclerViewChange) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Fragment answerEditTestFragment  = adapter.getFragmentAtPosition(2);
+        Fragment answerEditTestFragment  = adapter.getFragmentAtPosition(2);
 
-                if (answerEditTestFragment != null) {
-                    ((AnswerEditTestFragment) answerEditTestFragment).updateAnswerRecycler(recyclerViewChange);
-                }
-            }
-        }).start();
+        if (answerEditTestFragment != null) {
+            ((AnswerEditTestFragment) answerEditTestFragment).updateAnswerRecycler(recyclerViewChange);
+        }
     }
 
     @Override
@@ -318,15 +321,26 @@ public class EditTestActivity extends AppCompatActivity
 
     @Override
     public void updateColumnRecyclerItem(final int position) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Fragment columnEditTestFragment  = adapter.getFragmentAtPosition(1);
-                
-                if (columnEditTestFragment != null) {
-                    ((ColumnEditTestFragment) columnEditTestFragment).updateItem(position);
-                }
-            }
-        }).start();
+        Fragment columnEditTestFragment  = adapter.getFragmentAtPosition(1);
+
+        if (columnEditTestFragment != null) {
+            ((ColumnEditTestFragment) columnEditTestFragment).updateItem(position);
+        }
+    }
+
+    @Override
+    public void onSwipeRight() {
+    }
+
+    @Override
+    public void onSwipeLeft() {
+    }
+
+    private void updateNewColumn() {
+        Fragment columnEditTestFragment  = adapter.getFragmentAtPosition(1);
+
+        if (columnEditTestFragment != null) {
+            ((ColumnEditTestFragment) columnEditTestFragment).updateNewItem(this);
+        }
     }
 }

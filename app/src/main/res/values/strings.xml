@@ -50,4 +50,8 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="navigation_info">%1$d/%2$d</string>
+    <string name="create_new_data_edit">New</string>
+    <string name="dialog_new_column_title">Create new answer</string>
+    <string name="dialog_new_column_message">Do you want to create a new answer ?</string>
+    <string name="dialog_create_new_data_edit">Create</string>
 </resources>

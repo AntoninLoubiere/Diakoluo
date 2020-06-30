@@ -82,7 +82,6 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
         navigationTextView.setText(getString(R.string.navigation_info, columnIndex + 1,
                 currentTest.getNumberColumn()));
 
-
         if (columnIndex > 0) {
             if (!previousButton.isEnabled()) {
                 previousButton.setVisibility(View.VISIBLE);

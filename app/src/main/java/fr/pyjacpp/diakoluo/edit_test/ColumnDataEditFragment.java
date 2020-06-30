@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
+import fr.pyjacpp.diakoluo.OnSwipeTouchListener;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
@@ -62,7 +63,6 @@ public class ColumnDataEditFragment extends Fragment {
         inflatedView = inflater.inflate(R.layout.fragment_edit_column_data, container, false);
 
         if (columnIndex >= 0) {
-
             titleEditText = inflatedView.findViewById(R.id.titleEditText);
             descriptionEditText = inflatedView.findViewById(R.id.descriptionEditText);
             Spinner columnTypeSpinner = inflatedView.findViewById(R.id.columnTypeSpinner);
@@ -120,6 +120,19 @@ public class ColumnDataEditFragment extends Fragment {
                 }
             });
         }
+
+        inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
+            @Override
+            public void onSwipeRight() {
+                mListener.onSwipeRight();
+            }
+
+            @Override
+            public void onSwipeLeft() {
+                mListener.onSwipeLeft();
+            }
+        });
+
         return inflatedView;
     }
 
@@ -180,6 +193,8 @@ public class ColumnDataEditFragment extends Fragment {
 
     interface OnFragmentInteractionListener {
         void updateColumnRecyclerItem(int position);
+        void onSwipeRight();
+        void onSwipeLeft();
     }
 
     public interface OnParentFragmentInteractionListener {
