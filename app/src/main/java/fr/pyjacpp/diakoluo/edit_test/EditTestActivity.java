@@ -322,13 +322,9 @@ public class EditTestActivity extends AppCompatActivity
             @Override
             public void run() {
                 Fragment columnEditTestFragment  = adapter.getFragmentAtPosition(1);
-
-                RecyclerViewChange change = new RecyclerViewChange(RecyclerViewChange.ItemChanged);
-                change.setPosition(position);
-                updateAnswerRecycler(change);
-
+                
                 if (columnEditTestFragment != null) {
-                    ((AnswerEditTestFragment) columnEditTestFragment).updateAnswerRecycler(change);
+                    ((ColumnEditTestFragment) columnEditTestFragment).updateItem(position);
                 }
             }
         }).start();
