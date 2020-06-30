@@ -1,6 +1,10 @@
 package fr.pyjacpp.diakoluo.edit_test;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,7 +14,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -27,12 +33,20 @@ public class EditTestActivity extends AppCompatActivity
         implements
         AnswerEditTestFragment.OnFragmentInteractionListener,
         AnswerEditTestRecyclerListFragment.OnFragmentInteractionListener,
+        AnswerDataEditFragment.OnFragmentInteractionListener,
         ColumnEditTestFragment.OnFragmentInteractionListener,
+        ColumnDataEditFragment.OnFragmentInteractionListener,
         ColumnEditTestRecyclerListFragment.OnFragmentInteractionListener,
         MainInformationEditTestFragment.OnFragmentInteractionListener {
 
+    public static final String ACTION_BROADCAST_UPDATE_COLUMN_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.UPDATE_COLUMN_RECYCLER";
+    public static final String ACTION_BROADCAST_UPDATE_ANSWER_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.UPDATE_ANSWER_RECYCLER";
+    public static final String EXTRA_INT_POSITION = "position";
+
     private ArrayDeque<EditTestValidator> errorValidatorDeque;
     private boolean errorInDeque;
+
+    private EditTestPagerAdapterFragment adapter;
 
     class EditTestValidator {
         private final boolean error;
@@ -97,10 +111,11 @@ public class EditTestActivity extends AppCompatActivity
 
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        viewPager.setAdapter(new EditTestPagerAdapterFragment(
+        adapter = new EditTestPagerAdapterFragment(
                 getSupportFragmentManager(),
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, this
-        ));
+        );
+        viewPager.setAdapter(adapter);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,6 +143,21 @@ public class EditTestActivity extends AppCompatActivity
                 verifyAndAsk();
             }
         });
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                updateColumnRecyclerItem(intent.getIntExtra(EXTRA_INT_POSITION, 0));
+            }
+        }, new IntentFilter(ACTION_BROADCAST_UPDATE_COLUMN_RECYCLER));
+
+        localBroadcastManager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                updateAnswerRecyclerItem(intent.getIntExtra(EXTRA_INT_POSITION, 0));
+            }
+        }, new IntentFilter(ACTION_BROADCAST_UPDATE_ANSWER_RECYCLER));
     }
 
     @Override
@@ -263,5 +293,44 @@ public class EditTestActivity extends AppCompatActivity
     @Override
     public EditTestValidator descriptionEditTestValidator(String text) {
         return new EditTestValidator();
+    }
+
+    @Override
+    public void updateAnswerRecycler(final RecyclerViewChange recyclerViewChange) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Fragment answerEditTestFragment  = adapter.getFragmentAtPosition(2);
+
+                if (answerEditTestFragment != null) {
+                    ((AnswerEditTestFragment) answerEditTestFragment).updateAnswerRecycler(recyclerViewChange);
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    public void updateAnswerRecyclerItem(int position) {
+        RecyclerViewChange change = new RecyclerViewChange(RecyclerViewChange.ItemChanged);
+        change.setPosition(position);
+        updateAnswerRecycler(change);
+    }
+
+    @Override
+    public void updateColumnRecyclerItem(final int position) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Fragment columnEditTestFragment  = adapter.getFragmentAtPosition(1);
+
+                RecyclerViewChange change = new RecyclerViewChange(RecyclerViewChange.ItemChanged);
+                change.setPosition(position);
+                updateAnswerRecycler(change);
+
+                if (columnEditTestFragment != null) {
+                    ((AnswerEditTestFragment) columnEditTestFragment).updateAnswerRecycler(change);
+                }
+            }
+        }).start();
     }
 }

@@ -15,7 +15,7 @@ public class Column {
     private String description;
 
     private ColumnInputType inputType;
-    private Object defaultValue;
+    private Object defaultValue;  // should be immutable
 
     public Column() {
         this.name = null;
@@ -29,6 +29,13 @@ public class Column {
         this.description = description;
         this.inputType = inputType;
         this.defaultValue = "";
+    }
+
+    public Column(Column column) {
+        name = column.name;
+        description = column.description;
+        inputType = column.inputType;
+        defaultValue = column.defaultValue;
     }
 
     public String getName() {
@@ -77,7 +84,7 @@ public class Column {
         return columnNameTextView;
     }
 
-    private View showColumnEditValue(Context context) {
+    private TextInputLayout showColumnEditValue(Context context) {
         TextInputLayout inputLayout = new TextInputLayout(context, null, R.style.Widget_MaterialComponents_TextInputLayout_OutlinedBox);
         TextInputEditText inputField = new TextInputEditText(context);
         inputLayout.setHint(name);
@@ -88,8 +95,8 @@ public class Column {
     }
 
 
-    public View showColumnEditValue(Context context, Object defaultValue) {
-        TextInputLayout inputLayout = (TextInputLayout) showColumnEditValue(context);
+    public TextInputLayout showColumnEditValue(Context context, Object defaultValue) {
+        TextInputLayout inputLayout = showColumnEditValue(context);
         EditText inputField = inputLayout.getEditText();
         if (inputField != null && defaultValue != null)
             inputField.setText((String) defaultValue);

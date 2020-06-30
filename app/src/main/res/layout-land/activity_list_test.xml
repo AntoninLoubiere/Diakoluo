@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".list_tests.ListTestActivity"
-    android:layout_margin="8dp">
+    tools:context=".list_tests.ListTestActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,35 +15,31 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            tools:layout="@layout/fragment_recycler_list"
-            />
+            tools:layout="@layout/fragment_recycler_list" />
 
         <View
-            android:background="@color/dividerColor"
             android:layout_width="1dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:background="@color/dividerColor" />
 
         <fragment
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:id="@+id/testMainInformationFragment"
             class="fr.pyjacpp.diakoluo.view_test.MainInformationViewTestFragment"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            tools:layout="@layout/fragment_view_main_information_test"
-            />
+            tools:layout="@layout/fragment_view_main_information_test" />
 
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        style="@style/FloatingActionButton"
         android:id="@+id/addFloatingButton"
+        style="@style/FloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:src="@drawable/ic_add_white_24dp"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:src="@drawable/ic_add_white_24dp" />
 
 </RelativeLayout>

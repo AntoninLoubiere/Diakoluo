@@ -38,8 +38,6 @@ public class DiakoluoApplication extends Application {
     private Integer currentIndexEditTest;
     
     private RecyclerViewChange testListChanged;
-    private RecyclerViewChange answerListChanged;
-    private RecyclerViewChange columnListChanged;
 
     private SharedPreferences sharedPreferences;
 
@@ -187,22 +185,6 @@ public class DiakoluoApplication extends Application {
     private void setTestListChanged(RecyclerViewChange testListChanged) {
         this.testListChanged = testListChanged;
     }
-    
-    private RecyclerViewChange getAnswerListChanged() {
-        return answerListChanged;
-    }
-
-    private void setAnswerListChanged(RecyclerViewChange answerListChanged) {
-        this.answerListChanged = answerListChanged;
-    }
-
-    private RecyclerViewChange getColumnListChanged() {
-        return columnListChanged;
-    }
-
-    private void setColumnListChanged(RecyclerViewChange columnListChanged) {
-        this.columnListChanged = columnListChanged;
-    }
 
     private boolean getAnalyticsEnable() {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
@@ -304,22 +286,6 @@ public class DiakoluoApplication extends Application {
 
     public static RecyclerViewChange getTestListChanged(Context context) {
         return ((DiakoluoApplication) context.getApplicationContext()).getTestListChanged();
-    }
-
-    public static void setAnswerListChanged(Context context, RecyclerViewChange setAnswerListChanged) {
-        ((DiakoluoApplication) context.getApplicationContext()).setAnswerListChanged(setAnswerListChanged);
-    }
-
-    public static RecyclerViewChange getAnswerListChanged(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getAnswerListChanged();
-    }
-
-    public static void setColumnListChanged(Context context, RecyclerViewChange setColumnListChanged) {
-        ((DiakoluoApplication) context.getApplicationContext()).setColumnListChanged(setColumnListChanged);
-    }
-
-    public static RecyclerViewChange getColumnListChanged(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getColumnListChanged();
     }
 
     public static void saveTest(Context context) {

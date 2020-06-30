@@ -39,8 +39,14 @@ public class Test {
         createdDate = new Date(test.createdDate.getTime());
         lastModification = new Date(test.lastModification.getTime());
         numberTestDid = test.numberTestDid;
-        listColumn = new ArrayList<>(test.listColumn);
-        listRow = new ArrayList<>(test.listRow);
+        listColumn = new ArrayList<>();
+        for (Column column : test.listColumn) {
+            listColumn.add(new Column(column));
+        }
+        listRow = new ArrayList<>();
+        for (DataRow dataRow : test.listRow) {
+            listRow.add(new DataRow(dataRow, listColumn, test.listColumn));
+        }
         filename = test.filename;
     }
 

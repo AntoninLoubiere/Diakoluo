@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.edit_test.EditTestActivity;
@@ -25,6 +27,9 @@ public class ListTestActivity extends AppCompatActivity
         MainInformationViewTestFragment.OnFragmentInteractionListener {
 
     private boolean detailMainInformationTest;
+    private MainInformationViewTestFragment mainInformationViewTestFragment;
+
+    private int currentTestSelected = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +41,8 @@ public class ListTestActivity extends AppCompatActivity
             actionBar.setTitle(R.string.list_test);
 
         detailMainInformationTest = findViewById(R.id.testMainInformationFragment) != null;
+        mainInformationViewTestFragment = (MainInformationViewTestFragment)
+                getSupportFragmentManager().findFragmentById(R.id.testMainInformationFragment);
 
         FloatingActionButton addButton = findViewById(R.id.addFloatingButton);
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -45,22 +52,34 @@ public class ListTestActivity extends AppCompatActivity
                 startActivity(new Intent(ListTestActivity.this, EditTestActivity.class));
             }
         });
+
+        if (detailMainInformationTest) {
+            if (DiakoluoApplication.getListTest(this).size() > 0)
+            updateDetail(0);
+        }
     }
 
     @Override
     public void onItemClick(View view, int position) {
         if (detailMainInformationTest) {
-            MainInformationViewTestFragment mainInformationViewTestFragment =(MainInformationViewTestFragment)
-                    getSupportFragmentManager().findFragmentById(R.id.testMainInformationFragment);
-
-            if (mainInformationViewTestFragment != null) {
-                DiakoluoApplication.setCurrentTest(view.getContext(),
-                        DiakoluoApplication.getListTest(view.getContext()).get(position));
-
-                mainInformationViewTestFragment.updateContent(this);
-            }
+            updateDetail(position);
         } else {
             onSeeButtonClick(view, position);
+        }
+    }
+
+    private void updateDetail(int position) {
+        if (mainInformationViewTestFragment != null) {
+            if (position < 0) {
+                DiakoluoApplication.setCurrentTest(this, null);
+            } else {
+                DiakoluoApplication.setCurrentTest(this,
+                        DiakoluoApplication.getListTest(this).get(position));
+            }
+
+            currentTestSelected = position;
+
+            mainInformationViewTestFragment.updateContent(this);
         }
     }
 
@@ -106,5 +125,16 @@ public class ListTestActivity extends AppCompatActivity
     public void onEditMenuItemClick(View view, int position) {
         DiakoluoApplication.setCurrentIndexEditTest(view.getContext(), position);
         startActivity(new Intent(view.getContext(), EditTestActivity.class));
+    }
+
+    @Override
+    public void onDeleteTest(int position) {
+        ArrayList<Test> listTest = DiakoluoApplication.getListTest(this);
+        if (position == currentTestSelected || currentTestSelected == -1) {
+            if (listTest.size() > 0)
+                updateDetail(0);
+            else
+                updateDetail(-1);
+        }
     }
 }

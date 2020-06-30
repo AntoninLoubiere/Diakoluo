@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -23,12 +24,21 @@ import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 
-public class ColumnEditTestFragment extends Fragment {
+public class ColumnEditTestFragment extends Fragment implements
+        ColumnEditTestRecyclerListFragment.OnParentFragmentInteractionListener,
+        ColumnDataEditFragment.OnParentFragmentInteractionListener{
     private OnFragmentInteractionListener mListener;
+
+    private boolean columnDetail;
+
+    @Nullable
+    private ColumnDataEditFragment columnDataEditFragment = null;
+    private ColumnEditTestRecyclerListFragment columnEditTestRecyclerListFragment;
 
     public ColumnEditTestFragment() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -36,6 +46,10 @@ public class ColumnEditTestFragment extends Fragment {
 
         View inflatedView = inflater.inflate(R.layout.fragment_edit_column_test, container, false);
 
+        columnDetail = inflatedView.findViewById(R.id.columnDataEditFragmentContainer) != null;
+
+        columnEditTestRecyclerListFragment = (ColumnEditTestRecyclerListFragment)
+                getChildFragmentManager().findFragmentById(R.id.columnEditTestRecyclerListFragment);
 
         Button addColumnButton = inflatedView.findViewById(R.id.addColumnButton);
         addColumnButton.setOnClickListener(new View.OnClickListener() {
@@ -50,23 +64,27 @@ public class ColumnEditTestFragment extends Fragment {
                         RecyclerViewChange.ItemInserted
                 );
                 columnListChanged.setPosition(listColumn.size() - 1);
-                DiakoluoApplication.setColumnListChanged(view.getContext(), columnListChanged);
+                columnEditTestRecyclerListFragment.applyRecyclerChanges(columnListChanged);
 
-                RecyclerViewChange recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.ItemRangeChanged);
-                recyclerViewChange.setPositionStart(0);
-                recyclerViewChange.setPositionEnd(currentEditTest.getNumberRow() - 1);
-                DiakoluoApplication.setAnswerListChanged(view.getContext(), recyclerViewChange);
+                if (listColumn.size() <= 1) {
+                    RecyclerViewChange recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.ItemRangeChanged);
+                    recyclerViewChange.setPositionStart(0);
+                    recyclerViewChange.setPositionEnd(currentEditTest.getNumberRow() - 1);
+                    mListener.updateAnswerRecycler(recyclerViewChange);
+                }
 
                 for (DataRow row : currentEditTest.getListRow()) {
                     // TODO: improve
                     row.getListCells().put(column, new DataCellString((String) column.getDefaultValue()));
                 }
-
-                Intent intent = new Intent(view.getContext(), ColumnDataEditActivity.class);
-                intent.putExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, listColumn.size() - 1);
-                startActivity(intent);
+                onItemClick(view, listColumn.size() - 1);
             }
         });
+
+        if (columnDetail && DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getNumberColumn() > 0) {
+            onItemClick(inflatedView, 0); // show first element
+        }
+
         return inflatedView;
     }
 
@@ -87,6 +105,91 @@ public class ColumnEditTestFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onItemClick(View view, int position) {
+        onItemClick(view, position, false);
+    }
+
+    public void onItemClick(View view, int position, boolean forceUpdate) {
+        if (columnDetail) {
+            if (columnDataEditFragment == null || columnDataEditFragment.getColumnIndex() != position || forceUpdate) {
+                if (position >= 0) {
+                    columnDataEditFragment = ColumnDataEditFragment.newInstance(position);
+
+                    getChildFragmentManager()
+                            .beginTransaction()
+                            .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
+                            .replace(R.id.columnDataEditFragmentContainer,
+                                    columnDataEditFragment)
+                            .commit();
+                } else if (columnDataEditFragment != null) {
+                    getChildFragmentManager()
+                            .beginTransaction()
+                            .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
+                            .remove(columnDataEditFragment)
+                            .commit();
+                    columnDataEditFragment = null;
+                }
+            }
+        } else {
+            Intent intent = new Intent(view.getContext(), ColumnDataEditActivity.class);
+            intent.putExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, position);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onSwap(int dragFrom, int dragTo) {
+        // detect if fragment need to update index due to a swap
+        if (columnDataEditFragment != null) {
+            int i = columnDataEditFragment.getColumnIndex();
+            if (dragFrom < dragTo) {
+                if (dragFrom < i) {
+                    if (i <= dragTo) {
+                        columnDataEditFragment.setColumnIndex(i - 1);
+                    }
+                } else if (i == dragFrom) {
+                    columnDataEditFragment.setColumnIndex(dragTo);
+                }
+            } else {
+                if (dragTo <= i) {
+                    if (i < dragFrom) {
+                        columnDataEditFragment.setColumnIndex(i + 1);
+                    } else if (i == dragFrom) {
+                        columnDataEditFragment.setColumnIndex(dragTo);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDeleteItem(View view, int position) {
+        if (columnDetail && columnDataEditFragment != null) {
+            int columnIndex = columnDataEditFragment.getColumnIndex();
+            if (position == columnIndex) {
+                columnDataEditFragment.setColumnIndex(-1);
+
+                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
+                if (position < currentEditTest.getNumberColumn()) {
+                    onItemClick(view, position, true);
+                } else if (currentEditTest.getNumberColumn() > 0) {
+                    onItemClick(view, currentEditTest.getNumberColumn() - 1, true);
+                } else {
+                    onItemClick(view, -1, true);
+                }
+            } else if (position < columnIndex) {
+                columnDataEditFragment.setColumnIndex(columnIndex - 1);
+            }
+        }
+    }
+
+    @Override
+    public void updateItem(int position) {
+        columnEditTestRecyclerListFragment.updateItem(position);
+    }
+
     public interface OnFragmentInteractionListener {
+        void updateAnswerRecycler(RecyclerViewChange recyclerViewChange);
     }
 }

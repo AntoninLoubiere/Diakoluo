@@ -1,9 +1,11 @@
 package fr.pyjacpp.diakoluo.edit_test;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
@@ -40,7 +42,7 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
                     answerIndex
             );
 
-            getFragmentManager().beginTransaction().replace(
+            getSupportFragmentManager().beginTransaction().replace(
                     R.id.answerDataEditFragmentContainer,
                     fragment).commit();
         }
@@ -50,5 +52,14 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public void updateAnswerRecyclerItem(int position) {
+        Intent intent = new Intent();
+        intent.setAction(EditTestActivity.ACTION_BROADCAST_UPDATE_ANSWER_RECYCLER);
+        intent.putExtra(EditTestActivity.EXTRA_INT_POSITION, position);
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager.sendBroadcast(intent);
     }
 }

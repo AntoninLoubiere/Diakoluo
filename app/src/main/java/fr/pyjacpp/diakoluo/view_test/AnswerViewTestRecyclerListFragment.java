@@ -16,7 +16,7 @@ import fr.pyjacpp.diakoluo.RecyclerItemClickListener;
 
 public class AnswerViewTestRecyclerListFragment extends Fragment {
     private OnFragmentInteractionListener listener;
-    private OnFragmentInteractionParentListener parentListener;
+    private OnParentFragmentInteractionListener parentListener;
 
     public AnswerViewTestRecyclerListFragment() {
         // Required empty public constructor
@@ -65,10 +65,10 @@ public class AnswerViewTestRecyclerListFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
 
-        if (getParentFragment() instanceof OnFragmentInteractionParentListener) {
-            parentListener = (OnFragmentInteractionParentListener) getParentFragment();
+        if (getParentFragment() instanceof OnParentFragmentInteractionListener) {
+            parentListener = (OnParentFragmentInteractionListener) getParentFragment();
         } else {
-            throw new RuntimeException("Parent fragment must implement OnFragmentInteractionParentListener");
+            throw new RuntimeException("Parent fragment must implement OnParentFragmentInteractionListener");
         }
     }
 
@@ -82,7 +82,7 @@ public class AnswerViewTestRecyclerListFragment extends Fragment {
     public interface OnFragmentInteractionListener {
     }
 
-    public interface OnFragmentInteractionParentListener {
+    public interface OnParentFragmentInteractionListener {
         void onItemClick(View view, int position);
     }
 }
