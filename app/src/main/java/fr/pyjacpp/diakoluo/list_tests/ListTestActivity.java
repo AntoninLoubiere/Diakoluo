@@ -141,8 +141,14 @@ public class ListTestActivity extends AppCompatActivity
     }
 
     @Override
-    public void onExportMenuItemClick(View view, int position) {
-        FileManager.exportTest(this, position);
+    public void onExportMenuItemClick(View view, final int position) {
+        ExportDialogFragment exportDialogFragment = new ExportDialogFragment(new ExportDialogFragment.OnValidListener() {
+            @Override
+            public void createXmlFile(boolean saveNumberTestDone) {
+                FileManager.exportTest(ListTestActivity.this, position, saveNumberTestDone);
+            }
+        });
+        exportDialogFragment.show(getSupportFragmentManager(), "dialog");
     }
 
     @Override

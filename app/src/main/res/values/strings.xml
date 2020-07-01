@@ -57,4 +57,13 @@
     <string name="dialog_create_new_data_edit">Create</string>
     <string name="dialog_new_answer_title">Create new answer</string>
     <string name="dialog_new_answer_message">Do you want to create a new answer ?</string>
+    <string name="select_export">Select export file type:</string>
+    <string name="all_features_may_not_be_available_in_this_format">All features may not be available in this format !</string>
+    <string name="save_test_done">Save number of test done</string>
+    <string name="save_column_header">Write column name at the top of the file</string>
+    <string name="save_column_type_header">Save column type at the top of the file</string>
+    <string-array name="export_entries">
+        <item>Diakôluo file (.dkl)</item>
+        <item>Csv file (.csv)</item>
+    </string-array>
 </resources>

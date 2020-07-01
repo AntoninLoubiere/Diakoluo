@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Text.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/export" />
+
+            <TextView
+                style="@style/TextAppearance.MaterialComponents.Headline6"
+                android:layout_marginTop="@dimen/default_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/select_export"/>
+
+            <Spinner
+                android:id="@+id/exportFileTypeSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/export_entries"/>
+
+            <TextView
+                android:id="@+id/warningFileTypeTextView"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_warning_yellow_24dp"
+                android:drawablePadding="@dimen/default_margin"
+                android:text="@string/all_features_may_not_be_available_in_this_format"
+                android:visibility="gone" />
+
+            <CheckBox
+                android:id="@+id/testDoneCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/save_test_done"
+                android:checked="true" />
+
+            <CheckBox
+                android:id="@+id/columnHeaderCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/save_column_header"
+                android:checked="true" />
+
+            <CheckBox
+                android:id="@+id/columnTypeHeaderCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/save_column_type_header"
+                android:checked="true" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/cancelButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel">
+        </Button>
+
+        <Button
+            android:id="@+id/validButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/export">
+        </Button>
+
+    </LinearLayout>
+
+</LinearLayout>

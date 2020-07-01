@@ -13,7 +13,7 @@ public class XmlSaver {
     static void save(OutputStream fileOutputStream, Test test) throws IOException {
         save(fileOutputStream, test, true);
     }
-    static void save(OutputStream fileOutputStream, Test test, boolean writePrivateStats) throws IOException {
+    static void save(OutputStream fileOutputStream, Test test, boolean saveNumberTestDone) throws IOException {
         fileOutputStream.write(TEST_START.getBytes());
 
         fileOutputStream.write(getStartBeacon(FileManager.TAG_TEST).getBytes());
@@ -29,7 +29,7 @@ public class XmlSaver {
         fileOutputStream.write(getCoupleBeacon(FileManager.TAG_LAST_MODIFICATION,
                 String.valueOf(test.getLastModificationDate().getTime())).getBytes());
 
-        if (writePrivateStats)
+        if (saveNumberTestDone)
             fileOutputStream.write(getCoupleBeacon(FileManager.TAG_NUMBER_TEST_DID,
                     String.valueOf(test.getNumberTestDid())).getBytes());
 

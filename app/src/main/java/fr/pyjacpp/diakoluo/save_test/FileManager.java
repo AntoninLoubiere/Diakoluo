@@ -41,7 +41,7 @@ public class FileManager {
 
     private static final int CREATE_DOCUMENT_REQUEST_CODE = 1;
     public static final String extension = ".dkl";
-    private static int currentTestPosition = -1;
+    private static FileCreateContext fileCreateContext = null;
 
 
     public static void saveFromPrivateFile(Context context, Test test) throws IOException {
@@ -107,10 +107,10 @@ public class FileManager {
         context.deleteFile(TEST_PREFIX + testRemoved.getFilename());
     }
 
-    public static void exportTest(Activity activity, int position) {
-        if (currentTestPosition < 0) {
+    public static void exportTest(Activity activity, int position, boolean saveNumberTestDone) {
+        if (fileCreateContext == null) {
             Test testToSave = DiakoluoApplication.getListTest(activity).get(position);
-            currentTestPosition = position;
+            fileCreateContext = new XmlCreateContext(position, saveNumberTestDone);
 
             Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
             intent.setType(MIME_TYPE);
@@ -132,25 +132,42 @@ public class FileManager {
 
                     if (uri != null) {
                         try {
-                            Test testToSave = DiakoluoApplication.getListTest(activity).get(currentTestPosition);
+                            Test testToSave = DiakoluoApplication.getListTest(activity).get(fileCreateContext.position);
                             ParcelFileDescriptor pfd = activity.getContentResolver().openFileDescriptor(uri, "w");
 
                             if (pfd != null) {
                                 FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor());
                                 try {
-                                    XmlSaver.save(fos, testToSave, false);
+                                    XmlSaver.save(fos, testToSave, ((XmlCreateContext) fileCreateContext).saveNumberTestDone);
                                 } finally {
                                     fos.close();
                                     pfd.close();
                                 }
                             }
-                        } catch (IOException e) {
+                        } catch (IOException | ClassCastException e) {
                             // TODO: error
                         }
                     }
                 }
             }
-            currentTestPosition = -1; // reset test position to allow another export
+            fileCreateContext = null; // reset test position to allow another export
+        }
+    }
+
+    private static class FileCreateContext {
+        private int position;
+
+        FileCreateContext(int position) {
+            this.position = position;
+        }
+    }
+
+    private static class XmlCreateContext extends FileCreateContext{
+        private boolean saveNumberTestDone;
+
+        XmlCreateContext(int position, boolean saveNumberTestDone) {
+            super(position);
+            this.saveNumberTestDone = saveNumberTestDone;
         }
     }
 }
