@@ -5,10 +5,8 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Date;
 
-import fr.pyjacpp.diakoluo.tests.data.DataCell;
-
-import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.tests.column.Column;
+import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public class Test {
     private String name;
@@ -209,15 +207,10 @@ public class Test {
         }
     }
 
-    public String getDefaultFilename(boolean useExtension) {
-        String s = name
+    public String getDefaultFilename() {
+        return name
                 .replace(' ', '_')
                 .replace('/', '_')
                 .replace('.', '_').toLowerCase();
-        if (useExtension) {
-            return s + FileManager.extension;
-        } else {
-            return s;
-        }
     }
 }

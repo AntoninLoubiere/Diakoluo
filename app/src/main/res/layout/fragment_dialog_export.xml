@@ -66,6 +66,27 @@
                 android:text="@string/save_column_type_header"
                 android:checked="true" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/separatorTextView"
+                    style="@style/TextAppearance.MaterialComponents.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/separator"/>
+
+                <Spinner
+                    android:id="@+id/separatorSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:entries="@array/separatorsCsv" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>

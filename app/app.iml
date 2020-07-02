@@ -112,6 +112,7 @@
     <orderEntry type="library" name="Gradle: javax.inject:javax.inject:1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.okhttp3:okhttp:3.12.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.okio:okio:1.15.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:annotations-java5:15.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.firebase:firebase-analytics:17.4.3@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-measurement:17.4.3@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.material:material:1.1.0@aar" level="project" />

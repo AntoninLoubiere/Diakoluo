@@ -145,7 +145,12 @@ public class ListTestActivity extends AppCompatActivity
         ExportDialogFragment exportDialogFragment = new ExportDialogFragment(new ExportDialogFragment.OnValidListener() {
             @Override
             public void createXmlFile(boolean saveNumberTestDone) {
-                FileManager.exportTest(ListTestActivity.this, position, saveNumberTestDone);
+                FileManager.exportXmlTest(ListTestActivity.this, position, saveNumberTestDone);
+            }
+
+            @Override
+            public void createCsvFile(boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
+                FileManager.exportCsvTest(ListTestActivity.this, position, columnHeader, columnTypeHeader, separator, lineSeparator);
             }
         });
         exportDialogFragment.show(getSupportFragmentManager(), "dialog");

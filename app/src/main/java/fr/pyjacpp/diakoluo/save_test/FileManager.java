@@ -40,7 +40,8 @@ public class FileManager {
     private static final String MIME_TYPE = "application/dkl";
 
     private static final int CREATE_DOCUMENT_REQUEST_CODE = 1;
-    public static final String extension = ".dkl";
+    private static final String DKL_EXTENSION = ".dkl";
+    private static final String CSV_EXTENSION = ".csv";
     private static FileCreateContext fileCreateContext = null;
 
 
@@ -74,8 +75,8 @@ public class FileManager {
     }
 
     public static void getAvailableFilename(Context context, Test test) {
-        String fileExtension = ".dkl";
-        String name = test.getDefaultFilename(false);
+        String fileExtension = DKL_EXTENSION;
+        String name = test.getDefaultFilename();
         int index = -1;
 
         String currentFileName;
@@ -84,7 +85,7 @@ public class FileManager {
             index++;
 
             if (index > 0) {
-                fileExtension = "_" + index + ".dkl";
+                fileExtension = "_" + index + DKL_EXTENSION;
             }
 
             currentFileName = name + fileExtension;
@@ -107,7 +108,7 @@ public class FileManager {
         context.deleteFile(TEST_PREFIX + testRemoved.getFilename());
     }
 
-    public static void exportTest(Activity activity, int position, boolean saveNumberTestDone) {
+    public static void exportXmlTest(Activity activity, int position, boolean saveNumberTestDone) {
         if (fileCreateContext == null) {
             Test testToSave = DiakoluoApplication.getListTest(activity).get(position);
             fileCreateContext = new XmlCreateContext(position, saveNumberTestDone);
@@ -115,7 +116,23 @@ public class FileManager {
             Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
             intent.setType(MIME_TYPE);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.putExtra(Intent.EXTRA_TITLE, testToSave.getDefaultFilename(true));
+            intent.putExtra(Intent.EXTRA_TITLE, testToSave.getDefaultFilename() + DKL_EXTENSION);
+
+            activity.startActivityForResult(intent, CREATE_DOCUMENT_REQUEST_CODE);
+        } else {
+            Log.w("FileManager", "Can't export test, already waiting result");
+        }
+    }
+
+    public static void exportCsvTest(Activity activity, int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
+        if (fileCreateContext == null) {
+            Test testToSave = DiakoluoApplication.getListTest(activity).get(position);
+            fileCreateContext = new CsvCreateContext(position, columnHeader, columnTypeHeader, separator, lineSeparator);
+
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.setType(MIME_TYPE);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.putExtra(Intent.EXTRA_TITLE, testToSave.getDefaultFilename() + CSV_EXTENSION);
 
             activity.startActivityForResult(intent, CREATE_DOCUMENT_REQUEST_CODE);
         } else {
@@ -138,14 +155,26 @@ public class FileManager {
                             if (pfd != null) {
                                 FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor());
                                 try {
-                                    XmlSaver.save(fos, testToSave, ((XmlCreateContext) fileCreateContext).saveNumberTestDone);
+                                    if (fileCreateContext instanceof  XmlCreateContext) {
+                                        XmlSaver.save(fos, testToSave, ((XmlCreateContext) fileCreateContext).saveNumberTestDone);
+                                    } else if (fileCreateContext instanceof CsvCreateContext) {
+                                        CsvCreateContext fileCreateContext = (CsvCreateContext) FileManager.fileCreateContext;
+                                        CsvSaver.save(
+                                                fos,
+                                                testToSave,
+                                                fileCreateContext.columnHeader,
+                                                fileCreateContext.columnTypeHeader,
+                                                fileCreateContext.lineSeparator,
+                                                fileCreateContext.separator);
+                                    } else {
+                                        throw new IllegalStateException("File create context has a incorect type");
+                                    }
                                 } finally {
                                     fos.close();
                                     pfd.close();
                                 }
                             }
-                        } catch (IOException | ClassCastException e) {
-                            // TODO: error
+                        } catch (IOException e) {
                         }
                     }
                 }
@@ -168,6 +197,22 @@ public class FileManager {
         XmlCreateContext(int position, boolean saveNumberTestDone) {
             super(position);
             this.saveNumberTestDone = saveNumberTestDone;
+        }
+    }
+
+    private static class CsvCreateContext extends FileCreateContext{
+        private boolean columnHeader;
+        private boolean columnTypeHeader;
+        private String separator;
+        private String lineSeparator;
+
+
+        CsvCreateContext(int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
+            super(position);
+            this.columnHeader = columnHeader;
+            this.columnTypeHeader = columnTypeHeader;
+            this.separator = separator;
+            this.lineSeparator = lineSeparator;
         }
     }
 }

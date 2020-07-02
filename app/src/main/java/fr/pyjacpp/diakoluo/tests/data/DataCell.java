@@ -8,15 +8,14 @@ import android.widget.EditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 
-import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
-import fr.pyjacpp.diakoluo.tests.column.Column;
+import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 
 public class DataCell {
     public DataCell(DataCell dataCell) {

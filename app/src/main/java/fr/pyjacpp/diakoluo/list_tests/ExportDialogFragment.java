@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.save_test.CsvSaver;
+
 
 public class ExportDialogFragment extends DialogFragment {
 
@@ -34,6 +36,9 @@ public class ExportDialogFragment extends DialogFragment {
     private boolean columnTypeHeaderChecked;
 
     private OnValidListener listener;
+    private Spinner exportFileType;
+    private Spinner separatorSpinner;
+    private TextView separatorTextView;
 
     ExportDialogFragment(OnValidListener listener) {
         this.listener = listener;
@@ -44,7 +49,9 @@ public class ExportDialogFragment extends DialogFragment {
                              final Bundle savedInstanceState) {
         View inflatedView = inflater.inflate(R.layout.fragment_dialog_export, container, false);
 
-        final Spinner exportFileType = inflatedView.findViewById(R.id.exportFileTypeSpinner);
+        exportFileType = inflatedView.findViewById(R.id.exportFileTypeSpinner);
+        separatorSpinner = inflatedView.findViewById(R.id.separatorSpinner);
+        separatorTextView = inflatedView.findViewById(R.id.separatorTextView);
         saveNumberTestDoneCheckBox = inflatedView.findViewById(R.id.testDoneCheckBox);
         columnHeaderCheckBox = inflatedView.findViewById(R.id.columnHeaderCheckBox);
         columnTypeHeaderCheckBox = inflatedView.findViewById(R.id.columnTypeHeaderCheckBox);
@@ -79,6 +86,8 @@ public class ExportDialogFragment extends DialogFragment {
                     columnHeaderCheckBox.setChecked(true);
                     columnTypeHeaderCheckBox.setEnabled(false);
                     columnTypeHeaderCheckBox.setChecked(true);
+                    separatorSpinner.setEnabled(false);
+                    separatorTextView.setEnabled(false);
                 } else {
                     warningExportFileTypeTextView.setVisibility(View.VISIBLE);
                     saveNumberTestDoneCheckBox.setEnabled(false);
@@ -87,6 +96,8 @@ public class ExportDialogFragment extends DialogFragment {
                     columnHeaderCheckBox.setEnabled(true);
                     columnTypeHeaderCheckBox.setChecked(columnTypeHeaderChecked);
                     columnTypeHeaderCheckBox.setEnabled(true);
+                    separatorSpinner.setEnabled(true);
+                    separatorTextView.setEnabled(true);
                 }
             }
 
@@ -132,7 +143,11 @@ public class ExportDialogFragment extends DialogFragment {
                 if (exportFileType.getSelectedItemId() == DIAKOLUO_FILE_TYPE_INDEX) {
                     listener.createXmlFile(saveNumberTestDoneCheckBox.isChecked());
                 } else {
-                    // TODO
+                    listener.createCsvFile(
+                            columnHeaderCheckBox.isChecked(),
+                            columnTypeHeaderCheckBox.isChecked(),
+                            CsvSaver.SEPARATORS[(int) separatorSpinner.getSelectedItemId()],
+                            CsvSaver.DEFAULT_LINE_SEPARATOR);
                 }
                 dismiss();
             }
@@ -151,5 +166,6 @@ public class ExportDialogFragment extends DialogFragment {
 
     public interface OnValidListener {
         void createXmlFile(boolean saveNumberTestDone);
+        void createCsvFile(boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator);
     }
 }

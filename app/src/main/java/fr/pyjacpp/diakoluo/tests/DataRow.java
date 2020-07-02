@@ -1,10 +1,11 @@
 package fr.pyjacpp.diakoluo.tests;
 
-import java.util.ArrayList;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import fr.pyjacpp.diakoluo.save_test.CsvSaver;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
@@ -45,10 +46,21 @@ public class DataRow {
     }
 
     public void writeXml(OutputStream fileOutputStream, Test test) throws IOException {
-        for (Column column : test.getListColumn()) {
+        ArrayList<Column> listColumn = test.getListColumn();
+        for (int i = 0, listColumnSize = listColumn.size(); i < listColumnSize; i++) {
+            Column column = listColumn.get(i);
             DataCell dataCell = listCells.get(column);
             if (dataCell != null)
                 dataCell.writeXml(fileOutputStream);
+        }
+    }
+
+    public void writeCsv(CsvSaver.CsvContext csvContext, Test test) throws IOException {
+        ArrayList<Column> listColumn = test.getListColumn();
+        for (int i = 0, listColumnSize = listColumn.size(); i < listColumnSize; i++) {
+            Column column = listColumn.get(i);
+            DataCell dataCell = listCells.get(column);
+            CsvSaver.writeCell(csvContext, i, dataCell == null ? "" : dataCell.getStringValue());
         }
     }
 }
