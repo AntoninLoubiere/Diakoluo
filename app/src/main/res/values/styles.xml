@@ -86,6 +86,4 @@
         <item name="android:ellipsize">marquee</item>
         <item name="rippleColor">@color/mtrl_btn_ripple_color</item>
     </style>
-
-
 </resources>

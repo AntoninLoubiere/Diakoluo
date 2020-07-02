@@ -1,6 +1,19 @@
 package fr.pyjacpp.diakoluo.save_test;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
+import android.util.Log;
+import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -9,71 +22,68 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import fr.pyjacpp.diakoluo.DiakoluoApplication;
+import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-@SuppressWarnings("TryFinallyCanBeTryWithResources") // because not enought API
 public class FileManager {
     private static final String TEST_PREFIX = "test_";
     
     // tag constants
-    static final String TAG_TEST              = "test";
-    static final String TAG_NAME              = "name";
-    static final String TAG_DESCRIPTION       = "description";
-    static final String TAG_NUMBER_TEST_DID   = "numberTestDid";
-    static final String TAG_CREATED_DATE      = "createdDate";
-    static final String TAG_LAST_MODIFICATION = "lastModification";
-    static final String TAG_COLUMNS           = "columns";
-    static final String TAG_COLUMN            = "column";
-    static final String TAG_ROWS              = "rows";
-    static final String TAG_ROW               = "row";
-    static final String TAG_CELL              = "cell";
-    static final String TAG_INPUT_TYPE        = "inputType";
-    static final String TAG_DEFAULT_VALUE     = "defaultValue";
+    static final String TAG_TEST                 = "test";
+    static final String TAG_NAME                 = "name";
+    static final String TAG_DESCRIPTION          = "description";
+    static final String TAG_NUMBER_TEST_DID      = "numberTestDid";
+    static final String TAG_CREATED_DATE         = "createdDate";
+    static final String TAG_LAST_MODIFICATION    = "lastModification";
+    static final String TAG_COLUMNS              = "columns";
+    static final String TAG_COLUMN               = "column";
+    static final String TAG_ROWS                 = "rows";
+    static final String TAG_ROW                  = "row";
+    public static final String TAG_CELL          = "cell";
+    static final String TAG_INPUT_TYPE           = "inputType";
+    public static final String TAG_DEFAULT_VALUE = "defaultValue";
 
-    public static void save(Context context, Test test) throws IOException {
-        FileOutputStream fileOutputStream = context.openFileOutput(TEST_PREFIX + test.getFilename(),
-                Context.MODE_PRIVATE);
-        try {
+    private static final String MIME_TYPE = "application/dkl";
+
+    private static final int CREATE_DOCUMENT_REQUEST_CODE = 1;
+    private static final String DKL_EXTENSION = ".dkl";
+    private static final String CSV_EXTENSION = ".csv";
+    private static FileCreateContext fileCreateContext = null;
+
+
+    public static void saveFromPrivateFile(Context context, Test test) throws IOException {
+        try (FileOutputStream fileOutputStream = context.openFileOutput(TEST_PREFIX + test.getFilename(),
+                Context.MODE_PRIVATE)) {
             XmlSaver.save(fileOutputStream, test);
-        } finally {
-            fileOutputStream.close();
         }
     }
 
-    public static Test load(Context context, String filename) throws IOException, XmlPullParserException {
-        FileInputStream fileInputStream = context.openFileInput(TEST_PREFIX + filename);
+    public static Test loadFromPrivateFile(Context context, String filename) throws IOException, XmlPullParserException {
 
-        try {
+        try (FileInputStream fileInputStream = context.openFileInput(TEST_PREFIX + filename)) {
             Test loadedTest = XmlLoader.load(fileInputStream);
             if (loadedTest != null) {
                 loadedTest.setFilename(filename);
             }
             return loadedTest;
-        } finally {
-            fileInputStream.close();
         }
     }
 
     public static Test loadFromAsset(Context context, String filename) throws IOException, XmlPullParserException {
-        InputStream fileInputStream = context.getAssets().open(filename);
 
-        try {
+        try (InputStream fileInputStream = context.getAssets().open(filename)) {
             Test loadedTest = XmlLoader.load(fileInputStream);
             if (loadedTest != null) {
                 loadedTest.setFilename(filename);
             }
             return loadedTest;
-        } finally {
-            fileInputStream.close();
         }
     }
 
     public static void getAvailableFilename(Context context, Test test) {
-        String fileExtension = ".dkl";
-        String name = test.getName()
-                .replace(' ', '_')
-                .replace('/', '_')
-                .replace('.', '_');
+        String fileExtension = DKL_EXTENSION;
+        String name = test.getDefaultFilename();
         int index = -1;
 
         String currentFileName;
@@ -82,7 +92,7 @@ public class FileManager {
             index++;
 
             if (index > 0) {
-                fileExtension = "_" + index + ".dkl";
+                fileExtension = "_" + index + DKL_EXTENSION;
             }
 
             currentFileName = name + fileExtension;
@@ -103,5 +113,126 @@ public class FileManager {
 
     public static void delete(Context context, Test testRemoved) {
         context.deleteFile(TEST_PREFIX + testRemoved.getFilename());
+    }
+
+    public static void exportXmlTest(Activity activity, int position, boolean saveNumberTestDone) {
+        if (fileCreateContext == null) {
+            Test testToSave = DiakoluoApplication.getListTest(activity).get(position);
+            fileCreateContext = new XmlCreateContext(position, saveNumberTestDone);
+
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.setType(MIME_TYPE);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.putExtra(Intent.EXTRA_TITLE, testToSave.getDefaultFilename() + DKL_EXTENSION);
+
+            activity.startActivityForResult(intent, CREATE_DOCUMENT_REQUEST_CODE);
+        } else {
+            Log.w("FileManager", "Can't export test, already waiting result");
+        }
+    }
+
+    public static void exportCsvTest(Activity activity, int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
+        if (fileCreateContext == null) {
+            Test testToSave = DiakoluoApplication.getListTest(activity).get(position);
+            fileCreateContext = new CsvCreateContext(position, columnHeader, columnTypeHeader, separator, lineSeparator);
+
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.setType(MIME_TYPE);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.putExtra(Intent.EXTRA_TITLE, testToSave.getDefaultFilename() + CSV_EXTENSION);
+
+            activity.startActivityForResult(intent, CREATE_DOCUMENT_REQUEST_CODE);
+        } else {
+            Log.w("FileManager", "Can't export test, already waiting result");
+        }
+    }
+
+    public static void exportTestResult(Activity activity, int requestCode, int resultCode,
+                                        @Nullable Intent data, @Nullable View snackbarAnchorView) { // activity must call this in activity on result
+        if (requestCode == CREATE_DOCUMENT_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    Uri uri = data.getData();
+
+                    if (uri != null) {
+                        try {
+                            Test testToSave = DiakoluoApplication.getListTest(activity).get(fileCreateContext.position);
+                            ParcelFileDescriptor pfd = activity.getContentResolver().openFileDescriptor(uri, "w");
+
+                            if (pfd != null) {
+                                FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor());
+                                try {
+                                    if (fileCreateContext instanceof  XmlCreateContext) {
+                                        XmlSaver.save(fos, testToSave, ((XmlCreateContext) fileCreateContext).saveNumberTestDone);
+                                    } else if (fileCreateContext instanceof CsvCreateContext) {
+                                        CsvCreateContext fileCreateContext = (CsvCreateContext) FileManager.fileCreateContext;
+                                        CsvSaver.save(
+                                                fos,
+                                                testToSave,
+                                                fileCreateContext.columnHeader,
+                                                fileCreateContext.columnTypeHeader,
+                                                fileCreateContext.lineSeparator,
+                                                fileCreateContext.separator);
+                                    } else {
+                                        throw new IllegalStateException("File create context has a incorrect type");
+                                    }
+                                } finally {
+                                    fos.close();
+                                    pfd.close();
+                                }
+                                Snackbar.make(activity.findViewById(android.R.id.content), R.string.test_exported, BaseTransientBottomBar.LENGTH_LONG)
+                                        .setAnchorView(snackbarAnchorView).show();
+                            }
+                        } catch (IOException e) {
+                            new AlertDialog.Builder(activity)
+                                    .setTitle(R.string.dialog_export_error_title)
+                                    .setMessage(R.string.dialog_export_error_message)
+                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.dismiss();
+                                        }
+                                    })
+                                    .setIcon(R.drawable.ic_error_red_24dp)
+                                    .show();
+                        }
+                    }
+                }
+            }
+            fileCreateContext = null; // reset test position to allow another export
+        }
+    }
+
+    private static class FileCreateContext {
+        private int position;
+
+        FileCreateContext(int position) {
+            this.position = position;
+        }
+    }
+
+    private static class XmlCreateContext extends FileCreateContext{
+        private boolean saveNumberTestDone;
+
+        XmlCreateContext(int position, boolean saveNumberTestDone) {
+            super(position);
+            this.saveNumberTestDone = saveNumberTestDone;
+        }
+    }
+
+    private static class CsvCreateContext extends FileCreateContext{
+        private boolean columnHeader;
+        private boolean columnTypeHeader;
+        private String separator;
+        private String lineSeparator;
+
+
+        CsvCreateContext(int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
+            super(position);
+            this.columnHeader = columnHeader;
+            this.columnTypeHeader = columnTypeHeader;
+            this.separator = separator;
+            this.lineSeparator = lineSeparator;
+        }
     }
 }

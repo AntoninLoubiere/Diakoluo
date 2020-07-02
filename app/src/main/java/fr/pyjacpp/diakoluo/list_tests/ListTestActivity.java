@@ -7,6 +7,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.edit_test.EditTestActivity;
+import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.test_tests.TestSettingsActivity;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.view_test.MainInformationViewTestFragment;
@@ -30,6 +32,7 @@ public class ListTestActivity extends AppCompatActivity
     private MainInformationViewTestFragment mainInformationViewTestFragment;
 
     private int currentTestSelected = -1;
+    private FloatingActionButton addButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +47,7 @@ public class ListTestActivity extends AppCompatActivity
         mainInformationViewTestFragment = (MainInformationViewTestFragment)
                 getSupportFragmentManager().findFragmentById(R.id.testMainInformationFragment);
 
-        FloatingActionButton addButton = findViewById(R.id.addFloatingButton);
+        addButton = findViewById(R.id.addFloatingButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -136,5 +139,28 @@ public class ListTestActivity extends AppCompatActivity
             else
                 updateDetail(-1);
         }
+    }
+
+    @Override
+    public void onExportMenuItemClick(View view, final int position) {
+        ExportDialogFragment exportDialogFragment = new ExportDialogFragment(new ExportDialogFragment.OnValidListener() {
+            @Override
+            public void createXmlFile(boolean saveNumberTestDone) {
+                FileManager.exportXmlTest(ListTestActivity.this, position, saveNumberTestDone);
+            }
+
+            @Override
+            public void createCsvFile(boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
+                FileManager.exportCsvTest(ListTestActivity.this, position, columnHeader, columnTypeHeader, separator, lineSeparator);
+            }
+        });
+        exportDialogFragment.show(getSupportFragmentManager(), "dialog");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        FileManager.exportTestResult(this, requestCode, resultCode, data, addButton);
     }
 }

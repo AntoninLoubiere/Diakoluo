@@ -80,10 +80,10 @@ public class DiakoluoApplication extends Application {
                 FileManager.getAvailableFilename(this, test);
             }
             try {
-                FileManager.save(this, test);
+                FileManager.saveFromPrivateFile(this, test);
                 listTestFilename.add(test.getFilename());
             } catch (IOException e) {
-                Log.e("DiakoluoApplication", "Can't save test " + test.getName());
+                Log.e("DiakoluoApplication", "Can't saveFromPrivateFile test " + test.getName());
                 e.printStackTrace();
             }
         }
@@ -114,7 +114,7 @@ public class DiakoluoApplication extends Application {
 
         for (String filename : listTestFilename) {
             try {
-                listTest.add(FileManager.load(this, filename));
+                listTest.add(FileManager.loadFromPrivateFile(this, filename));
             } catch (IOException | XmlPullParserException e){
                 Log.e("DiakoluoApplication", "Can't load test " + filename);
                 e.printStackTrace();

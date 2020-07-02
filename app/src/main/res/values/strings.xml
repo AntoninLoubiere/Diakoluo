@@ -35,6 +35,7 @@
     <string name="column_name_format">%s:</string>
     <string name="column_type">Column type:</string>
     <string name="no_test_selected">No test selected. Select a test to show his informations.</string>
+    <string name="export">Export</string>
     <string name="list_test">List of tests</string>
     <string name="test_deleted">\"%s\" has been deleted</string>
     <string name="close">close</string>
@@ -56,4 +57,21 @@
     <string name="dialog_create_new_data_edit">Create</string>
     <string name="dialog_new_answer_title">Create new answer</string>
     <string name="dialog_new_answer_message">Do you want to create a new answer ?</string>
+    <string name="select_export">Select export file type:</string>
+    <string name="all_features_may_not_be_available_in_this_format">All features may not be available in this format !</string>
+    <string name="save_test_done">Save number of test done</string>
+    <string name="save_column_header">Write column name at the top of the file</string>
+    <string name="save_column_type_header">Save column type at the top of the file</string>
+    <string name="separator">Separator:</string>
+    <string name="dialog_export_error_title">Export error</string>
+    <string name="dialog_export_error_message">An error occur during the importation. The file may not work.</string>
+    <string name="test_exported">The test has been successfully exported</string>
+    <string-array name="export_entries">
+        <item>Diakôluo file (.dkl)</item>
+        <item>Csv file (.csv)</item>
+    </string-array>
+    <string-array name="separatorsCsv">
+        <item>Comma (\",\")</item>
+        <item>Semi-colon (\";\")</item>
+    </string-array>
 </resources>

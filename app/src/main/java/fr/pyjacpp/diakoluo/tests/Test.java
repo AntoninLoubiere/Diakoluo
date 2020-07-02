@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Date;
 
+import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public class Test {
@@ -204,5 +205,12 @@ public class Test {
         } else {
             return firstCell.getStringValue();
         }
+    }
+
+    public String getDefaultFilename() {
+        return name
+                .replace(' ', '_')
+                .replace('/', '_')
+                .replace('.', '_').toLowerCase();
     }
 }

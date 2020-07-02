@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
-import fr.pyjacpp.diakoluo.tests.Column;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 

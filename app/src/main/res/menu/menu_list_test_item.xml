@@ -7,6 +7,11 @@
         android:title="@string/edit" />
 
     <item
+        android:id="@+id/export"
+        android:icon="@drawable/ic_export_accent_color_24dp"
+        android:title="@string/export" />
+
+    <item
         android:id="@+id/delete"
         android:icon="@drawable/ic_delete_forever_accent_color_24dp"
         android:title="@string/delete" />

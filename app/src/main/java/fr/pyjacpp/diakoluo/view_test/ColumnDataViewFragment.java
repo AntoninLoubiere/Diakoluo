@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.OnSwipeTouchListener;
 import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.tests.Column;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 public class ColumnDataViewFragment extends Fragment {

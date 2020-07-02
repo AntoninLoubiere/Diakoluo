@@ -28,6 +28,7 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
         void onSeeButtonClick(View view, int position);
         void onDeleteMenuItemClick(View view, int position);
         void onEditMenuItemClick(View view, int position);
+        void onExportMenuItemClick(View view, int position);
     }
 
     static class TestViewHolder extends RecyclerView.ViewHolder {
@@ -106,20 +107,24 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.edit:
-                                if (listener != null) {
+                        if (listener != null) {
+                            switch (item.getItemId()) {
+                                case R.id.edit:
                                     listener.onEditMenuItemClick(view, position);
-                                }
-                                return true;
-                            case R.id.delete:
-                                if (listener != null) {
-                                    listener.onDeleteMenuItemClick(view, position);
-                                }
-                                return true;
+                                    return true;
 
-                            default:
-                                return false;
+                                case R.id.delete:
+                                    listener.onDeleteMenuItemClick(view, position);
+                                    return true;
+
+                                case R.id.export:
+                                    listener.onExportMenuItemClick(view, position);
+
+                                default:
+                                    return false;
+                            }
+                        } else {
+                            return false;
                         }
                     }
                 });
