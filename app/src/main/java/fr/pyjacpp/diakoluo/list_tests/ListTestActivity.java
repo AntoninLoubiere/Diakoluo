@@ -32,6 +32,7 @@ public class ListTestActivity extends AppCompatActivity
     private MainInformationViewTestFragment mainInformationViewTestFragment;
 
     private int currentTestSelected = -1;
+    private FloatingActionButton addButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public class ListTestActivity extends AppCompatActivity
         mainInformationViewTestFragment = (MainInformationViewTestFragment)
                 getSupportFragmentManager().findFragmentById(R.id.testMainInformationFragment);
 
-        FloatingActionButton addButton = findViewById(R.id.addFloatingButton);
+        addButton = findViewById(R.id.addFloatingButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -160,6 +161,6 @@ public class ListTestActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        FileManager.exportTestResult(this, requestCode, resultCode, data);
+        FileManager.exportTestResult(this, requestCode, resultCode, data, addButton);
     }
 }

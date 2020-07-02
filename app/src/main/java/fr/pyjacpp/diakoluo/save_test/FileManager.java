@@ -2,12 +2,18 @@ package fr.pyjacpp.diakoluo.save_test;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -17,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
+import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 public class FileManager {
@@ -141,7 +148,7 @@ public class FileManager {
     }
 
     public static void exportTestResult(Activity activity, int requestCode, int resultCode,
-                                        @Nullable Intent data) { // activity must call this in activity on result
+                                        @Nullable Intent data, @Nullable View snackbarAnchorView) { // activity must call this in activity on result
         if (requestCode == CREATE_DOCUMENT_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 if (data != null) {
@@ -167,14 +174,27 @@ public class FileManager {
                                                 fileCreateContext.lineSeparator,
                                                 fileCreateContext.separator);
                                     } else {
-                                        throw new IllegalStateException("File create context has a incorect type");
+                                        throw new IllegalStateException("File create context has a incorrect type");
                                     }
                                 } finally {
                                     fos.close();
                                     pfd.close();
                                 }
+                                Snackbar.make(activity.findViewById(android.R.id.content), R.string.test_exported, BaseTransientBottomBar.LENGTH_LONG)
+                                        .setAnchorView(snackbarAnchorView).show();
                             }
                         } catch (IOException e) {
+                            new AlertDialog.Builder(activity)
+                                    .setTitle(R.string.dialog_export_error_title)
+                                    .setMessage(R.string.dialog_export_error_message)
+                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.dismiss();
+                                        }
+                                    })
+                                    .setIcon(R.drawable.ic_error_red_24dp)
+                                    .show();
                         }
                     }
                 }
