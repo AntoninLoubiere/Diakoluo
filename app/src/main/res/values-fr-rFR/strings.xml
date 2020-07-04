@@ -23,7 +23,7 @@
     <string name="cancel">Annuler</string>
     <string name="delete">Supprimer</string>
     <string name="edit">Editer</string>
-    <string name="error_label_title_blank">Le titre ne peut pas être laissé vide.</string>
+    <string name="error_label_title_blank">Le nom du test ne peut pas être laissé vide.</string>
     <string name="error_label_title_already_exist">Un test du même nom à déjà été créé.</string>
     <string name="error">Erreur</string>
     <string name="warning">Attention</string>

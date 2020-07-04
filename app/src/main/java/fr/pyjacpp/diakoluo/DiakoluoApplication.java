@@ -32,9 +32,10 @@ public class DiakoluoApplication extends Application {
     private static final int ANALYTICS_SET = 1;
 
     private ArrayList<Test> listTest;
-    private Test currentTest;
+    private Test currentTest = null;
+    private Test currentEditTest = null;
+    private Test currentImportTest = null;
     private TestTestContext testTestContext;
-    private Test currentEditTest;
     private Integer currentIndexEditTest;
     
     private RecyclerViewChange testListChanged;
@@ -143,7 +144,7 @@ public class DiakoluoApplication extends Application {
         return currentTest;
     }
 
-    private ArrayList<Test> getListTest() {
+    public ArrayList<Test> getListTest() {
         return listTest;
     }
 
@@ -162,6 +163,14 @@ public class DiakoluoApplication extends Application {
     private void setCurrentEditTest(Test currentEditTest) {
         this.currentEditTest = currentEditTest;
         currentIndexEditTest = null;
+    }
+
+    public Test getCurrentImportTest() {
+        return currentImportTest;
+    }
+
+    public void setCurrentImportTest(Test currentImportTest) {
+        this.currentImportTest = currentImportTest;
     }
 
     private Integer getCurrentIndexEditTest() {
@@ -244,6 +253,10 @@ public class DiakoluoApplication extends Application {
 
     // static
 
+    public static DiakoluoApplication getDiakoluoApplication(Context context) {
+        return  (DiakoluoApplication) context.getApplicationContext();
+    }
+
     public static void setCurrentTest(Context context, Test currentTest) {
         ((DiakoluoApplication) context.getApplicationContext()).setCurrentTest(currentTest);
     }
@@ -270,6 +283,14 @@ public class DiakoluoApplication extends Application {
 
     public static void setCurrentEditTest(Context context, Test currentEditTest) {
         ((DiakoluoApplication) context.getApplicationContext()).setCurrentEditTest(currentEditTest);
+    }
+
+    public static Test getCurrentImportTest(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentImportTest();
+    }
+
+    public static void setCurrentImportTest(Context context, Test currentEditTest) {
+        ((DiakoluoApplication) context.getApplicationContext()).setCurrentImportTest(currentEditTest);
     }
 
     public static Integer getCurrentIndexEditTest(Context context) {
@@ -320,5 +341,4 @@ public class DiakoluoApplication extends Application {
         ((DiakoluoApplication) context.getApplicationContext()).setAnalyticsSet(b);
     }
 
-    
 }

@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -26,7 +27,9 @@ import fr.pyjacpp.diakoluo.view_test.ViewTestActivity;
 
 public class ListTestActivity extends AppCompatActivity
         implements ListTestsFragment.OnFragmentInteractionListener,
-        MainInformationViewTestFragment.OnFragmentInteractionListener {
+        MainInformationViewTestFragment.OnFragmentInteractionListener,
+        ExportDialogFragment.OnValidListener,
+        ImportXmlDialogFragment.OnValidListener{
 
     private boolean detailMainInformationTest;
     private MainInformationViewTestFragment mainInformationViewTestFragment;
@@ -100,6 +103,10 @@ public class ListTestActivity extends AppCompatActivity
                 startActivity(new Intent(ListTestActivity.this, SettingsActivity.class));
                 return true;
 
+            case R.id.importAction:
+                FileManager.importTest(this);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -142,18 +149,8 @@ public class ListTestActivity extends AppCompatActivity
     }
 
     @Override
-    public void onExportMenuItemClick(View view, final int position) {
-        ExportDialogFragment exportDialogFragment = new ExportDialogFragment(new ExportDialogFragment.OnValidListener() {
-            @Override
-            public void createXmlFile(boolean saveNumberTestDone) {
-                FileManager.exportXmlTest(ListTestActivity.this, position, saveNumberTestDone);
-            }
-
-            @Override
-            public void createCsvFile(boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
-                FileManager.exportCsvTest(ListTestActivity.this, position, columnHeader, columnTypeHeader, separator, lineSeparator);
-            }
-        });
+    public void onExportMenuItemClick(View view, int position) {
+        ExportDialogFragment exportDialogFragment = new ExportDialogFragment(position);
         exportDialogFragment.show(getSupportFragmentManager(), "dialog");
     }
 
@@ -161,6 +158,40 @@ public class ListTestActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        FileManager.exportTestResult(this, requestCode, resultCode, data, addButton);
+        FileManager.exportTestResult(this, requestCode, resultCode, data, addButton, new FileManager.ResultListener() {
+            @Override
+            public void showXmlImportDialog(Test testLoaded) {
+                DiakoluoApplication.setCurrentImportTest(ListTestActivity.this, testLoaded);
+                ImportXmlDialogFragment importXmlDialogFragment = new ImportXmlDialogFragment();
+                importXmlDialogFragment.show(getSupportFragmentManager(), "dialog");
+            }
+        });
+    }
+
+    @Override
+    public void createXmlFile(int position, boolean saveNumberTestDone) {
+        FileManager.exportXmlTest(ListTestActivity.this, position, saveNumberTestDone);
+    }
+
+    @Override
+    public void createCsvFile(int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
+        FileManager.exportCsvTest(ListTestActivity.this, position, columnHeader, columnTypeHeader, separator, lineSeparator);
+    }
+
+    @Override
+    public void saveXmlFile() {
+        // Add test and update recycler
+        DiakoluoApplication diakoluoApplication = DiakoluoApplication.getDiakoluoApplication(this);
+        Test currentImportTest = diakoluoApplication.getCurrentImportTest();
+        ArrayList<Test> listTest = diakoluoApplication.getListTest();
+        listTest.add(currentImportTest);
+
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentListTest);
+        if (fragment != null) {
+            ((ListTestsFragment) fragment).notifyUpdateInserted(listTest.size());
+        }
+
+        diakoluoApplication.setCurrentImportTest(null);
+
     }
 }
