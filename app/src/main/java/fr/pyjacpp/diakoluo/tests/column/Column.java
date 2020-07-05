@@ -8,40 +8,42 @@ import android.widget.TextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
-import fr.pyjacpp.diakoluo.save_test.XmlSaver;
+import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 
 public class Column {
     private String name;
     private String description;
 
-    private ColumnInputType inputType;
-    private Object defaultValue;  // should be immutable
+    ColumnInputType inputType;
+    protected Column() {
+        initialize();
+    }
 
-    public Column() {
+    protected Column(XmlPullParser parser) throws IOException, XmlPullParserException {
+        initialize();
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            readColumnXmlTag(parser);
+        }
+    }
+
+    void initialize() {
         this.name = null;
         this.description = null;
         this.inputType = null;
-        this.defaultValue = null;
-    }
-
-    public Column(String name, String description, ColumnInputType inputType) {
-        this.name = name;
-        this.description = description;
-        this.inputType = inputType;
-        this.defaultValue = "";
-    }
-
-    public Column(Column column) {
-        name = column.name;
-        description = column.description;
-        inputType = column.inputType;
-        defaultValue = column.defaultValue;
     }
 
     public String getName() {
@@ -69,30 +71,21 @@ public class Column {
     }
 
     public Object getDefaultValue() {
-        return defaultValue;
+        throw new RuntimeException("Not implemented");
     }
 
     public void setDefaultValue(Object defaultValue) {
-        this.defaultValue = defaultValue;
+        throw new RuntimeException("Not implemented");
     }
 
     public boolean isValid() {
         return !(name == null ||
                 description == null ||
-                inputType == null ||
-                defaultValue == null);
+                inputType == null);
     }
 
     public void writeXmlHeader(OutputStream fileOutputStream) throws IOException {
-        switch (inputType) {
-            case String:
-                fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_DEFAULT_VALUE,
-                        (String) defaultValue).getBytes());
-                break;
-
-            default:
-                throw new IllegalStateException("State unexepted" + inputType);
-        }
+        throw new RuntimeException("Not implemented");
     }
 
     public View showColumnName(Context context) {
@@ -120,5 +113,78 @@ public class Column {
             inputField.setText((String) defaultValue);
 
         return inputLayout;
+    }
+
+    void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
+        switch (parser.getName()) {
+            case FileManager.TAG_NAME:
+                name = XmlLoader.readName(parser);
+                break;
+
+            case FileManager.TAG_DESCRIPTION:
+                description = XmlLoader.readDescription(parser);
+                break;
+
+            default:
+                XmlLoader.skip(parser);
+                break;
+        }
+    }
+
+    public static Column newColumn(ColumnInputType columnInputType) {
+        switch (columnInputType) {
+            case String:
+                ColumnString columnString = new ColumnString();
+                columnString.setName("");
+                columnString.setDefaultValue("");
+                columnString.setDefaultValue("");
+                return columnString;
+
+            default:
+                throw new IllegalStateException("Unexpected value: " + columnInputType);
+        }
+    }
+
+    static void privateCopyColumn(Column baseColumn, Column newColumn) {
+        newColumn.name = baseColumn.name;
+        newColumn.description = baseColumn.description;
+        newColumn.inputType = baseColumn.inputType;
+    }
+
+    public static Column readColumnXml(XmlPullParser parser) throws XmlPullParserException, IOException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMN);
+        String attributeValue = parser.getAttributeValue(null, FileManager.ATTRIBUTE_INPUT_TYPE);
+        if (attributeValue == null) {
+            // old version
+            return XmlLoader.readColumnXml(parser);
+        } else {
+            ColumnInputType columnInputType = ColumnInputType.get(attributeValue);
+            if (columnInputType == null) {
+                throw new XmlPullParserException("Column input type error");
+            } else {
+                Column column;
+                switch (columnInputType) {
+                    case String:
+                        column = new ColumnString(parser);
+                        break;
+
+                    default:
+                        throw new IllegalStateException("InputType " + columnInputType.name() + " not implemented");
+                }
+                if (column.isValid()) {
+                    return column;
+                } else {
+                    return null;
+                }
+            }
+        }
+    }
+
+    public static Column copyColumn(Column column) {
+        if (column instanceof ColumnString) {
+            return ColumnString.privateCopyColumn((ColumnString) column);
+        } else {
+            throw new IllegalStateException("Column type not detected");
+        }
     }
 }

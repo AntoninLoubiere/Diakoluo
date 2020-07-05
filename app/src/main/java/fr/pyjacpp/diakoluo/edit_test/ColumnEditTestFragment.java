@@ -70,7 +70,7 @@ public class ColumnEditTestFragment extends Fragment implements
     void updateNewItem(Context context) {
         Test currentEditTest = DiakoluoApplication.getCurrentEditTest(context);
         ArrayList<Column> listColumn = currentEditTest.getListColumn();
-        Column column = new Column("", "", ColumnInputType.DEFAULT_INPUT_TYPE);
+        Column column = Column.newColumn(ColumnInputType.DEFAULT_INPUT_TYPE);
         listColumn.add(column);
 
         for (DataRow row : currentEditTest.getListRow()) {

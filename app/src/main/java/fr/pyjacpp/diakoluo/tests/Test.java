@@ -42,7 +42,7 @@ public class Test {
         numberTestDid = test.numberTestDid;
         listColumn = new ArrayList<>();
         for (Column column : test.listColumn) {
-            listColumn.add(new Column(column));
+            listColumn.add(Column.copyColumn(column));
         }
         listRow = new ArrayList<>();
         for (DataRow dataRow : test.listRow) {

@@ -30,19 +30,19 @@ public class FileManager {
     private static final String TEST_PREFIX = "test_";
     
     // tag constants
-    static final String TAG_TEST                 = "test";
-    static final String TAG_NAME                 = "name";
-    static final String TAG_DESCRIPTION          = "description";
-    static final String TAG_NUMBER_TEST_DID      = "numberTestDid";
-    static final String TAG_CREATED_DATE         = "createdDate";
-    static final String TAG_LAST_MODIFICATION    = "lastModification";
-    static final String TAG_COLUMNS              = "columns";
-    static final String TAG_COLUMN               = "column";
-    static final String TAG_ROWS                 = "rows";
-    static final String TAG_ROW                  = "row";
-    public static final String TAG_CELL          = "cell";
-    static final String TAG_INPUT_TYPE           = "inputType";
-    public static final String TAG_DEFAULT_VALUE = "defaultValue";
+    static final String TAG_TEST                    = "test";
+    public static final String TAG_NAME                    = "name";
+    public static final String TAG_DESCRIPTION             = "description";
+    static final String TAG_NUMBER_TEST_DID         = "numberTestDid";
+    static final String TAG_CREATED_DATE            = "createdDate";
+    static final String TAG_LAST_MODIFICATION       = "lastModification";
+    static final String TAG_COLUMNS                 = "columns";
+    public static final String TAG_COLUMN           = "column";
+    static final String TAG_ROWS                    = "rows";
+    static final String TAG_ROW                     = "row";
+    public static final String TAG_CELL             = "cell";
+    public static final String ATTRIBUTE_INPUT_TYPE = "inputType";
+    public static final String TAG_DEFAULT_VALUE    = "defaultValue";
 
     private static final String MIME_TYPE = "*/*";
 
