@@ -17,7 +17,7 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 
-public class DataCell {
+public abstract class DataCell {
     public DataCell(DataCell dataCell) {
     }
 
@@ -46,9 +46,7 @@ public class DataCell {
         row.getListCells().put(column, getDefaultValueCell(column));
     }
 
-    public Object getValue() {
-        throw new RuntimeException("Not implemented");
-    }
+    public abstract Object getValue();
 
     public static Class<? extends DataCell> getClassByColumnType(ColumnInputType inputType) {
         switch (inputType) {
@@ -60,9 +58,7 @@ public class DataCell {
         }
     }
 
-    public void setValue(Object object) {
-        throw new RuntimeException("Not implemented");
-    }
+    public abstract void setValue(Object object);
 
     public View showValue(Context context) {
         MaterialTextView valueTextView = new MaterialTextView(context);
@@ -98,9 +94,7 @@ public class DataCell {
         return (String) answer;
     }
 
-    public String getStringValue() {
-        throw new RuntimeException("Not implemented");
-    }
+    public abstract String getStringValue();
 
     public void setValueFromView(View view) {
         setValue(getValueFromView(view));
@@ -124,6 +118,10 @@ public class DataCell {
             testTestContext.addScore(1);
     }
 
+    public abstract void setValueFromCsv(String lineCell);
+
+    public abstract void writeXml(OutputStream fileOutputStream) throws IOException;
+
     public class ShowValueResponse {
         ShowValueResponse(View valueView, boolean answerIsTrue) {
             this.valueView = valueView;
@@ -140,9 +138,5 @@ public class DataCell {
         public boolean isAnswerTrue() {
             return answerIsTrue;
         }
-    }
-
-    public void writeXml(OutputStream fileOutputStream) throws IOException {
-        throw new RuntimeException("Not implemented");
     }
 }

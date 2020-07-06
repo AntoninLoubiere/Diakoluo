@@ -17,10 +17,12 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
@@ -30,25 +32,30 @@ public class FileManager {
     private static final String TEST_PREFIX = "test_";
     
     // tag constants
-    static final String TAG_TEST                 = "test";
-    static final String TAG_NAME                 = "name";
-    static final String TAG_DESCRIPTION          = "description";
-    static final String TAG_NUMBER_TEST_DID      = "numberTestDid";
-    static final String TAG_CREATED_DATE         = "createdDate";
-    static final String TAG_LAST_MODIFICATION    = "lastModification";
-    static final String TAG_COLUMNS              = "columns";
-    static final String TAG_COLUMN               = "column";
-    static final String TAG_ROWS                 = "rows";
-    static final String TAG_ROW                  = "row";
-    public static final String TAG_CELL          = "cell";
-    static final String TAG_INPUT_TYPE           = "inputType";
-    public static final String TAG_DEFAULT_VALUE = "defaultValue";
+    static final String TAG_TEST                    = "test";
+    public static final String TAG_NAME             = "name";
+    public static final String TAG_DESCRIPTION      = "description";
+    static final String TAG_NUMBER_TEST_DID         = "numberTestDid";
+    static final String TAG_CREATED_DATE            = "createdDate";
+    static final String TAG_LAST_MODIFICATION       = "lastModification";
+    static final String TAG_COLUMNS                 = "columns";
+    public static final String TAG_COLUMN           = "column";
+    static final String TAG_ROWS                    = "rows";
+    static final String TAG_ROW                     = "row";
+    public static final String TAG_CELL             = "cell";
+    public static final String ATTRIBUTE_INPUT_TYPE = "inputType";
+    public static final String TAG_DEFAULT_VALUE    = "defaultValue";
 
-    private static final String MIME_TYPE = "application/dkl";
+    private static final String MIME_TYPE = "*/*";
 
     private static final int CREATE_DOCUMENT_REQUEST_CODE = 1;
+    private static final int OPEN_DOCUMENT_REQUEST_CODE = 2;
     private static final String DKL_EXTENSION = ".dkl";
     private static final String CSV_EXTENSION = ".csv";
+    private static final Boolean BOOLEAN_DIAKOLUO_TYPE = true;
+
+    private static final int NUMBER_LINE_SHOW_CSV = 4;
+
     private static FileCreateContext fileCreateContext = null;
 
 
@@ -147,9 +154,18 @@ public class FileManager {
         }
     }
 
+    public static void importTest(Activity activity) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType(MIME_TYPE);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        activity.startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE);
+    }
+
     public static void exportTestResult(Activity activity, int requestCode, int resultCode,
-                                        @Nullable Intent data, @Nullable View snackbarAnchorView) { // activity must call this in activity on result
+                                        @Nullable Intent data, @Nullable View snackbarAnchorView, ResultListener resultListener) { // activity must call this in activity on result
         if (requestCode == CREATE_DOCUMENT_REQUEST_CODE) {
+            // process create document
             if (resultCode == Activity.RESULT_OK) {
                 if (data != null) {
                     Uri uri = data.getData();
@@ -200,7 +216,104 @@ public class FileManager {
                 }
             }
             fileCreateContext = null; // reset test position to allow another export
+        } else if (requestCode == OPEN_DOCUMENT_REQUEST_CODE) {
+            // process open document
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    Uri uri = data.getData();
+
+                    if (uri != null) {
+                        InputStream inputStream = null;
+                        try {
+                            inputStream = activity.getContentResolver().openInputStream(uri);
+
+                            if (inputStream == null) {
+                                throw new IOException("Error");
+                            }
+
+                            Boolean b = detectFileType(inputStream);
+
+                            inputStream.close();
+                            // reset inputStream
+                            inputStream =
+                                    activity.getContentResolver().openInputStream(uri);
+
+                            if (inputStream == null) {
+                                throw new IOException("Error");
+                            }
+
+                            if (b == null) {
+                                throw new IOException("Type not detected");
+                            } else if (b == BOOLEAN_DIAKOLUO_TYPE) {
+                                // Process .dkl
+                                Test testLoaded = XmlLoader.load(inputStream);
+                                if (testLoaded.isValid()) {
+                                    resultListener.showXmlImportDialog(new ImportXmlContext(testLoaded));
+                                } else {
+                                    throw new IOException("Test not imported");
+                                }
+                            } else {
+                                // Process .csv
+                                String[] firstsLines= new String[NUMBER_LINE_SHOW_CSV + 1];
+                                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+                                String line;
+                                int lineCount = -1;
+                                while ((line = bufferedReader.readLine()) != null) {
+                                    lineCount += 1;
+                                    if (lineCount < NUMBER_LINE_SHOW_CSV) {
+                                        firstsLines[lineCount] = line;
+                                    } else {
+                                        firstsLines[NUMBER_LINE_SHOW_CSV] = "...";
+                                        break;
+                                    }
+                                }
+
+                                resultListener.showCsvImportDialog(new ImportCsvContext(firstsLines, uri));
+                            }
+                        } catch (IOException | ClassCastException | XmlPullParserException e) {
+                            new AlertDialog.Builder(activity)
+                                    .setTitle(R.string.dialog_import_error_title)
+                                    .setMessage(R.string.dialog_import_error_message)
+                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.dismiss();
+                                        }
+                                    })
+                                    .setIcon(R.drawable.ic_error_red_24dp)
+                                    .show();
+                            e.printStackTrace();
+                        } finally {
+                            if (inputStream != null) {
+                                try {
+                                    inputStream.close();
+                                } catch (IOException ignored) {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    private static Boolean detectFileType(InputStream reader) throws IOException {
+        int i_char;
+        char c;
+        Boolean result = null;
+        while ((i_char = reader.read()) != -1) {
+            c = (char) i_char;
+            if (c == '<') {
+                result = BOOLEAN_DIAKOLUO_TYPE;
+                break;
+            }
+            else if (c != '\n' && c != ' ' && c != '\t') {
+                result = !BOOLEAN_DIAKOLUO_TYPE;
+                break;
+            }
+        }
+        return result; // file empty
     }
 
     private static class FileCreateContext {
@@ -234,5 +347,31 @@ public class FileManager {
             this.separator = separator;
             this.lineSeparator = lineSeparator;
         }
+    }
+
+    public static class ImportContext {
+    }
+
+    public static class ImportXmlContext extends ImportContext {
+        public Test importTest;
+
+        public ImportXmlContext(Test importTest) {
+            this.importTest = importTest;
+        }
+    }
+
+    public static class ImportCsvContext extends ImportContext {
+        public String[] firstLines;
+        public Uri fileUri;
+
+        public ImportCsvContext(String[] firstLines, Uri fileUri) {
+            this.firstLines = firstLines;
+            this.fileUri = fileUri;
+        }
+    }
+
+    public interface  ResultListener {
+        void showXmlImportDialog(ImportXmlContext importXmlContext);
+        void showCsvImportDialog(ImportCsvContext importCsvContext);
     }
 }

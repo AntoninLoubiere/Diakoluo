@@ -1,5 +1,6 @@
 package fr.pyjacpp.diakoluo.list_tests;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ public class ExportDialogFragment extends DialogFragment {
     private static final String SAVE_NUMBER_TEST_DONE = "numberTestDone";
     private static final String COLUMN_HEADER = "columnHeader";
     private static final String COLUMN_TYPE_HEADER = "columnTypeHeader";
+    private static final String POSITION = "position";
 
     private CheckBox saveNumberTestDoneCheckBox;
     private CheckBox columnHeaderCheckBox;
@@ -39,9 +41,13 @@ public class ExportDialogFragment extends DialogFragment {
     private Spinner exportFileType;
     private Spinner separatorSpinner;
     private TextView separatorTextView;
+    private int position;
 
-    ExportDialogFragment(OnValidListener listener) {
-        this.listener = listener;
+    public  ExportDialogFragment() {
+    }
+
+    ExportDialogFragment(int position) {
+        this.position = position;
     }
 
     @Override
@@ -67,6 +73,7 @@ public class ExportDialogFragment extends DialogFragment {
             saveNumberTestDoneChecked = savedInstanceState.getBoolean(SAVE_NUMBER_TEST_DONE, true);
             columnHeaderChecked = savedInstanceState.getBoolean(COLUMN_HEADER, true);
             columnTypeHeaderChecked = savedInstanceState.getBoolean(COLUMN_TYPE_HEADER, true);
+            position = savedInstanceState.getInt(POSITION);
         }
 
         // lock updates
@@ -141,9 +148,10 @@ public class ExportDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 if (exportFileType.getSelectedItemId() == DIAKOLUO_FILE_TYPE_INDEX) {
-                    listener.createXmlFile(saveNumberTestDoneCheckBox.isChecked());
+                    listener.createXmlFile(position, saveNumberTestDoneCheckBox.isChecked());
                 } else {
                     listener.createCsvFile(
+                            position,
                             columnHeaderCheckBox.isChecked(),
                             columnTypeHeaderCheckBox.isChecked(),
                             CsvSaver.SEPARATORS[(int) separatorSpinner.getSelectedItemId()],
@@ -157,15 +165,26 @@ public class ExportDialogFragment extends DialogFragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnValidListener) {
+            listener = (OnValidListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement onValidListener");
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SAVE_NUMBER_TEST_DONE, saveNumberTestDoneChecked);
         outState.putBoolean(COLUMN_HEADER, columnHeaderChecked);
         outState.putBoolean(COLUMN_TYPE_HEADER, columnTypeHeaderChecked);
+        outState.putInt(POSITION, position);
     }
 
     public interface OnValidListener {
-        void createXmlFile(boolean saveNumberTestDone);
-        void createCsvFile(boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator);
+        void createXmlFile(int position, boolean saveNumberTestDone);
+        void createCsvFile(int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator);
     }
 }

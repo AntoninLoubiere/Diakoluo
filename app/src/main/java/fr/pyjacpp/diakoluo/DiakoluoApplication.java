@@ -32,9 +32,10 @@ public class DiakoluoApplication extends Application {
     private static final int ANALYTICS_SET = 1;
 
     private ArrayList<Test> listTest;
-    private Test currentTest;
+    private Test currentTest = null;
+    private Test currentEditTest = null;
+    private FileManager.ImportContext currentImportContext = null;
     private TestTestContext testTestContext;
-    private Test currentEditTest;
     private Integer currentIndexEditTest;
     
     private RecyclerViewChange testListChanged;
@@ -143,7 +144,7 @@ public class DiakoluoApplication extends Application {
         return currentTest;
     }
 
-    private ArrayList<Test> getListTest() {
+    public ArrayList<Test> getListTest() {
         return listTest;
     }
 
@@ -162,6 +163,14 @@ public class DiakoluoApplication extends Application {
     private void setCurrentEditTest(Test currentEditTest) {
         this.currentEditTest = currentEditTest;
         currentIndexEditTest = null;
+    }
+
+    public FileManager.ImportContext getCurrentImportContext() {
+        return currentImportContext;
+    }
+
+    public void setCurrentImportContext(FileManager.ImportContext currentImportTest) {
+        this.currentImportContext = currentImportTest;
     }
 
     private Integer getCurrentIndexEditTest() {
@@ -244,6 +253,10 @@ public class DiakoluoApplication extends Application {
 
     // static
 
+    public static DiakoluoApplication getDiakoluoApplication(Context context) {
+        return  (DiakoluoApplication) context.getApplicationContext();
+    }
+
     public static void setCurrentTest(Context context, Test currentTest) {
         ((DiakoluoApplication) context.getApplicationContext()).setCurrentTest(currentTest);
     }
@@ -270,6 +283,14 @@ public class DiakoluoApplication extends Application {
 
     public static void setCurrentEditTest(Context context, Test currentEditTest) {
         ((DiakoluoApplication) context.getApplicationContext()).setCurrentEditTest(currentEditTest);
+    }
+
+    public static FileManager.ImportContext getCurrentImportContext(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentImportContext();
+    }
+
+    public static void setCurrentImportContext(Context context, FileManager.ImportContext currentEditTest) {
+        ((DiakoluoApplication) context.getApplicationContext()).setCurrentImportContext(currentEditTest);
     }
 
     public static Integer getCurrentIndexEditTest(Context context) {
@@ -320,5 +341,4 @@ public class DiakoluoApplication extends Application {
         ((DiakoluoApplication) context.getApplicationContext()).setAnalyticsSet(b);
     }
 
-    
 }

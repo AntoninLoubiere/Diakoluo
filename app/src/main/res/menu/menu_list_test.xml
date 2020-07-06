@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/importAction"
+        android:icon="@drawable/ic_import_white_24dp"
+        android:title="@string/import_text"
+        app:showAsAction="ifRoom"/>
+
     <item
         android:id="@+id/settingsAction"
         android:icon="@drawable/ic_settings_white_24dp"

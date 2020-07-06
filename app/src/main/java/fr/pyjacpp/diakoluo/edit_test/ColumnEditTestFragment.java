@@ -56,7 +56,7 @@ public class ColumnEditTestFragment extends Fragment implements
             @Override
             public void onClick(View view) {
                 updateNewItem(view.getContext());
-                onItemClick(view, DiakoluoApplication.getCurrentEditTest(view.getContext()).getNumberColumn());
+                onItemClick(view, DiakoluoApplication.getCurrentEditTest(view.getContext()).getNumberColumn() - 1);
             }
         });
 
@@ -70,7 +70,7 @@ public class ColumnEditTestFragment extends Fragment implements
     void updateNewItem(Context context) {
         Test currentEditTest = DiakoluoApplication.getCurrentEditTest(context);
         ArrayList<Column> listColumn = currentEditTest.getListColumn();
-        Column column = new Column("", "", ColumnInputType.DEFAULT_INPUT_TYPE);
+        Column column = Column.newColumn(ColumnInputType.DEFAULT_INPUT_TYPE, context.getString(R.string.default_column_name, listColumn.size() + 1), "");
         listColumn.add(column);
 
         for (DataRow row : currentEditTest.getListRow()) {
@@ -80,7 +80,7 @@ public class ColumnEditTestFragment extends Fragment implements
         RecyclerViewChange columnListChanged = new RecyclerViewChange(
                 RecyclerViewChange.ItemInserted
         );
-        columnListChanged.setPosition(currentEditTest.getNumberColumn() - 1);
+        columnListChanged.setPosition(listColumn.size() - 1);
         columnEditTestRecyclerListFragment.applyRecyclerChanges(columnListChanged);
 
         if (currentEditTest.getNumberColumn() <= 1) {

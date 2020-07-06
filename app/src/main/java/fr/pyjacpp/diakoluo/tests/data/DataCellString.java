@@ -39,6 +39,11 @@ public class DataCellString extends DataCell {
     }
 
     @Override
+    public void setValueFromCsv(String lineCell) {
+        value = lineCell;
+    }
+
+    @Override
     public void writeXml(OutputStream fileOutputStream) throws IOException {
         fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_CELL, value).getBytes());
     }
