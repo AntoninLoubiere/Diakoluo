@@ -57,7 +57,7 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
         });
         LinearLayoutManager answerRecyclerViewLayout = new LinearLayoutManager(answerRecyclerView.getContext());
 
-        answerRecyclerView.setHasFixedSize(true);
+        answerRecyclerView.setHasFixedSize(false);
         answerRecyclerView.setLayoutManager(answerRecyclerViewLayout);
         answerRecyclerView.setAdapter(answerRecyclerViewAdapter);
 
@@ -146,8 +146,8 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
         answerRecyclerViewAdapter.notifyItemChanged(position);
     }
 
-    void applyRecyclerChanges(RecyclerViewChange columnListChanged) {
-        columnListChanged.apply(answerRecyclerViewAdapter);
+    void applyRecyclerChanges(RecyclerViewChange answerListChanged) {
+        answerListChanged.apply(answerRecyclerViewAdapter);
     }
 
     public interface OnFragmentInteractionListener {

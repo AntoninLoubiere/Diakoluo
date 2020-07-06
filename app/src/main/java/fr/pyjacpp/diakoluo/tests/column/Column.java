@@ -130,12 +130,16 @@ public abstract class Column {
     }
 
     public static Column newColumn(ColumnInputType columnInputType) {
+        return newColumn(columnInputType, "", "");
+    }
+
+    public static Column newColumn(ColumnInputType columnInputType, String name, String description) {
         switch (columnInputType) {
             case String:
                 ColumnString columnString = new ColumnString();
-                columnString.setName("");
-                columnString.setDefaultValue("");
-                columnString.setDefaultValue("");
+                columnString.setName(name);
+                columnString.setDescription(description);
+                columnString.initializeDefaultValue();
                 return columnString;
 
             default:

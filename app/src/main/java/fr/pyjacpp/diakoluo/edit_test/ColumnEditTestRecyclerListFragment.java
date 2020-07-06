@@ -76,7 +76,6 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
         });
         LinearLayoutManager columnRecyclerViewLayoutManager = new LinearLayoutManager(columnRecyclerView.getContext());
 
-        columnRecyclerView.setHasFixedSize(true);
         columnRecyclerView.setLayoutManager(columnRecyclerViewLayoutManager);
         columnRecyclerView.setAdapter(columnRecyclerViewAdapter);
 
