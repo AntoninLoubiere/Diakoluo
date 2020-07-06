@@ -262,8 +262,6 @@ public class XmlLoader {
     public static Column readColumnXml(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMN);
 
-        Log.d("XmlLoader", "DEPRECATED");
-
         String name = null;
         String description = null;
         ColumnInputType inputType = null;

@@ -2,14 +2,16 @@ package fr.pyjacpp.diakoluo.test_tests;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
-import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 
 public class TestTestContext {
 
@@ -31,7 +33,15 @@ public class TestTestContext {
     private HashMap<Column, Object> userAnswer = new HashMap<>();
     private HashMap<Column, Boolean> showColumn = new HashMap<>();
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    protected TestTestContext(Test test, int numberQuestionToAsk, int numberColumnToShow) {
+        this.test = test;
+        this.numberQuestionToAsk = numberQuestionToAsk;
+        this.numberColumnToShow = numberColumnToShow;
 
+        // initialize
+        reset();
+    }
 
     TestTestContext(Context context, int numberQuestionToAsk, int numberColumnToShow) {
         this.numberQuestionToAsk = numberQuestionToAsk;
