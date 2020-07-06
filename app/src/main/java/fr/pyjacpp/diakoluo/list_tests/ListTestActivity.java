@@ -1,9 +1,9 @@
 package fr.pyjacpp.diakoluo.list_tests;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -11,6 +11,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -220,9 +221,30 @@ public class ListTestActivity extends AppCompatActivity
                         name);
                 importTest(diakoluoApplication, testLoaded);
             }
+        } catch (CsvLoader.CsvException e) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.dialog_import_error_title)
+                    .setMessage(R.string.dialog_export_error_csv_message)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .setIcon(R.drawable.ic_error_red_24dp)
+                    .show();
         } catch (IOException e) {
-            e.printStackTrace();
-            // TODO: Error
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.dialog_import_error_title)
+                    .setMessage(R.string.dialog_import_error_message)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .setIcon(R.drawable.ic_error_red_24dp)
+                    .show();
         } finally {
             if (pfd != null)
                 try {
@@ -234,8 +256,17 @@ public class ListTestActivity extends AppCompatActivity
 
     private void importTest(DiakoluoApplication diakoluoApplication, Test currentImportTest) {
         if (currentImportTest == null) {
-            Log.d("LoadTest", "Test is null");
-            // TODO: Error
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.dialog_import_error_title)
+                    .setMessage(R.string.dialog_import_error_message)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .setIcon(R.drawable.ic_error_red_24dp)
+                    .show();
         } else {
             ArrayList<Test> listTest = diakoluoApplication.getListTest();
             listTest.add(currentImportTest);

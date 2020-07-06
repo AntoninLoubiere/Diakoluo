@@ -41,7 +41,7 @@ public class CsvLoader {
             if (numberColumns > 0) {
                 columnNames = line;
             } else {
-                throw new IOException("Line missing !");
+                throw new CsvException("Line missing !");
             }
         }
 
@@ -54,7 +54,7 @@ public class CsvLoader {
                     numberColumns = currentSize;
                 }
             } else {
-                throw new IOException("Line missing !");
+                throw new CsvException("Line missing !");
             }
         }
 
@@ -83,7 +83,7 @@ public class CsvLoader {
                 }
                 rows.add(row);
             } else {
-                throw new IOException("Csv format error");
+                throw new CsvException("Csv format error");
             }
         }
 
@@ -228,6 +228,12 @@ public class CsvLoader {
             this.bufferedReader = bufferedReader;
             this.separator = separator;
             this.lineSeparator = lineSeparator;
+        }
+    }
+
+    public static class CsvException extends IOException {
+        CsvException(String csv_format_error) {
+            super(csv_format_error);
         }
     }
 }
