@@ -60,8 +60,8 @@
     <string name="select_export">Select export file type:</string>
     <string name="all_features_may_not_be_available_in_this_format">All features may not be available in this format !</string>
     <string name="save_test_done">Save number of test done</string>
-    <string name="save_column_header">Write column name at the top of the file</string>
-    <string name="save_column_type_header">Save column type at the top of the file</string>
+    <string name="save_column_header_save">Save column name at the top of the file</string>
+    <string name="save_column_type_header_save">Save column type at the top of the file</string>
     <string name="separator">Separator:</string>
     <string name="dialog_export_error_title">Export error</string>
     <string name="dialog_export_error_message">An error occur during the importation. The file may not work.</string>
@@ -70,6 +70,11 @@
     <string name="dialog_import_error_title">Import error</string>
     <string name="dialog_import_error_message">A error occur during the importation. The test hasn\'t been added.</string>
     <string name="import_hint_title_test">Name of the test</string>
+    <string name="save_column_header_load">Load column name at the top of the file</string>
+    <string name="save_column_type_header_load">Load column type at the top of the file</string>
+    <string name="file_preview">File preview:</string>
+    <string name="test_default_name">Test</string>
+    <string name="default_column_name">Column %d</string>
     <string-array name="export_entries">
         <item>Diakôluo file (.dkl)</item>
         <item>Csv file (.csv)</item>

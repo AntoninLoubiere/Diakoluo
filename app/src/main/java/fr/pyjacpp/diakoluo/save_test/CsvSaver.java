@@ -10,8 +10,8 @@ import fr.pyjacpp.diakoluo.tests.column.Column;
 
 public class CsvSaver {
 
-    public static final String DEFAULT_LINE_SEPARATOR = "\n";
-    public static final String[] SEPARATORS = {",", ";"};
+    public static final String DEFAULT_LINE_SEPARATOR = "\n"; // must be only one char
+    public static final String[] SEPARATORS = {",", ";"}; // must be only one char
 
     static void save(FileOutputStream fileOutputStream, Test test, boolean columnHeader, boolean columnTypeHeader, String lineSeparator, String separator) throws IOException {
         ArrayList<Column> listColumn = test.getListColumn();

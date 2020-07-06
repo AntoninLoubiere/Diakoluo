@@ -35,6 +35,11 @@ class ColumnString extends Column {
     }
 
     @Override
+    public void initializeDefaultValue() {
+        defaultValue = "";
+    }
+
+    @Override
     public Object getDefaultValue() {
         return defaultValue;
     }

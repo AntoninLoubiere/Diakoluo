@@ -17,10 +17,12 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
@@ -31,8 +33,8 @@ public class FileManager {
     
     // tag constants
     static final String TAG_TEST                    = "test";
-    public static final String TAG_NAME                    = "name";
-    public static final String TAG_DESCRIPTION             = "description";
+    public static final String TAG_NAME             = "name";
+    public static final String TAG_DESCRIPTION      = "description";
     static final String TAG_NUMBER_TEST_DID         = "numberTestDid";
     static final String TAG_CREATED_DATE            = "createdDate";
     static final String TAG_LAST_MODIFICATION       = "lastModification";
@@ -51,6 +53,8 @@ public class FileManager {
     private static final String DKL_EXTENSION = ".dkl";
     private static final String CSV_EXTENSION = ".csv";
     private static final Boolean BOOLEAN_DIAKOLUO_TYPE = true;
+
+    private static final int NUMBER_LINE_SHOW_CSV = 4;
 
     private static FileCreateContext fileCreateContext = null;
 
@@ -244,11 +248,28 @@ public class FileManager {
                                 // Process .dkl
                                 Test testLoaded = XmlLoader.load(inputStream);
                                 if (testLoaded.isValid()) {
-                                    resultListener.showXmlImportDialog(testLoaded);
+                                    resultListener.showXmlImportDialog(new ImportXmlContext(testLoaded));
+                                } else {
+                                    throw new IOException("Test not imported");
                                 }
                             } else {
                                 // Process .csv
-                                Log.d("FileManager", "File type: .csv");
+                                String[] firstsLines= new String[NUMBER_LINE_SHOW_CSV + 1];
+                                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+                                String line;
+                                int lineCount = -1;
+                                while ((line = bufferedReader.readLine()) != null) {
+                                    lineCount += 1;
+                                    if (lineCount < NUMBER_LINE_SHOW_CSV) {
+                                        firstsLines[lineCount] = line;
+                                    } else {
+                                        firstsLines[NUMBER_LINE_SHOW_CSV] = "...";
+                                        break;
+                                    }
+                                }
+
+                                resultListener.showCsvImportDialog(new ImportCsvContext(firstsLines, uri));
                             }
                         } catch (IOException | ClassCastException | XmlPullParserException e) {
                             new AlertDialog.Builder(activity)
@@ -328,7 +349,29 @@ public class FileManager {
         }
     }
 
+    public static class ImportContext {
+    }
+
+    public static class ImportXmlContext extends ImportContext {
+        public Test importTest;
+
+        public ImportXmlContext(Test importTest) {
+            this.importTest = importTest;
+        }
+    }
+
+    public static class ImportCsvContext extends ImportContext {
+        public String[] firstLines;
+        public Uri fileUri;
+
+        public ImportCsvContext(String[] firstLines, Uri fileUri) {
+            this.firstLines = firstLines;
+            this.fileUri = fileUri;
+        }
+    }
+
     public interface  ResultListener {
-        void showXmlImportDialog(Test testLoaded);
+        void showXmlImportDialog(ImportXmlContext importXmlContext);
+        void showCsvImportDialog(ImportCsvContext importCsvContext);
     }
 }

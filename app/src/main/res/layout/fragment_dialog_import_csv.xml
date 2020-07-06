@@ -20,56 +20,28 @@
                 style="@style/Text.Title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/export" />
+                android:text="@string/import_text" />
 
-            <TextView
-                style="@style/TextAppearance.MaterialComponents.Headline6"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_marginTop="@dimen/default_margin"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/select_export"/>
+                android:layout_height="wrap_content">
 
-            <Spinner
-                android:id="@+id/exportFileTypeSpinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:entries="@array/export_entries"/>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/titleInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/import_hint_title_test"
+                    android:selectAllOnFocus="true"/>
 
-            <TextView
-                android:id="@+id/warningFileTypeTextView"
-                style="@style/TextAppearance.MaterialComponents.Body1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_warning_yellow_24dp"
-                android:drawablePadding="@dimen/default_margin"
-                android:text="@string/all_features_may_not_be_available_in_this_format"
-                android:visibility="gone" />
-
-            <CheckBox
-                android:id="@+id/testDoneCheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/save_test_done"
-                android:checked="true" />
-
-            <CheckBox
-                android:id="@+id/columnHeaderCheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/save_column_header_save"
-                android:checked="true" />
-
-            <CheckBox
-                android:id="@+id/columnTypeHeaderCheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/save_column_type_header_save"
-                android:checked="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/default_margin">
 
                 <TextView
                     android:id="@+id/separatorTextView"
@@ -86,6 +58,33 @@
                     android:entries="@array/separatorsCsv" />
 
             </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/columnHeaderCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/save_column_header_load" />
+
+            <CheckBox
+                android:id="@+id/columnTypeHeaderCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/save_column_type_header_load" />
+
+            <TextView
+                style="@style/TextAppearance.MaterialComponents.Headline6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/file_preview" />
+
+            <TextView
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_marginTop="@dimen/default_margin"
+                android:id="@+id/previewTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
@@ -116,7 +115,7 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/export">
+            android:text="@string/import_text">
         </Button>
 
     </LinearLayout>

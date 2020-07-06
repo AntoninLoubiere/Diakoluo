@@ -34,7 +34,7 @@ public class DiakoluoApplication extends Application {
     private ArrayList<Test> listTest;
     private Test currentTest = null;
     private Test currentEditTest = null;
-    private Test currentImportTest = null;
+    private FileManager.ImportContext currentImportContext = null;
     private TestTestContext testTestContext;
     private Integer currentIndexEditTest;
     
@@ -165,12 +165,12 @@ public class DiakoluoApplication extends Application {
         currentIndexEditTest = null;
     }
 
-    public Test getCurrentImportTest() {
-        return currentImportTest;
+    public FileManager.ImportContext getCurrentImportContext() {
+        return currentImportContext;
     }
 
-    public void setCurrentImportTest(Test currentImportTest) {
-        this.currentImportTest = currentImportTest;
+    public void setCurrentImportContext(FileManager.ImportContext currentImportTest) {
+        this.currentImportContext = currentImportTest;
     }
 
     private Integer getCurrentIndexEditTest() {
@@ -285,12 +285,12 @@ public class DiakoluoApplication extends Application {
         ((DiakoluoApplication) context.getApplicationContext()).setCurrentEditTest(currentEditTest);
     }
 
-    public static Test getCurrentImportTest(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentImportTest();
+    public static FileManager.ImportContext getCurrentImportContext(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentImportContext();
     }
 
-    public static void setCurrentImportTest(Context context, Test currentEditTest) {
-        ((DiakoluoApplication) context.getApplicationContext()).setCurrentImportTest(currentEditTest);
+    public static void setCurrentImportContext(Context context, FileManager.ImportContext currentEditTest) {
+        ((DiakoluoApplication) context.getApplicationContext()).setCurrentImportContext(currentEditTest);
     }
 
     public static Integer getCurrentIndexEditTest(Context context) {

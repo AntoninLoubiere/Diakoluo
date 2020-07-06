@@ -2,6 +2,8 @@ package fr.pyjacpp.diakoluo.list_tests;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,11 +16,15 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.edit_test.EditTestActivity;
+import fr.pyjacpp.diakoluo.save_test.CsvLoader;
+import fr.pyjacpp.diakoluo.save_test.CsvSaver;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.test_tests.TestSettingsActivity;
 import fr.pyjacpp.diakoluo.tests.Test;
@@ -29,7 +35,8 @@ public class ListTestActivity extends AppCompatActivity
         implements ListTestsFragment.OnFragmentInteractionListener,
         MainInformationViewTestFragment.OnFragmentInteractionListener,
         ExportDialogFragment.OnValidListener,
-        ImportXmlDialogFragment.OnValidListener{
+        ImportXmlDialogFragment.OnValidListener,
+        ImportCsvDialogFragment.OnValidListener {
 
     private boolean detailMainInformationTest;
     private MainInformationViewTestFragment mainInformationViewTestFragment;
@@ -160,10 +167,17 @@ public class ListTestActivity extends AppCompatActivity
 
         FileManager.exportTestResult(this, requestCode, resultCode, data, addButton, new FileManager.ResultListener() {
             @Override
-            public void showXmlImportDialog(Test testLoaded) {
-                DiakoluoApplication.setCurrentImportTest(ListTestActivity.this, testLoaded);
+            public void showXmlImportDialog(FileManager.ImportXmlContext importContext) {
+                DiakoluoApplication.setCurrentImportContext(ListTestActivity.this, importContext);
                 ImportXmlDialogFragment importXmlDialogFragment = new ImportXmlDialogFragment();
                 importXmlDialogFragment.show(getSupportFragmentManager(), "dialog");
+            }
+
+            @Override
+            public void showCsvImportDialog(FileManager.ImportCsvContext importContext) {
+                DiakoluoApplication.setCurrentImportContext(ListTestActivity.this, importContext);
+                ImportCsvDialogFragment importCsvDialogFragment = new ImportCsvDialogFragment();
+                importCsvDialogFragment.show(getSupportFragmentManager(), "dialog");
             }
         });
     }
@@ -179,19 +193,58 @@ public class ListTestActivity extends AppCompatActivity
     }
 
     @Override
-    public void saveXmlFile() {
+    public void loadXmlFile() {
         // Add test and update recycler
         DiakoluoApplication diakoluoApplication = DiakoluoApplication.getDiakoluoApplication(this);
-        Test currentImportTest = diakoluoApplication.getCurrentImportTest();
-        ArrayList<Test> listTest = diakoluoApplication.getListTest();
-        listTest.add(currentImportTest);
+        FileManager.ImportXmlContext currentImportContext = (FileManager.ImportXmlContext) diakoluoApplication.getCurrentImportContext();
+        importTest(diakoluoApplication, currentImportContext.importTest);
 
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentListTest);
-        if (fragment != null) {
-            ((ListTestsFragment) fragment).notifyUpdateInserted(listTest.size());
+    }
+
+
+    @Override
+    public void loadCsvFile(String name, int separatorId, boolean loadColumnName, boolean loadColumnType) {
+        DiakoluoApplication diakoluoApplication = DiakoluoApplication.getDiakoluoApplication(this);
+
+        FileManager.ImportCsvContext importContext = (FileManager.ImportCsvContext) diakoluoApplication.getCurrentImportContext();
+        ParcelFileDescriptor pfd = null;
+        try {
+            pfd = getContentResolver().openFileDescriptor(importContext.fileUri, "r");
+            if (pfd != null) {
+                FileInputStream inputStream;
+                inputStream = new FileInputStream(pfd.getFileDescriptor());
+                Test testLoaded = CsvLoader.load(this, inputStream,
+                        CsvSaver.SEPARATORS[separatorId].charAt(0),
+                        loadColumnName,
+                        loadColumnType,
+                        name);
+                importTest(diakoluoApplication, testLoaded);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            // TODO: Error
+        } finally {
+            if (pfd != null)
+                try {
+                    pfd.close();
+                } catch (IOException ignored) {
+                }
         }
+    }
 
-        diakoluoApplication.setCurrentImportTest(null);
+    private void importTest(DiakoluoApplication diakoluoApplication, Test currentImportTest) {
+        if (currentImportTest == null) {
+            Log.d("LoadTest", "Test is null");
+            // TODO: Error
+        } else {
+            ArrayList<Test> listTest = diakoluoApplication.getListTest();
+            listTest.add(currentImportTest);
 
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentListTest);
+            if (fragment != null) {
+                ((ListTestsFragment) fragment).notifyUpdateInserted(listTest.size());
+            }
+        }
+        diakoluoApplication.setCurrentImportContext(null);
     }
 }

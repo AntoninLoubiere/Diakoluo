@@ -8,7 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
@@ -17,39 +20,44 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 
-
-public class ImportXmlDialogFragment extends DialogFragment {
-
+public class ImportCsvDialogFragment extends DialogFragment {
     private OnValidListener listener;
 
     private EditText titleEditText;
+    private CheckBox loadColumnName;
+    private CheckBox loadColumnType;
+    private Spinner separatorSpinner;
 
-    public ImportXmlDialogFragment() {
-
+    public ImportCsvDialogFragment() {
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View inflatedView = inflater.inflate(R.layout.fragment_dialog_import_xml, container, false);
+        final View inflatedView = inflater.inflate(R.layout.fragment_dialog_import_csv, container, false);
 
         FileManager.ImportContext _currentImportContext = DiakoluoApplication.getCurrentImportContext(inflatedView.getContext());
-        final FileManager.ImportXmlContext currentImportContext;
-        if (_currentImportContext instanceof FileManager.ImportXmlContext) {
-            currentImportContext = (FileManager.ImportXmlContext) _currentImportContext;
+        final FileManager.ImportCsvContext currentImportContext;
+        if (_currentImportContext instanceof FileManager.ImportCsvContext) {
+            currentImportContext = (FileManager.ImportCsvContext) _currentImportContext;
         } else {
             dismiss();
             return new View(inflatedView.getContext());
         }
 
         titleEditText = inflatedView.findViewById(R.id.titleInput);
+        loadColumnName = inflatedView.findViewById(R.id.columnHeaderCheckBox);
+        loadColumnType = inflatedView.findViewById(R.id.columnTypeHeaderCheckBox);
+        separatorSpinner = inflatedView.findViewById(R.id.separatorSpinner);
+
+        TextView filePreviewTextFile = inflatedView.findViewById(R.id.previewTextView);
 
         Button cancelButton = inflatedView.findViewById(R.id.cancelButton);
         Button validButton = inflatedView.findViewById(R.id.validButton);
 
         if (savedInstanceState == null) {
             // first dialog open
-            titleEditText.setText(currentImportContext.importTest.getName());
+            titleEditText.setText(R.string.test_default_name);
         }
 
         titleEditText.addTextChangedListener(new TextWatcher() {
@@ -71,6 +79,16 @@ public class ImportXmlDialogFragment extends DialogFragment {
             }
         });
 
+        StringBuilder previewText = new StringBuilder();
+
+        for (int i = 0; i < currentImportContext.firstLines.length; i++) {
+            if (i > 0)
+                previewText.append("\n\n");
+
+            previewText.append(currentImportContext.firstLines[i]);
+        }
+        filePreviewTextFile.setText(previewText.toString());
+
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,8 +102,10 @@ public class ImportXmlDialogFragment extends DialogFragment {
                 if (titleEditText.getText().length() < 1) {
                     titleEditText.requestFocus();
                 } else {
-                    currentImportContext.importTest.setName(titleEditText.getText().toString());
-                    listener.loadXmlFile();
+                    listener.loadCsvFile(titleEditText.getText().toString(),
+                            (int) separatorSpinner.getSelectedItemId(),
+                            loadColumnName.isChecked(),
+                            loadColumnType.isChecked());
                     dismiss();
                 }
             }
@@ -106,6 +126,6 @@ public class ImportXmlDialogFragment extends DialogFragment {
     }
 
     public interface OnValidListener {
-        void loadXmlFile();
+        void loadCsvFile(String name, int separatorId, boolean saveColumnName, boolean saveColumnType);
     }
 }

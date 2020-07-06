@@ -19,7 +19,7 @@ import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 
-public class Column {
+public abstract class Column {
     private String name;
     private String description;
 
@@ -70,13 +70,11 @@ public class Column {
         this.inputType = inputType;
     }
 
-    public Object getDefaultValue() {
-        throw new RuntimeException("Not implemented");
-    }
+    public abstract Object getDefaultValue();
 
-    public void setDefaultValue(Object defaultValue) {
-        throw new RuntimeException("Not implemented");
-    }
+    public abstract void setDefaultValue(Object defaultValue);
+
+    public abstract void initializeDefaultValue();
 
     public boolean isValid() {
         return !(name == null ||
