@@ -29,8 +29,8 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -219,7 +219,7 @@ public class FileManager {
                                         .setAnchorView(snackbarAnchorView).show();
                             }
                         } catch (IOException e) {
-                            new AlertDialog.Builder(activity)
+                            new MaterialAlertDialogBuilder(activity)
                                     .setTitle(R.string.dialog_export_error_title)
                                     .setMessage(R.string.dialog_export_error_message)
                                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -291,7 +291,7 @@ public class FileManager {
                                 resultListener.showCsvImportDialog(new ImportCsvContext(firstsLines, uri));
                             }
                         } catch (IOException | ClassCastException | XmlPullParserException e) {
-                            new AlertDialog.Builder(activity)
+                            new MaterialAlertDialogBuilder(activity)
                                     .setTitle(R.string.dialog_import_error_title)
                                     .setMessage(R.string.dialog_import_error_message)
                                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -374,7 +374,7 @@ public class FileManager {
     public static class ImportXmlContext extends ImportContext {
         public Test importTest;
 
-        public ImportXmlContext(Test importTest) {
+        ImportXmlContext(Test importTest) {
             this.importTest = importTest;
         }
     }
@@ -383,7 +383,7 @@ public class FileManager {
         public String[] firstLines;
         public Uri fileUri;
 
-        public ImportCsvContext(String[] firstLines, Uri fileUri) {
+        ImportCsvContext(String[] firstLines, Uri fileUri) {
             this.firstLines = firstLines;
             this.fileUri = fileUri;
         }

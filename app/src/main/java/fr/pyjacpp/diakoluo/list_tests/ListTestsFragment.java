@@ -27,11 +27,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -79,7 +79,7 @@ public class ListTestsFragment extends Fragment {
             public void onDeleteMenuItemClick(final View view, final int position) {
                 final ArrayList<Test> listTest = DiakoluoApplication.getListTest(view.getContext());
 
-                new AlertDialog.Builder(view.getContext())
+                new MaterialAlertDialogBuilder(view.getContext())
                         .setTitle(R.string.dialog_delete_test_title)
                         .setMessage(getString(R.string.dialog_delete_test_message, listTest.get(position).getName()))
                         .setCancelable(true)
