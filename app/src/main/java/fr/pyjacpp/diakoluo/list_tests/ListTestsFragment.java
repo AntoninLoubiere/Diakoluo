@@ -1,18 +1,38 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.list_tests;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -60,7 +80,7 @@ public class ListTestsFragment extends Fragment {
             public void onDeleteMenuItemClick(final View view, final int position) {
                 final ArrayList<Test> listTest = DiakoluoApplication.getListTest(view.getContext());
 
-                new AlertDialog.Builder(view.getContext())
+                new MaterialAlertDialogBuilder(view.getContext())
                         .setTitle(R.string.dialog_delete_test_title)
                         .setMessage(getString(R.string.dialog_delete_test_message, listTest.get(position).getName()))
                         .setCancelable(true)
@@ -75,7 +95,6 @@ public class ListTestsFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 deleteTest(inflatedLayout, position);
-                                listener.onDeleteTest(position);
                                 dialogInterface.dismiss();
                             }
                         })
@@ -110,6 +129,8 @@ public class ListTestsFragment extends Fragment {
         testRecyclerView.removeViewAt(position);
         testRecyclerViewAdapter.notifyItemRemoved(position);
         testRecyclerViewAdapter.notifyItemRangeChanged(position, listTest.size());
+
+        listener.onDeleteTest(position, listTest.size() - 1);
 
         new Thread(new Runnable() {
             @Override
@@ -158,7 +179,7 @@ public class ListTestsFragment extends Fragment {
         void onPlayButtonClick(View view, int position);
         void onSeeButtonClick(View view, int position);
         void onEditMenuItemClick(View view, int position);
-        void onDeleteTest(int position);
+        void onDeleteTest(int position, int listTestSize);
         void onExportMenuItemClick(View view, int position);
     }
 }

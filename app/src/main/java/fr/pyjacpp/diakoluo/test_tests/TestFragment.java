@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.test_tests;
 
 import android.animation.ObjectAnimator;
@@ -66,7 +85,7 @@ public class TestFragment extends Fragment {
             }
         });
 
-        progressBar.setMax(testTestContext.getListRowToAsk().size() * 100);
+        progressBar.setMax(testTestContext.getMaxProgress());
 
         updateAnswer();
 
@@ -91,11 +110,12 @@ public class TestFragment extends Fragment {
                 // if the answer is give
 
                 validButton.setText(R.string.continue_text);
-                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", (testTestContext.getCurrentIndex() + 1) * TestTestContext.PROGRESS_BAR_PRECISION);
+                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress",
+                        testTestContext.getProgress() + TestTestContext.PROGRESS_BAR_PRECISION);
                 animation.setDuration(300);
                 animation.setInterpolator(new AccelerateDecelerateInterpolator());
                 animation.start();
-                progressBar.setProgress((testTestContext.getCurrentIndex() + 1) * TestTestContext.PROGRESS_BAR_PRECISION);
+                progressBar.setProgress(testTestContext.getProgress() + TestTestContext.PROGRESS_BAR_PRECISION);
 
                 for (Column column : testTestContext.getTest().getListColumn()) {
                     LinearLayout answerRow = columnLinearLayoutHashMap.get(column);
@@ -128,7 +148,7 @@ public class TestFragment extends Fragment {
                 // if the user need to enter the answer
 
                 validButton.setText(R.string.valid);
-                progressBar.setProgress(testTestContext.getCurrentIndex() * 100);
+                progressBar.setProgress(testTestContext.getProgress());
 
                 for (Column column : testTestContext.getTest().getListColumn()) {
                     LinearLayout answerRow = columnLinearLayoutHashMap.get(column);

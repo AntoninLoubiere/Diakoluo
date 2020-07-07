@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.list_tests;
 
 import android.content.DialogInterface;
@@ -11,10 +30,10 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.FileInputStream;
@@ -69,7 +88,7 @@ public class ListTestActivity extends AppCompatActivity
 
         if (detailMainInformationTest) {
             if (DiakoluoApplication.getListTest(this).size() > 0)
-            updateDetail(0);
+                updateDetail(0);
         }
     }
 
@@ -146,10 +165,9 @@ public class ListTestActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDeleteTest(int position) {
-        ArrayList<Test> listTest = DiakoluoApplication.getListTest(this);
+    public void onDeleteTest(int position, int listTestSize) {
         if (position == currentTestSelected || currentTestSelected == -1) {
-            if (listTest.size() > 0)
+            if (listTestSize > 0)
                 updateDetail(0);
             else
                 updateDetail(-1);
@@ -222,7 +240,7 @@ public class ListTestActivity extends AppCompatActivity
                 importTest(diakoluoApplication, testLoaded);
             }
         } catch (CsvLoader.CsvException e) {
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.dialog_import_error_title)
                     .setMessage(R.string.dialog_export_error_csv_message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -234,7 +252,7 @@ public class ListTestActivity extends AppCompatActivity
                     .setIcon(R.drawable.ic_error_red_24dp)
                     .show();
         } catch (IOException e) {
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.dialog_import_error_title)
                     .setMessage(R.string.dialog_import_error_message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -256,7 +274,7 @@ public class ListTestActivity extends AppCompatActivity
 
     private void importTest(DiakoluoApplication diakoluoApplication, Test currentImportTest) {
         if (currentImportTest == null) {
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.dialog_import_error_title)
                     .setMessage(R.string.dialog_import_error_message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

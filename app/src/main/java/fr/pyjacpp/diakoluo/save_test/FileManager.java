@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.save_test;
 
 import android.app.Activity;
@@ -10,8 +29,8 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -200,7 +219,7 @@ public class FileManager {
                                         .setAnchorView(snackbarAnchorView).show();
                             }
                         } catch (IOException e) {
-                            new AlertDialog.Builder(activity)
+                            new MaterialAlertDialogBuilder(activity)
                                     .setTitle(R.string.dialog_export_error_title)
                                     .setMessage(R.string.dialog_export_error_message)
                                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -272,7 +291,7 @@ public class FileManager {
                                 resultListener.showCsvImportDialog(new ImportCsvContext(firstsLines, uri));
                             }
                         } catch (IOException | ClassCastException | XmlPullParserException e) {
-                            new AlertDialog.Builder(activity)
+                            new MaterialAlertDialogBuilder(activity)
                                     .setTitle(R.string.dialog_import_error_title)
                                     .setMessage(R.string.dialog_import_error_message)
                                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -355,7 +374,7 @@ public class FileManager {
     public static class ImportXmlContext extends ImportContext {
         public Test importTest;
 
-        public ImportXmlContext(Test importTest) {
+        ImportXmlContext(Test importTest) {
             this.importTest = importTest;
         }
     }
@@ -364,7 +383,7 @@ public class FileManager {
         public String[] firstLines;
         public Uri fileUri;
 
-        public ImportCsvContext(String[] firstLines, Uri fileUri) {
+        ImportCsvContext(String[] firstLines, Uri fileUri) {
             this.firstLines = firstLines;
             this.fileUri = fileUri;
         }

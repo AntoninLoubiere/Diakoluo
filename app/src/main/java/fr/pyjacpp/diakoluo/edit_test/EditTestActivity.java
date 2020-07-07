@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.BroadcastReceiver;
@@ -12,13 +31,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayDeque;
@@ -240,7 +259,7 @@ public class EditTestActivity extends AppCompatActivity
             EditTestValidator validator = errorValidatorDeque.pop();
 
             if (validator.isError() && !validator.isWarning()) {
-                new AlertDialog.Builder(this)
+                new MaterialAlertDialogBuilder(this)
                         .setTitle(R.string.error)
                         .setMessage(validator.getErrorMessageResourceId())
                         .setIcon(R.drawable.ic_error_red_24dp)
@@ -254,7 +273,7 @@ public class EditTestActivity extends AppCompatActivity
                         .show();
 
             } else if (validator.isWarning() && !errorInDeque) {
-                new AlertDialog.Builder(this)
+                new MaterialAlertDialogBuilder(this)
                         .setTitle(R.string.warning)
                         .setMessage(validator.getErrorMessageResourceId())
                         .setIcon(R.drawable.ic_warning_yellow_24dp)
