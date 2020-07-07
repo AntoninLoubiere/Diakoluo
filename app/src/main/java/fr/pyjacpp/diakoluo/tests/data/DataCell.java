@@ -67,7 +67,9 @@ public abstract class DataCell {
     }
 
     public static void setDefaultCellFromView(View view, DataRow row, Column column) {
-        row.getListCells().put(column, getDefaultValueCell(column));
+        DataCell cell = getDefaultValueCell(column);
+        row.getListCells().put(column, cell);
+        cell.setValueFromView(view);
     }
 
     public abstract Object getValue();
