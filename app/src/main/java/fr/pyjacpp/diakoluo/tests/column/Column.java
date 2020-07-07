@@ -23,7 +23,7 @@ public abstract class Column {
     private String name;
     private String description;
 
-    ColumnInputType inputType;
+    protected ColumnInputType inputType;
     protected Column() {
         initialize();
     }
@@ -82,9 +82,7 @@ public abstract class Column {
                 inputType == null);
     }
 
-    public void writeXmlHeader(OutputStream fileOutputStream) throws IOException {
-        throw new RuntimeException("Not implemented");
-    }
+    public abstract void writeXmlHeader(OutputStream fileOutputStream) throws IOException;
 
     public View showColumnName(Context context) {
         TextView columnNameTextView = new TextView(context);
