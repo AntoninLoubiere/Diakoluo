@@ -18,69 +18,68 @@
   ~     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/default_margin"
+    android:padding="@dimen/default_margin"
+    android:clipToPadding="false"
     tools:context=".test_tests.StarterActivity">
 
-    <TextView
-        android:id="@+id/title"
-        style="@style/TextAppearance.MaterialComponents.Headline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/welcome"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/welcomeText"
-        style="@style/TextAppearance.MaterialComponents.Body1"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_margin"
-        android:text="@string/welcome_text"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        android:autoLink="web"
-        android:linksClickable="true"/>
+        android:orientation="vertical">
 
-    <CheckBox
-        android:id="@+id/analyticsCheckBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_margin"
-        android:checked="true"
-        android:text="@string/check_box_analytics"
-        app:layout_constraintTop_toBottomOf="@+id/welcomeText" />
+        <TextView
+            android:id="@+id/title"
+            style="@style/TextAppearance.MaterialComponents.Headline3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/welcome"
+            android:textAlignment="center" />
 
-    <CheckBox
-        android:id="@+id/crashCheckBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:text="@string/check_box_crash"
-        app:layout_constraintTop_toBottomOf="@+id/analyticsCheckBox" />
+        <TextView
+            android:id="@+id/welcomeText"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin"
+            android:text="@string/welcome_text"
+            android:autoLink="web"
+            android:linksClickable="true" />
 
-    <TextView
-        android:id="@+id/noteText"
-        style="@style/TextAppearance.MaterialComponents.Caption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_margin"
-        android:linksClickable="true"
-        android:text="@string/data_caption"
-        app:layout_constraintTop_toBottomOf="@id/crashCheckBox" />
+        <CheckBox
+            android:id="@+id/analyticsCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin"
+            android:checked="true"
+            android:text="@string/check_box_analytics" />
 
-    <Button
-        android:id="@+id/validButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/accept_and_continue"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        <CheckBox
+            android:id="@+id/crashCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/check_box_crash" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/noteText"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin"
+            android:linksClickable="true"
+            android:text="@string/data_caption"
+            app:layout_constraintTop_toBottomOf="@id/crashCheckBox" />
+
+        <Button
+            android:id="@+id/validButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/accept_and_continue" />
+
+    </LinearLayout>
+</ScrollView>
