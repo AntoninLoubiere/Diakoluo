@@ -44,10 +44,14 @@ public abstract class DataCell {
     }
 
     public static DataCell copyDataCell(DataCell dataCell) {
-        if (dataCell instanceof DataCellString) {
-            return new DataCellString((DataCellString) dataCell);
+        if (dataCell == null) {
+            return null;
         } else {
-            throw new IllegalStateException("Unexpected value: " + dataCell.getClass());
+            if (dataCell instanceof DataCellString) {
+                return new DataCellString((DataCellString) dataCell);
+            } else {
+                throw new IllegalStateException("Unexpected value: " + dataCell.getClass());
+            }
         }
     }
 

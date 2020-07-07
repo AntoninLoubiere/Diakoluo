@@ -146,10 +146,6 @@ public class Test {
         this.numberTestDid = numberTestDid;
     }
 
-    public void incrementTestDid() {
-        numberTestDid++;
-    }
-
     public ArrayList<Column> getListColumn() {
         return listColumn;
     }

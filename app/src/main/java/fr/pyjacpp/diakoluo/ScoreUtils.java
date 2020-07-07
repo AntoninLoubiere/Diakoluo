@@ -46,19 +46,19 @@ public class ScoreUtils {
         return getScore20(context.getScore(), context.getMaxScore());
     }
 
-    public static float getScore10(TestTestContext context) {
+    static float getScore10(TestTestContext context) {
         return getScore10(context.getScore(), context.getMaxScore());
     }
 
-    public static float getScoreFrac(TestTestContext context) {
+    static float getScoreFrac(TestTestContext context) {
         return getScoreFrac(context.getScore(), context.getMaxScore());
     }
 
-    public static float getScorePercent(TestTestContext context) {
+    static float getScorePercent(TestTestContext context) {
         return getScorePercent(context.getScore(), context.getMaxScore());
     }
 
-    public static float getScoreCustom(TestTestContext context, int n) {
+    static float getScoreCustom(TestTestContext context, int n) {
         return getScoreCustom(context.getScore(), context.getMaxScore(), n);
     }
 }
