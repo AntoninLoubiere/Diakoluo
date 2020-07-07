@@ -88,7 +88,7 @@ public class ListTestActivity extends AppCompatActivity
 
         if (detailMainInformationTest) {
             if (DiakoluoApplication.getListTest(this).size() > 0)
-            updateDetail(0);
+                updateDetail(0);
         }
     }
 
@@ -165,10 +165,9 @@ public class ListTestActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDeleteTest(int position) {
-        ArrayList<Test> listTest = DiakoluoApplication.getListTest(this);
+    public void onDeleteTest(int position, int listTestSize) {
         if (position == currentTestSelected || currentTestSelected == -1) {
-            if (listTest.size() > 0)
+            if (listTestSize > 0)
                 updateDetail(0);
             else
                 updateDetail(-1);

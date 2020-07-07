@@ -22,6 +22,7 @@ package fr.pyjacpp.diakoluo.list_tests;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,7 +95,6 @@ public class ListTestsFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 deleteTest(inflatedLayout, position);
-                                listener.onDeleteTest(position);
                                 dialogInterface.dismiss();
                             }
                         })
@@ -129,6 +129,8 @@ public class ListTestsFragment extends Fragment {
         testRecyclerView.removeViewAt(position);
         testRecyclerViewAdapter.notifyItemRemoved(position);
         testRecyclerViewAdapter.notifyItemRangeChanged(position, listTest.size());
+
+        listener.onDeleteTest(position, listTest.size() - 1);
 
         new Thread(new Runnable() {
             @Override
@@ -177,7 +179,7 @@ public class ListTestsFragment extends Fragment {
         void onPlayButtonClick(View view, int position);
         void onSeeButtonClick(View view, int position);
         void onEditMenuItemClick(View view, int position);
-        void onDeleteTest(int position);
+        void onDeleteTest(int position, int listTestSize);
         void onExportMenuItemClick(View view, int position);
     }
 }
