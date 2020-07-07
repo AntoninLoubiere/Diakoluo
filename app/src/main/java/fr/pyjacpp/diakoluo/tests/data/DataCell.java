@@ -21,6 +21,7 @@ package fr.pyjacpp.diakoluo.tests.data;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.view.View;
 import android.widget.EditText;
 
@@ -99,11 +100,15 @@ public abstract class DataCell {
         if (answerIsTrue) {
             valueTextView.setTextColor(context.getResources().getColor(R.color.trueAnswer));
         } else {
-            if (answerString == null || answerString.length() <= 0)
+            if (answerString == null || answerString.length() <= 0) {
                 valueTextView.setText(R.string.skip);
+                valueTextView.setTypeface(null, Typeface.ITALIC);
+            } else {
+                valueTextView.setPaintFlags(valueTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                valueTextView.setText(getStringValue(answer));
+            }
 
             valueTextView.setTextColor(context.getResources().getColor(R.color.wrongAnswer));
-            valueTextView.setPaintFlags(valueTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
         return new ShowValueResponse(valueTextView, answerIsTrue);
@@ -118,6 +123,8 @@ public abstract class DataCell {
     }
 
     public abstract String getStringValue();
+
+    protected abstract String getStringValue(Object answer);
 
     public void setValueFromView(View view) {
         setValue(getValueFromView(view));
