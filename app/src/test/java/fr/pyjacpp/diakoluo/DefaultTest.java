@@ -627,4 +627,8 @@ public class DefaultTest extends Test {
         setListColumn(columns);
         setListRow(dataRows);
     }
+
+    public DefaultTest(DefaultTest defaultTest) {
+        super(defaultTest);
+    }
 }

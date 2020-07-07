@@ -23,8 +23,11 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
+import fr.pyjacpp.diakoluo.DefaultTest;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 public class DataRowTest {
@@ -42,5 +45,15 @@ public class DataRowTest {
         assertTrue(dataRow.isSelected());
         dataRow.setSelected(false);
         assertFalse(dataRow.isSelected());
+    }
+
+    @Test
+    public void duplicateDataRow() {
+        DefaultTest defaultTest = new DefaultTest();
+        DefaultTest copyTest = new DefaultTest(defaultTest);
+        DataRow dataRow = new DataRow();
+        DataRow dataRow1 = new DataRow(dataRow, defaultTest.getListColumn(), copyTest.getListColumn());
+        assertNotSame(defaultTest.getListColumn(), copyTest.getListColumn());
+        assertNotSame(dataRow.getListCells(), dataRow1.getListCells());
     }
 }
