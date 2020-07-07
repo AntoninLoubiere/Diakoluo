@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><!--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
   ~ Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
   ~
   ~ This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
@@ -16,5 +17,634 @@
   ~     A copy of the license is available in the root folder of Diakôluô, under the
   ~     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
   -->
-
-<test><name>Les verbes anglais irréguliers</name><description>C'est le test par défaut.</description><createdDate>1581693710347</createdDate><lastModification>1581693710347</lastModification><numberTestDid>0</numberTestDid><columns><column><name>Base verbale</name><description>La base verbale du verbe</description><inputType>String</inputType><defaultValue></defaultValue></column><column><name>Prétérit</name><description>Le prétérit du verbe</description><inputType>String</inputType><defaultValue></defaultValue></column><column><name>Participe passé</name><description>Le participe passé du verbe</description><inputType>String</inputType><defaultValue></defaultValue></column><column><name>Traduction</name><description>La traduction du verbe</description><inputType>String</inputType><defaultValue></defaultValue></column></columns><rows><row><cell>be</cell><cell>was/were</cell><cell>been</cell><cell>être</cell></row><row><cell>beat</cell><cell>beat</cell><cell>beaten</cell><cell>battre</cell></row><row><cell>become</cell><cell>became</cell><cell>become</cell><cell>devenir</cell></row><row><cell>begin</cell><cell>began</cell><cell>begun</cell><cell>commencer</cell></row><row><cell>bet</cell><cell>bet</cell><cell>bet</cell><cell>parier</cell></row><row><cell>bind</cell><cell>bound</cell><cell>bound</cell><cell>relier (un livre)</cell></row><row><cell>bite</cell><cell>bit</cell><cell>bitten</cell><cell>mordre</cell></row><row><cell>bleed</cell><cell>bled</cell><cell>bled</cell><cell>saigner</cell></row><row><cell>blow (blow one’s nose)</cell><cell>blew</cell><cell>blown</cell><cell>souffler (se moucher)</cell></row><row><cell>break</cell><cell>broke</cell><cell>broken</cell><cell>casser</cell></row><row><cell>bring</cell><cell>brought</cell><cell>brought</cell><cell>apporter</cell></row><row><cell>build</cell><cell>built</cell><cell>built</cell><cell>construire</cell></row><row><cell>burn</cell><cell>burnt</cell><cell>burnt</cell><cell>brûler</cell></row><row><cell>burst (burst into)</cell><cell>burst</cell><cell>burst</cell><cell>éclater (faire irruption)</cell></row><row><cell>buy</cell><cell>bought</cell><cell>bought</cell><cell>acheter</cell></row><row><cell>catch</cell><cell>caught</cell><cell>caught</cell><cell>attraper</cell></row><row><cell>choose</cell><cell>chose</cell><cell>chosen</cell><cell>choisir</cell></row><row><cell>come</cell><cell>came</cell><cell>come</cell><cell>venir</cell></row><row><cell>cost</cell><cell>cost</cell><cell>cost</cell><cell>coûter</cell></row><row><cell>cut</cell><cell>cut</cell><cell>cut</cell><cell>couper</cell></row><row><cell>do</cell><cell>did</cell><cell>done</cell><cell>faire</cell></row><row><cell>draw</cell><cell>drew</cell><cell>drown</cell><cell>dessiner</cell></row><row><cell>dream</cell><cell>dreamt</cell><cell>dreamt</cell><cell>rêver</cell></row><row><cell>drink</cell><cell>drank</cell><cell>drunk</cell><cell>boire</cell></row><row><cell>drive</cell><cell>drove</cell><cell>driven</cell><cell>conduire</cell></row><row><cell>eat</cell><cell>ate</cell><cell>eaten</cell><cell>manger</cell></row><row><cell>fall</cell><cell>fell</cell><cell>fallen</cell><cell>tomber</cell></row><row><cell>feed</cell><cell>fed</cell><cell>fed</cell><cell>nourrir</cell></row><row><cell>feel</cell><cell>felt</cell><cell>felt</cell><cell>se sentir, ressentir</cell></row><row><cell>fight</cell><cell>fought</cell><cell>fought</cell><cell>se battre</cell></row><row><cell>find</cell><cell>found</cell><cell>found</cell><cell>trouver</cell></row><row><cell>fly</cell><cell>flew</cell><cell>flown</cell><cell>voler</cell></row><row><cell>forget</cell><cell>forgot</cell><cell>forgotten</cell><cell>oublier</cell></row><row><cell>forgive</cell><cell>forgave</cell><cell>forgiven</cell><cell>pardonner</cell></row><row><cell>freeze</cell><cell>froze</cell><cell>frozen</cell><cell>geler, se figer</cell></row><row><cell>get (get into)</cell><cell>got</cell><cell>got</cell><cell>obtenir (monter dans)</cell></row><row><cell>give</cell><cell>gave</cell><cell>given</cell><cell>donner</cell></row><row><cell>go</cell><cell>went</cell><cell>gone</cell><cell>aller</cell></row><row><cell>grow</cell><cell>grew</cell><cell>grown</cell><cell>grandir</cell></row><row><cell>hang (hang out)</cell><cell>hung</cell><cell>hung</cell><cell>pendre, suspendre (traîner)</cell></row><row><cell>have</cell><cell>had</cell><cell>had</cell><cell>avoir</cell></row><row><cell>hear</cell><cell>heard</cell><cell>heard</cell><cell>entendre</cell></row><row><cell>hide</cell><cell>hid</cell><cell>hidden</cell><cell>cacher</cell></row><row><cell>hit</cell><cell>hit</cell><cell>hit</cell><cell>frapper</cell></row><row><cell>hold</cell><cell>held</cell><cell>held</cell><cell>tenir</cell></row><row><cell>hurt</cell><cell>hurt</cell><cell>hurt</cell><cell>blesser, faire mal, avoir mal</cell></row><row><cell>keep (keep going)</cell><cell>kept</cell><cell>kept</cell><cell>garder (continuer)</cell></row><row><cell>know</cell><cell>knew</cell><cell>known</cell><cell>savoir, connaître</cell></row><row><cell>lay (lay the table)</cell><cell>laid</cell><cell>laid</cell><cell>poser (mettre la table)</cell></row><row><cell>learn</cell><cell>learn</cell><cell>learn</cell><cell>apprendre</cell></row><row><cell>leave</cell><cell>left</cell><cell>left</cell><cell>quitter, partir, laisser</cell></row><row><cell>lend (lend a hand/an ear)</cell><cell>lent</cell><cell>lent</cell><cell>prêter (donner un coup de main/prêter une oreille attentive)</cell></row><row><cell>let (let down)</cell><cell>let</cell><cell>let</cell><cell>permettre, laisser (laisser tomber)</cell></row><row><cell>lie</cell><cell>lay</cell><cell>lain</cell><cell>s'allonger</cell></row><row><cell>lose</cell><cell>lost</cell><cell>lost</cell><cell>perdre</cell></row><row><cell>make</cell><cell>made</cell><cell>made</cell><cell>faire, fabriquer</cell></row><row><cell>mean</cell><cell>meant</cell><cell>meant</cell><cell>vouloir dire</cell></row><row><cell>meet</cell><cell>met</cell><cell>met</cell><cell>rencontrer</cell></row><row><cell>pay</cell><cell>paid</cell><cell>paid</cell><cell>payer</cell></row><row><cell>put</cell><cell>put</cell><cell>put</cell><cell>mettre</cell></row><row><cell>read</cell><cell>read</cell><cell>read</cell><cell>lire</cell></row><row><cell>rent</cell><cell>rent</cell><cell>rent</cell><cell>louer</cell></row><row><cell>ride</cell><cell>rode</cell><cell>ridden</cell><cell>aller à bicyclette, à cheval</cell></row><row><cell>ring</cell><cell>rang</cell><cell>rung</cell><cell>sonner</cell></row><row><cell>rise</cell><cell>rose</cell><cell>risen</cell><cell>monter, s’élever</cell></row><row><cell>run</cell><cell>ran</cell><cell>run</cell><cell>courir</cell></row><row><cell>say</cell><cell>said</cell><cell>said</cell><cell>dire</cell></row><row><cell>see</cell><cell>saw</cell><cell>seen</cell><cell>voir</cell></row><row><cell>sell</cell><cell>sold</cell><cell>sold</cell><cell>vendre</cell></row><row><cell>send</cell><cell>sent</cell><cell>sent</cell><cell>envoyer</cell></row><row><cell>set (set the table)</cell><cell>set</cell><cell>set</cell><cell>poser, placer, mettre (la table)</cell></row><row><cell>shake</cell><cell>shook</cell><cell>shaken</cell><cell>trembler</cell></row><row><cell>shine</cell><cell>shone</cell><cell>shone</cell><cell>briller</cell></row><row><cell>shoot</cell><cell>shot</cell><cell>shot</cell><cell>tirer, marquer, tourner (un film)</cell></row><row><cell>show (show off)</cell><cell>showed</cell><cell>shown</cell><cell>montrer (se vanter)</cell></row><row><cell>shut</cell><cell>shut</cell><cell>shut</cell><cell>fermer</cell></row><row><cell>sing</cell><cell>sang</cell><cell>sung</cell><cell>chanter</cell></row><row><cell>sit (down)</cell><cell>sat</cell><cell>sat</cell><cell>s’assoir</cell></row><row><cell>sleep</cell><cell>slept</cell><cell>slept</cell><cell>dormir</cell></row><row><cell>smell</cell><cell>smelt</cell><cell>smelt</cell><cell>sentir (odorat)</cell></row><row><cell>speak</cell><cell>spoke</cell><cell>spoken</cell><cell>parler</cell></row><row><cell>spend</cell><cell>spent</cell><cell>spent</cell><cell>dépenser (de l’argent), passer (du temps)</cell></row><row><cell>spread</cell><cell>spread</cell><cell>spread</cell><cell>étaler, répandre</cell></row><row><cell>stand</cell><cell>stood</cell><cell>stood</cell><cell>se tenir debout</cell></row><row><cell>steal</cell><cell>stole</cell><cell>stolen</cell><cell>voler, dérober</cell></row><row><cell>strike (a deal)</cell><cell>struck</cell><cell>struck</cell><cell>frapper, donner un coup (passer un accord)</cell></row><row><cell>swear</cell><cell>swore</cell><cell>sworn</cell><cell>jurer</cell></row><row><cell>swim</cell><cell>swam</cell><cell>swum</cell><cell>nager</cell></row><row><cell>take</cell><cell>took</cell><cell>taken</cell><cell>prendre</cell></row><row><cell>teach</cell><cell>taught</cell><cell>taught</cell><cell>enseigner, apprendre</cell></row><row><cell>tear</cell><cell>tore</cell><cell>torn</cell><cell>déchirer</cell></row><row><cell>tell</cell><cell>told</cell><cell>told</cell><cell>dire, raconter</cell></row><row><cell>think</cell><cell>thought</cell><cell>thought</cell><cell>penser</cell></row><row><cell>throw</cell><cell>threw</cell><cell>thrown</cell><cell>jeter, lancer</cell></row><row><cell>understand</cell><cell>understood</cell><cell>understood</cell><cell>comprendre</cell></row><row><cell>upset</cell><cell>upset</cell><cell>upset</cell><cell>contrarier</cell></row><row><cell>wake up</cell><cell>woke up</cell><cell>woken up</cell><cell>se réveiller</cell></row><row><cell>wear</cell><cell>wore</cell><cell>worn</cell><cell>porter (vêtements)</cell></row><row><cell>win</cell><cell>won</cell><cell>won</cell><cell>gagner</cell></row><row><cell>write</cell><cell>wrote</cell><cell>written</cell><cell>écrire</cell></row></rows></test>
+<test>
+    <name>Les verbes anglais irréguliers</name>
+    <description>C'est le test par défaut.</description>
+    <createdDate>1581693710347</createdDate>
+    <lastModification>1581693710347</lastModification>
+    <numberTestDid>1</numberTestDid>
+    <columns>
+        <column inputType="String">
+            <name>Base verbale</name>
+            <description>La base verbale du verbe</description>
+            <defaultValue />
+        </column>
+        <column inputType="String">
+            <name>Prétérit</name>
+            <description>Le prétérit du verbe</description>
+            <defaultValue />
+        </column>
+        <column inputType="String">
+            <name>Participe passé</name>
+            <description>Le participe passé du verbe</description>
+            <defaultValue />
+        </column>
+        <column inputType="String">
+            <name>Traduction</name>
+            <description>La traduction du verbe</description>
+            <defaultValue />
+        </column>
+    </columns>
+    <rows>
+        <row>
+            <cell>be</cell>
+            <cell>was/were</cell>
+            <cell>been</cell>
+            <cell>être</cell>
+        </row>
+        <row>
+            <cell>beat</cell>
+            <cell>beat</cell>
+            <cell>beaten</cell>
+            <cell>battre</cell>
+        </row>
+        <row>
+            <cell>become</cell>
+            <cell>became</cell>
+            <cell>become</cell>
+            <cell>devenir</cell>
+        </row>
+        <row>
+            <cell>begin</cell>
+            <cell>began</cell>
+            <cell>begun</cell>
+            <cell>commencer</cell>
+        </row>
+        <row>
+            <cell>bet</cell>
+            <cell>bet</cell>
+            <cell>bet</cell>
+            <cell>parier</cell>
+        </row>
+        <row>
+            <cell>bind</cell>
+            <cell>bound</cell>
+            <cell>bound</cell>
+            <cell>relier (un livre)</cell>
+        </row>
+        <row>
+            <cell>bite</cell>
+            <cell>bit</cell>
+            <cell>bitten</cell>
+            <cell>mordre</cell>
+        </row>
+        <row>
+            <cell>bleed</cell>
+            <cell>bled</cell>
+            <cell>bled</cell>
+            <cell>saigner</cell>
+        </row>
+        <row>
+            <cell>blow (blow one’s nose)</cell>
+            <cell>blew</cell>
+            <cell>blown</cell>
+            <cell>souffler (se moucher)</cell>
+        </row>
+        <row>
+            <cell>break</cell>
+            <cell>broke</cell>
+            <cell>broken</cell>
+            <cell>casser</cell>
+        </row>
+        <row>
+            <cell>bring</cell>
+            <cell>brought</cell>
+            <cell>brought</cell>
+            <cell>apporter</cell>
+        </row>
+        <row>
+            <cell>build</cell>
+            <cell>built</cell>
+            <cell>built</cell>
+            <cell>construire</cell>
+        </row>
+        <row>
+            <cell>burn</cell>
+            <cell>burnt</cell>
+            <cell>burnt</cell>
+            <cell>brûler</cell>
+        </row>
+        <row>
+            <cell>burst (burst into)</cell>
+            <cell>burst</cell>
+            <cell>burst</cell>
+            <cell>éclater (faire irruption)</cell>
+        </row>
+        <row>
+            <cell>buy</cell>
+            <cell>bought</cell>
+            <cell>bought</cell>
+            <cell>acheter</cell>
+        </row>
+        <row>
+            <cell>catch</cell>
+            <cell>caught</cell>
+            <cell>caught</cell>
+            <cell>attraper</cell>
+        </row>
+        <row>
+            <cell>choose</cell>
+            <cell>chose</cell>
+            <cell>chosen</cell>
+            <cell>choisir</cell>
+        </row>
+        <row>
+            <cell>come</cell>
+            <cell>came</cell>
+            <cell>come</cell>
+            <cell>venir</cell>
+        </row>
+        <row>
+            <cell>cost</cell>
+            <cell>cost</cell>
+            <cell>cost</cell>
+            <cell>coûter</cell>
+        </row>
+        <row>
+            <cell>cut</cell>
+            <cell>cut</cell>
+            <cell>cut</cell>
+            <cell>couper</cell>
+        </row>
+        <row>
+            <cell>do</cell>
+            <cell>did</cell>
+            <cell>done</cell>
+            <cell>faire</cell>
+        </row>
+        <row>
+            <cell>draw</cell>
+            <cell>drew</cell>
+            <cell>drown</cell>
+            <cell>dessiner</cell>
+        </row>
+        <row>
+            <cell>dream</cell>
+            <cell>dreamt</cell>
+            <cell>dreamt</cell>
+            <cell>rêver</cell>
+        </row>
+        <row>
+            <cell>drink</cell>
+            <cell>drank</cell>
+            <cell>drunk</cell>
+            <cell>boire</cell>
+        </row>
+        <row>
+            <cell>drive</cell>
+            <cell>drove</cell>
+            <cell>driven</cell>
+            <cell>conduire</cell>
+        </row>
+        <row>
+            <cell>eat</cell>
+            <cell>ate</cell>
+            <cell>eaten</cell>
+            <cell>manger</cell>
+        </row>
+        <row>
+            <cell>fall</cell>
+            <cell>fell</cell>
+            <cell>fallen</cell>
+            <cell>tomber</cell>
+        </row>
+        <row>
+            <cell>feed</cell>
+            <cell>fed</cell>
+            <cell>fed</cell>
+            <cell>nourrir</cell>
+        </row>
+        <row>
+            <cell>feel</cell>
+            <cell>felt</cell>
+            <cell>felt</cell>
+            <cell>se sentir, ressentir</cell>
+        </row>
+        <row>
+            <cell>fight</cell>
+            <cell>fought</cell>
+            <cell>fought</cell>
+            <cell>se battre</cell>
+        </row>
+        <row>
+            <cell>find</cell>
+            <cell>found</cell>
+            <cell>found</cell>
+            <cell>trouver</cell>
+        </row>
+        <row>
+            <cell>fly</cell>
+            <cell>flew</cell>
+            <cell>flown</cell>
+            <cell>voler</cell>
+        </row>
+        <row>
+            <cell>forget</cell>
+            <cell>forgot</cell>
+            <cell>forgotten</cell>
+            <cell>oublier</cell>
+        </row>
+        <row>
+            <cell>forgive</cell>
+            <cell>forgave</cell>
+            <cell>forgiven</cell>
+            <cell>pardonner</cell>
+        </row>
+        <row>
+            <cell>freeze</cell>
+            <cell>froze</cell>
+            <cell>frozen</cell>
+            <cell>geler, se figer</cell>
+        </row>
+        <row>
+            <cell>get (get into)</cell>
+            <cell>got</cell>
+            <cell>got</cell>
+            <cell>obtenir (monter dans)</cell>
+        </row>
+        <row>
+            <cell>give</cell>
+            <cell>gave</cell>
+            <cell>given</cell>
+            <cell>donner</cell>
+        </row>
+        <row>
+            <cell>go</cell>
+            <cell>went</cell>
+            <cell>gone</cell>
+            <cell>aller</cell>
+        </row>
+        <row>
+            <cell>grow</cell>
+            <cell>grew</cell>
+            <cell>grown</cell>
+            <cell>grandir</cell>
+        </row>
+        <row>
+            <cell>hang (hang out)</cell>
+            <cell>hung</cell>
+            <cell>hung</cell>
+            <cell>pendre, suspendre (traîner)</cell>
+        </row>
+        <row>
+            <cell>have</cell>
+            <cell>had</cell>
+            <cell>had</cell>
+            <cell>avoir</cell>
+        </row>
+        <row>
+            <cell>hear</cell>
+            <cell>heard</cell>
+            <cell>heard</cell>
+            <cell>entendre</cell>
+        </row>
+        <row>
+            <cell>hide</cell>
+            <cell>hid</cell>
+            <cell>hidden</cell>
+            <cell>cacher</cell>
+        </row>
+        <row>
+            <cell>hit</cell>
+            <cell>hit</cell>
+            <cell>hit</cell>
+            <cell>frapper</cell>
+        </row>
+        <row>
+            <cell>hold</cell>
+            <cell>held</cell>
+            <cell>held</cell>
+            <cell>tenir</cell>
+        </row>
+        <row>
+            <cell>hurt</cell>
+            <cell>hurt</cell>
+            <cell>hurt</cell>
+            <cell>blesser, faire mal, avoir mal</cell>
+        </row>
+        <row>
+            <cell>keep (keep going)</cell>
+            <cell>kept</cell>
+            <cell>kept</cell>
+            <cell>garder (continuer)</cell>
+        </row>
+        <row>
+            <cell>know</cell>
+            <cell>knew</cell>
+            <cell>known</cell>
+            <cell>savoir, connaître</cell>
+        </row>
+        <row>
+            <cell>lay (lay the table)</cell>
+            <cell>laid</cell>
+            <cell>laid</cell>
+            <cell>poser (mettre la table)</cell>
+        </row>
+        <row>
+            <cell>learn</cell>
+            <cell>learn</cell>
+            <cell>learn</cell>
+            <cell>apprendre</cell>
+        </row>
+        <row>
+            <cell>leave</cell>
+            <cell>left</cell>
+            <cell>left</cell>
+            <cell>quitter, partir, laisser</cell>
+        </row>
+        <row>
+            <cell>lend (lend a hand/an ear)</cell>
+            <cell>lent</cell>
+            <cell>lent</cell>
+            <cell>prêter (donner un coup de main/prêter une oreille attentive)</cell>
+        </row>
+        <row>
+            <cell>let (let down)</cell>
+            <cell>let</cell>
+            <cell>let</cell>
+            <cell>permettre, laisser (laisser tomber)</cell>
+        </row>
+        <row>
+            <cell>lie</cell>
+            <cell>lay</cell>
+            <cell>lain</cell>
+            <cell>s'allonger</cell>
+        </row>
+        <row>
+            <cell>lose</cell>
+            <cell>lost</cell>
+            <cell>lost</cell>
+            <cell>perdre</cell>
+        </row>
+        <row>
+            <cell>make</cell>
+            <cell>made</cell>
+            <cell>made</cell>
+            <cell>faire, fabriquer</cell>
+        </row>
+        <row>
+            <cell>mean</cell>
+            <cell>meant</cell>
+            <cell>meant</cell>
+            <cell>vouloir dire</cell>
+        </row>
+        <row>
+            <cell>meet</cell>
+            <cell>met</cell>
+            <cell>met</cell>
+            <cell>rencontrer</cell>
+        </row>
+        <row>
+            <cell>pay</cell>
+            <cell>paid</cell>
+            <cell>paid</cell>
+            <cell>payer</cell>
+        </row>
+        <row>
+            <cell>put</cell>
+            <cell>put</cell>
+            <cell>put</cell>
+            <cell>mettre</cell>
+        </row>
+        <row>
+            <cell>read</cell>
+            <cell>read</cell>
+            <cell>read</cell>
+            <cell>lire</cell>
+        </row>
+        <row>
+            <cell>rent</cell>
+            <cell>rent</cell>
+            <cell>rent</cell>
+            <cell>louer</cell>
+        </row>
+        <row>
+            <cell>ride</cell>
+            <cell>rode</cell>
+            <cell>ridden</cell>
+            <cell>aller à bicyclette, à cheval</cell>
+        </row>
+        <row>
+            <cell>ring</cell>
+            <cell>rang</cell>
+            <cell>rung</cell>
+            <cell>sonner</cell>
+        </row>
+        <row>
+            <cell>rise</cell>
+            <cell>rose</cell>
+            <cell>risen</cell>
+            <cell>monter, s’élever</cell>
+        </row>
+        <row>
+            <cell>run</cell>
+            <cell>ran</cell>
+            <cell>run</cell>
+            <cell>courir</cell>
+        </row>
+        <row>
+            <cell>say</cell>
+            <cell>said</cell>
+            <cell>said</cell>
+            <cell>dire</cell>
+        </row>
+        <row>
+            <cell>see</cell>
+            <cell>saw</cell>
+            <cell>seen</cell>
+            <cell>voir</cell>
+        </row>
+        <row>
+            <cell>sell</cell>
+            <cell>sold</cell>
+            <cell>sold</cell>
+            <cell>vendre</cell>
+        </row>
+        <row>
+            <cell>send</cell>
+            <cell>sent</cell>
+            <cell>sent</cell>
+            <cell>envoyer</cell>
+        </row>
+        <row>
+            <cell>set (set the table)</cell>
+            <cell>set</cell>
+            <cell>set</cell>
+            <cell>poser, placer, mettre (la table)</cell>
+        </row>
+        <row>
+            <cell>shake</cell>
+            <cell>shook</cell>
+            <cell>shaken</cell>
+            <cell>trembler</cell>
+        </row>
+        <row>
+            <cell>shine</cell>
+            <cell>shone</cell>
+            <cell>shone</cell>
+            <cell>briller</cell>
+        </row>
+        <row>
+            <cell>shoot</cell>
+            <cell>shot</cell>
+            <cell>shot</cell>
+            <cell>tirer, marquer, tourner (un film)</cell>
+        </row>
+        <row>
+            <cell>show (show off)</cell>
+            <cell>showed</cell>
+            <cell>shown</cell>
+            <cell>montrer (se vanter)</cell>
+        </row>
+        <row>
+            <cell>shut</cell>
+            <cell>shut</cell>
+            <cell>shut</cell>
+            <cell>fermer</cell>
+        </row>
+        <row>
+            <cell>sing</cell>
+            <cell>sang</cell>
+            <cell>sung</cell>
+            <cell>chanter</cell>
+        </row>
+        <row>
+            <cell>sit (down)</cell>
+            <cell>sat</cell>
+            <cell>sat</cell>
+            <cell>s’assoir</cell>
+        </row>
+        <row>
+            <cell>sleep</cell>
+            <cell>slept</cell>
+            <cell>slept</cell>
+            <cell>dormir</cell>
+        </row>
+        <row>
+            <cell>smell</cell>
+            <cell>smelt</cell>
+            <cell>smelt</cell>
+            <cell>sentir (odorat)</cell>
+        </row>
+        <row>
+            <cell>speak</cell>
+            <cell>spoke</cell>
+            <cell>spoken</cell>
+            <cell>parler</cell>
+        </row>
+        <row>
+            <cell>spend</cell>
+            <cell>spent</cell>
+            <cell>spent</cell>
+            <cell>dépenser (de l’argent), passer (du temps)</cell>
+        </row>
+        <row>
+            <cell>spread</cell>
+            <cell>spread</cell>
+            <cell>spread</cell>
+            <cell>étaler, répandre</cell>
+        </row>
+        <row>
+            <cell>stand</cell>
+            <cell>stood</cell>
+            <cell>stood</cell>
+            <cell>se tenir debout</cell>
+        </row>
+        <row>
+            <cell>steal</cell>
+            <cell>stole</cell>
+            <cell>stolen</cell>
+            <cell>voler, dérober</cell>
+        </row>
+        <row>
+            <cell>strike (a deal)</cell>
+            <cell>struck</cell>
+            <cell>struck</cell>
+            <cell>frapper, donner un coup (passer un accord)</cell>
+        </row>
+        <row>
+            <cell>swear</cell>
+            <cell>swore</cell>
+            <cell>sworn</cell>
+            <cell>jurer</cell>
+        </row>
+        <row>
+            <cell>swim</cell>
+            <cell>swam</cell>
+            <cell>swum</cell>
+            <cell>nager</cell>
+        </row>
+        <row>
+            <cell>take</cell>
+            <cell>took</cell>
+            <cell>taken</cell>
+            <cell>prendre</cell>
+        </row>
+        <row>
+            <cell>teach</cell>
+            <cell>taught</cell>
+            <cell>taught</cell>
+            <cell>enseigner, apprendre</cell>
+        </row>
+        <row>
+            <cell>tear</cell>
+            <cell>tore</cell>
+            <cell>torn</cell>
+            <cell>déchirer</cell>
+        </row>
+        <row>
+            <cell>tell</cell>
+            <cell>told</cell>
+            <cell>told</cell>
+            <cell>dire, raconter</cell>
+        </row>
+        <row>
+            <cell>think</cell>
+            <cell>thought</cell>
+            <cell>thought</cell>
+            <cell>penser</cell>
+        </row>
+        <row>
+            <cell>throw</cell>
+            <cell>threw</cell>
+            <cell>thrown</cell>
+            <cell>jeter, lancer</cell>
+        </row>
+        <row>
+            <cell>understand</cell>
+            <cell>understood</cell>
+            <cell>understood</cell>
+            <cell>comprendre</cell>
+        </row>
+        <row>
+            <cell>upset</cell>
+            <cell>upset</cell>
+            <cell>upset</cell>
+            <cell>contrarier</cell>
+        </row>
+        <row>
+            <cell>wake up</cell>
+            <cell>woke up</cell>
+            <cell>woken up</cell>
+            <cell>se réveiller</cell>
+        </row>
+        <row>
+            <cell>wear</cell>
+            <cell>wore</cell>
+            <cell>worn</cell>
+            <cell>porter (vêtements)</cell>
+        </row>
+        <row>
+            <cell>win</cell>
+            <cell>won</cell>
+            <cell>won</cell>
+            <cell>gagner</cell>
+        </row>
+        <row>
+            <cell>write</cell>
+            <cell>wrote</cell>
+            <cell>written</cell>
+            <cell>écrire</cell>
+        </row>
+    </rows>
+</test>

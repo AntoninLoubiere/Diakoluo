@@ -27,9 +27,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
@@ -150,7 +151,7 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
             getIntent().putExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, columnIndex);
         } else {
             // new
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.dialog_new_column_title)
                     .setMessage(R.string.dialog_new_column_message)
                     .setIcon(R.drawable.ic_add_accent_color_24dp)

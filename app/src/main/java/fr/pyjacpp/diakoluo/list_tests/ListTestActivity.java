@@ -30,10 +30,10 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.FileInputStream;
@@ -88,7 +88,7 @@ public class ListTestActivity extends AppCompatActivity
 
         if (detailMainInformationTest) {
             if (DiakoluoApplication.getListTest(this).size() > 0)
-            updateDetail(0);
+                updateDetail(0);
         }
     }
 
@@ -165,10 +165,9 @@ public class ListTestActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDeleteTest(int position) {
-        ArrayList<Test> listTest = DiakoluoApplication.getListTest(this);
+    public void onDeleteTest(int position, int listTestSize) {
         if (position == currentTestSelected || currentTestSelected == -1) {
-            if (listTest.size() > 0)
+            if (listTestSize > 0)
                 updateDetail(0);
             else
                 updateDetail(-1);
@@ -241,7 +240,7 @@ public class ListTestActivity extends AppCompatActivity
                 importTest(diakoluoApplication, testLoaded);
             }
         } catch (CsvLoader.CsvException e) {
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.dialog_import_error_title)
                     .setMessage(R.string.dialog_export_error_csv_message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -253,7 +252,7 @@ public class ListTestActivity extends AppCompatActivity
                     .setIcon(R.drawable.ic_error_red_24dp)
                     .show();
         } catch (IOException e) {
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.dialog_import_error_title)
                     .setMessage(R.string.dialog_import_error_message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -275,7 +274,7 @@ public class ListTestActivity extends AppCompatActivity
 
     private void importTest(DiakoluoApplication diakoluoApplication, Test currentImportTest) {
         if (currentImportTest == null) {
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.dialog_import_error_title)
                     .setMessage(R.string.dialog_import_error_message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

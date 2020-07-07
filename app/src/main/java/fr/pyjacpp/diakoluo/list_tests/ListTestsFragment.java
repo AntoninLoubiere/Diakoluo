@@ -22,16 +22,17 @@ package fr.pyjacpp.diakoluo.list_tests;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class ListTestsFragment extends Fragment {
             public void onDeleteMenuItemClick(final View view, final int position) {
                 final ArrayList<Test> listTest = DiakoluoApplication.getListTest(view.getContext());
 
-                new AlertDialog.Builder(view.getContext())
+                new MaterialAlertDialogBuilder(view.getContext())
                         .setTitle(R.string.dialog_delete_test_title)
                         .setMessage(getString(R.string.dialog_delete_test_message, listTest.get(position).getName()))
                         .setCancelable(true)
@@ -94,7 +95,6 @@ public class ListTestsFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 deleteTest(inflatedLayout, position);
-                                listener.onDeleteTest(position);
                                 dialogInterface.dismiss();
                             }
                         })
@@ -129,6 +129,8 @@ public class ListTestsFragment extends Fragment {
         testRecyclerView.removeViewAt(position);
         testRecyclerViewAdapter.notifyItemRemoved(position);
         testRecyclerViewAdapter.notifyItemRangeChanged(position, listTest.size());
+
+        listener.onDeleteTest(position, listTest.size() - 1);
 
         new Thread(new Runnable() {
             @Override
@@ -177,7 +179,7 @@ public class ListTestsFragment extends Fragment {
         void onPlayButtonClick(View view, int position);
         void onSeeButtonClick(View view, int position);
         void onEditMenuItemClick(View view, int position);
-        void onDeleteTest(int position);
+        void onDeleteTest(int position, int listTestSize);
         void onExportMenuItemClick(View view, int position);
     }
 }

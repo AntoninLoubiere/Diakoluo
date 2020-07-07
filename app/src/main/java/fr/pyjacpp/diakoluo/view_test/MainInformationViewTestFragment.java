@@ -42,7 +42,6 @@ public class MainInformationViewTestFragment extends Fragment {
     private TextView createdDate;
     private TextView lastModification;
     private TextView numberTestDid;
-    private TextView noTestTextView;
     private View separator1;
     private View separator2;
 
@@ -61,7 +60,6 @@ public class MainInformationViewTestFragment extends Fragment {
         createdDate = inflatedView.findViewById(R.id.createdDateTextView);
         lastModification = inflatedView.findViewById(R.id.lastModificationTextView);
         numberTestDid = inflatedView.findViewById(R.id.numberTestDid);
-        noTestTextView = inflatedView.findViewById(R.id.noTestTextView);
 
         separator1 = inflatedView.findViewById(R.id.separator1);
         separator2 = inflatedView.findViewById(R.id.separator2);
@@ -79,8 +77,6 @@ public class MainInformationViewTestFragment extends Fragment {
         Test currentTest = DiakoluoApplication.getCurrentTest(context);
 
         if (currentTest != null) {
-            noTestTextView.setVisibility(View.GONE);
-
             title.setVisibility(View.VISIBLE);
             title.setText(currentTest.getName());
 
@@ -116,7 +112,6 @@ public class MainInformationViewTestFragment extends Fragment {
             separator1.setVisibility(View.VISIBLE);
             separator2.setVisibility(View.VISIBLE);
         } else {
-            noTestTextView.setVisibility(View.VISIBLE);
             title.setVisibility(View.GONE);
             description.setVisibility(View.GONE);
             createdDate.setVisibility(View.GONE);

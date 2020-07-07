@@ -62,7 +62,7 @@ public class TestScoreFragment extends Fragment {
         Button restartButton = inflatedView.findViewById(R.id.restartButton);
         Button mainMenuButton = inflatedView.findViewById(R.id.mainMenuButton);
 
-        scoreProgressBar.setMax(testTestContext.getMaxScore());
+        scoreProgressBar.setMax(testTestContext.getMaxProgressScore());
 
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override

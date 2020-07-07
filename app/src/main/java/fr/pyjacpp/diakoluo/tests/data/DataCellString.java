@@ -53,6 +53,11 @@ public class DataCellString extends DataCell {
     }
 
     @Override
+    protected String getStringValue(Object answer) {
+        return (String) answer;
+    }
+
+    @Override
     public boolean verifyAnswer(Object answer) {
         return ((String) answer).equalsIgnoreCase(value);
     }

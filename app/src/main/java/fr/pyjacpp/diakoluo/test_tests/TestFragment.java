@@ -85,7 +85,7 @@ public class TestFragment extends Fragment {
             }
         });
 
-        progressBar.setMax(testTestContext.getListRowToAsk().size() * 100);
+        progressBar.setMax(testTestContext.getMaxProgress());
 
         updateAnswer();
 
@@ -110,11 +110,12 @@ public class TestFragment extends Fragment {
                 // if the answer is give
 
                 validButton.setText(R.string.continue_text);
-                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", (testTestContext.getCurrentIndex() + 1) * TestTestContext.PROGRESS_BAR_PRECISION);
+                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress",
+                        testTestContext.getProgress() + TestTestContext.PROGRESS_BAR_PRECISION);
                 animation.setDuration(300);
                 animation.setInterpolator(new AccelerateDecelerateInterpolator());
                 animation.start();
-                progressBar.setProgress((testTestContext.getCurrentIndex() + 1) * TestTestContext.PROGRESS_BAR_PRECISION);
+                progressBar.setProgress(testTestContext.getProgress() + TestTestContext.PROGRESS_BAR_PRECISION);
 
                 for (Column column : testTestContext.getTest().getListColumn()) {
                     LinearLayout answerRow = columnLinearLayoutHashMap.get(column);
@@ -147,7 +148,7 @@ public class TestFragment extends Fragment {
                 // if the user need to enter the answer
 
                 validButton.setText(R.string.valid);
-                progressBar.setProgress(testTestContext.getCurrentIndex() * 100);
+                progressBar.setProgress(testTestContext.getProgress());
 
                 for (Column column : testTestContext.getTest().getListColumn()) {
                     LinearLayout answerRow = columnLinearLayoutHashMap.get(column);
