@@ -93,11 +93,11 @@ public class TestTestContext {
         return score;
     }
 
-    public int getProgressScore() {
+    int getProgressScore() {
         return score * PROGRESS_BAR_PRECISION;
     }
 
-    public int getMaxProgressScore() {
+    int getMaxProgressScore() {
         return maxScore * PROGRESS_BAR_PRECISION;
     }
 
@@ -196,5 +196,13 @@ public class TestTestContext {
             userAnswer.put(column, null);
             showColumn.put(column, false);
         }
+    }
+
+    int getProgress() {
+        return currentIndex * PROGRESS_BAR_PRECISION;
+    }
+
+    int getMaxProgress() {
+        return numberQuestionToAsk * PROGRESS_BAR_PRECISION;
     }
 }
