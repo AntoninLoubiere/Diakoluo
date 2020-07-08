@@ -105,10 +105,6 @@ public class TestTestContext {
         this.score += score;
     }
 
-    ArrayList<DataRow> getListRowToAsk() {
-        return listRowToAsk;
-    }
-
     /*public int getNumberColumnToShow() {
         return numberColumnToShow;
     }

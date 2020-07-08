@@ -40,6 +40,10 @@ android {
         }
         debug {
             ext.enableCrashlytics = false
+            FirebasePerformance {
+                instrumentationEnabled false
+            }
+
         }
     }
 }
