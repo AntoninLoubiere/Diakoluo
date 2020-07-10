@@ -71,6 +71,14 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
             updateNavigation();
         }
 
+        Button validButton = findViewById(R.id.validButton);
+        validButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
