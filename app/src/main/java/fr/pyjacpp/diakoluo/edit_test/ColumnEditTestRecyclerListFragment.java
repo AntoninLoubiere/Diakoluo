@@ -44,7 +44,7 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private OnParentFragmentInteractionListener parentListener;
 
-    private RecyclerView.Adapter columnRecyclerViewAdapter;
+    private ColumnAdapter columnRecyclerViewAdapter;
 
     public ColumnEditTestRecyclerListFragment() {
         // Required empty public constructor
@@ -184,11 +184,6 @@ public class ColumnEditTestRecyclerListFragment extends Fragment {
         } else {
             throw new RuntimeException("Parent listener must implement OnParentFragmentInteractionListener");
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     @Override

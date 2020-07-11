@@ -108,11 +108,6 @@ public class TestScoreFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;

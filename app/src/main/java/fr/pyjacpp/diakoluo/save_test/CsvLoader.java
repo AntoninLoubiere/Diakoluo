@@ -237,10 +237,10 @@ public class CsvLoader {
     }
 
     public static class CsvContext {
-        private Context context;
-        private BufferedReader bufferedReader;
-        private char separator;
-        private char lineSeparator;
+        private final Context context;
+        private final BufferedReader bufferedReader;
+        private final char separator;
+        private final char lineSeparator;
 
         CsvContext(Context context, BufferedReader bufferedReader, char separator, char lineSeparator) {
             this.context = context;

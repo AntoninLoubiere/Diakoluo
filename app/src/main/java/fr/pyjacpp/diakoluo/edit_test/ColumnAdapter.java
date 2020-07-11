@@ -36,7 +36,7 @@ import fr.pyjacpp.diakoluo.tests.Test;
 
 class ColumnAdapter extends RecyclerView.Adapter<ColumnAdapter.ColumnViewHolder> {
     private final Context context;
-    private ColumnViewListener listener;
+    private final ColumnViewListener listener;
 
     interface ColumnViewListener {
         void onItemClickListener(View view, View itemView);

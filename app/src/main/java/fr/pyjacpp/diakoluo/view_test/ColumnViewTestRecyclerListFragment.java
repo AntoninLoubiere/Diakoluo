@@ -46,7 +46,7 @@ public class ColumnViewTestRecyclerListFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_recycler_list, container, false);
 
         final RecyclerView columnRecyclerView = inflatedView.findViewById(R.id.recyclerView);
-        RecyclerView.Adapter columnRecyclerViewAdapter = new ColumnAdapter(columnRecyclerView.getContext());
+        ColumnAdapter columnRecyclerViewAdapter = new ColumnAdapter(columnRecyclerView.getContext());
         LinearLayoutManager columnRecyclerViewLayoutManager = new LinearLayoutManager(columnRecyclerView.getContext());
 
         columnRecyclerView.setHasFixedSize(true);

@@ -43,7 +43,7 @@ import fr.pyjacpp.diakoluo.tests.Test;
 public class TestSettingsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
-    private class TestQuestionPossibility {
+    private static class TestQuestionPossibility {
         final int possibility;
         final String toShow;
 

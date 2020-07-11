@@ -19,7 +19,7 @@
 
 <resources>
     <string name="app_name">Diakôluô</string>
-    <string name="information_line">Version 0.1.0 - Antonin LOUBIÈRE - GPL 3</string>
+    <string name="information_line">Version 0.2.0 - Antonin LOUBIÈRE - GPL 3</string>
     <string name="title">Title</string>
     <string name="very_long_description">Default description, a description can be very long. When I say very long, it\'s because a description can become very long. But I think I can do less long but it\'s needed to the demo.</string>
     <string name="created_date_test_format">Created the $1%s at $2%s</string>
@@ -51,9 +51,8 @@
     <string name="warning">Warning</string>
     <string name="add_answer">Add answer</string>
     <string name="add_column">Add column</string>
-    <string name="column_name_format">%s:</string>
+    <string name="column_name_format" translatable="false">%s:</string>
     <string name="column_type">Column type:</string>
-    <string name="no_test_selected">No test selected. Select a test to show his informations.</string>
     <string name="export">Export</string>
     <string name="list_test">List of tests</string>
     <string name="test_deleted">\"%s\" has been deleted</string>
@@ -69,12 +68,12 @@
     <string name="privacy">Privacy</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-    <string name="navigation_info">%1$d/%2$d</string>
+    <string name="navigation_info" translatable="false">%1$d/%2$d</string>
     <string name="create_new_data_edit">New</string>
     <string name="dialog_new_column_title">Create new column</string>
     <string name="dialog_new_column_message">Do you want to create a new column ?</string>
     <string name="dialog_create_new_data_edit">Create</string>
-    <string name="dialog_new_answer_title">Create new answer</string>
+    <string name="dialog_new_answer_title">Create new Answer</string>
     <string name="dialog_new_answer_message">Do you want to create a new answer ?</string>
     <string name="select_export">Select export file type:</string>
     <string name="all_features_may_not_be_available_in_this_format">All features may not be available in this format !</string>
@@ -83,7 +82,7 @@
     <string name="save_column_type_header_save">Save column type at the top of the file</string>
     <string name="separator">Separator:</string>
     <string name="dialog_export_error_title">Export error</string>
-    <string name="dialog_export_error_message">An error occur during the importation. The file may not work.</string>
+    <string name="dialog_export_error_message">An error occur during the exportation. The file may not work.</string>
     <string name="test_exported">The test has been successfully exported</string>
     <string name="import_text">Import</string>
     <string name="dialog_import_error_title">Import error</string>
@@ -97,9 +96,9 @@
     <string name="dialog_export_error_csv_message">An error occur during the importation. Check if it is the correct separator. The test hasn\'t been added.</string>
     <string name="reset">Reset</string>
     <string name="dialog_reset_title">Reset stats</string>
-    <string name="dialog_reset_message">Are you sure do reset all statistics (number of test done...)</string>
+    <string name="dialog_reset_message">Are you sure do reset all statistics (number of test done…)</string>
     <string-array name="export_entries">
-        <item>Diakôluo file (.dkl)</item>
+        <item>Diakôluô file (.dkl)</item>
         <item>Csv file (.csv)</item>
     </string-array>
     <string-array name="separatorsCsv">

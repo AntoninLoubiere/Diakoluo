@@ -185,9 +185,7 @@ public class XmlLoader {
 
             if (FileManager.TAG_ROW.equals(parser.getName())) {
                 DataRow row = readRow(parser, test);
-                if (row != null) {
-                    rowsList.add(row);
-                }
+                rowsList.add(row);
             } else {
                 skip(parser);
             }

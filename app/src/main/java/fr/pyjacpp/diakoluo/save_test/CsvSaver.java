@@ -87,9 +87,9 @@ public class CsvSaver {
     }
 
     public static class CsvContext {
-        private FileOutputStream fileOutputStream;
-        private String separator;
-        private String lineSeparator;
+        private final FileOutputStream fileOutputStream;
+        private final String separator;
+        private final String lineSeparator;
 
         CsvContext(FileOutputStream fileOutputStream, String separator, String lineSeparator) {
             this.fileOutputStream = fileOutputStream;

@@ -336,7 +336,7 @@ public class FileManager {
     }
 
     private static class FileCreateContext {
-        private int position;
+        private final int position;
 
         FileCreateContext(int position) {
             this.position = position;
@@ -344,7 +344,7 @@ public class FileManager {
     }
 
     private static class XmlCreateContext extends FileCreateContext{
-        private boolean saveNumberTestDone;
+        private final boolean saveNumberTestDone;
 
         XmlCreateContext(int position, boolean saveNumberTestDone) {
             super(position);
@@ -353,10 +353,10 @@ public class FileManager {
     }
 
     private static class CsvCreateContext extends FileCreateContext{
-        private boolean columnHeader;
-        private boolean columnTypeHeader;
-        private String separator;
-        private String lineSeparator;
+        private final boolean columnHeader;
+        private final boolean columnTypeHeader;
+        private final String separator;
+        private final String lineSeparator;
 
 
         CsvCreateContext(int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
@@ -372,7 +372,7 @@ public class FileManager {
     }
 
     public static class ImportXmlContext extends ImportContext {
-        public Test importTest;
+        public final Test importTest;
 
         ImportXmlContext(Test importTest) {
             this.importTest = importTest;
@@ -380,8 +380,8 @@ public class FileManager {
     }
 
     public static class ImportCsvContext extends ImportContext {
-        public String[] firstLines;
-        public Uri fileUri;
+        public final String[] firstLines;
+        public final Uri fileUri;
 
         ImportCsvContext(String[] firstLines, Uri fileUri) {
             this.firstLines = firstLines;

@@ -45,7 +45,7 @@ import fr.pyjacpp.diakoluo.tests.Test;
 public class ListTestsFragment extends Fragment {
     private OnFragmentInteractionListener listener;
     private RecyclerView testRecyclerView;
-    private RecyclerView.Adapter testRecyclerViewAdapter;
+    private TestAdapter testRecyclerViewAdapter;
 
     public ListTestsFragment() {
         // Required empty public constructor
@@ -143,7 +143,7 @@ public class ListTestsFragment extends Fragment {
                             @Override
                             public void onClick(View view) {
                                 listTest.add(position, testToDelete);
-
+                                DiakoluoApplication.saveTest(view.getContext());
                                 testRecyclerViewAdapter.notifyItemInserted(position);
                             }
                         })

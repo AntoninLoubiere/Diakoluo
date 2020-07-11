@@ -77,7 +77,7 @@ public class RecyclerViewChange {
         this.changes = changes;
     }
 
-    public void apply(RecyclerView.Adapter recyclerViewAdapter) {
+    public void apply(RecyclerView.Adapter<?> recyclerViewAdapter) {
         if (changeIsIn(ItemChanged)) {
             recyclerViewAdapter.notifyItemChanged(position);
         } if (changeIsIn(ItemInserted)) {
