@@ -29,7 +29,7 @@ android {
         applicationId "fr.pyjacpp.diakoluo"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 1
+        versionCode 2
         versionName 'v development'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
