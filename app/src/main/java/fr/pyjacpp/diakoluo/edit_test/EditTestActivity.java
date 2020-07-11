@@ -69,7 +69,7 @@ public class EditTestActivity extends AppCompatActivity
 
     private EditTestPagerAdapterFragment adapter;
 
-    class EditTestValidator {
+    static class EditTestValidator {
         private final boolean error;
         private final boolean warning;
         private final Integer errorMessageResourceId;
@@ -113,7 +113,7 @@ public class EditTestActivity extends AppCompatActivity
         TextView title = findViewById(R.id.title);
         ImageButton navigation = findViewById(R.id.navigationIcon);
 
-        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(this);
+        final Test currentEditTest = DiakoluoApplication.getCurrentEditTest(this);
         title.setText(currentEditTest == null || currentEditTest.getName().equals("") ?
                 getString(R.string.app_name) : currentEditTest.getName());
         navigation.setOnClickListener(new View.OnClickListener() {
@@ -127,6 +127,7 @@ public class EditTestActivity extends AppCompatActivity
         ViewPager viewPager = findViewById(R.id.viewTestViewPager);
         Button cancelButton = findViewById(R.id.cancelButton);
         Button validButton = findViewById(R.id.validButton);
+        ImageButton resetButton = findViewById(R.id.resetButton);
 
         viewPager.setOffscreenPageLimit(2);
 
@@ -162,6 +163,35 @@ public class EditTestActivity extends AppCompatActivity
                 addValidator(response);
 
                 verifyAndAsk();
+            }
+        });
+
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new MaterialAlertDialogBuilder(EditTestActivity.this)
+                        .setTitle(R.string.dialog_reset_title)
+                        .setMessage(R.string.dialog_reset_message)
+                        .setIcon(R.drawable.ic_reset_accent_color_24dp)
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setPositiveButton(R.string.reset, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (currentEditTest != null) {
+                                    currentEditTest.reset();
+                                    MainInformationEditTestFragment mainInformationEditTestFragment  =
+                                            (MainInformationEditTestFragment) adapter.getFragmentAtPosition(0);
+                                    mainInformationEditTestFragment.updateTestDid();
+                                    dialogInterface.dismiss();
+                                }
+                            }
+                        })
+                        .show();
             }
         });
 

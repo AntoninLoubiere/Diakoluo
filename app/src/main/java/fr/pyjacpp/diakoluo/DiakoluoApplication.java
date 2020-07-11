@@ -91,35 +91,41 @@ public class DiakoluoApplication extends Application {
     }
 
     private void saveTest() {
-        int numberTestCreated = sharedPreferences.getInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, -1);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int numberTestCreated = sharedPreferences.getInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, -1);
 
-        Set<String> listTestFilename = new HashSet<>();
+                Set<String> listTestFilename = new HashSet<>();
 
-        for (Test test : listTest) {
-            if (test.getFilename() == null) {
-                FileManager.getAvailableFilename(this, test);
+                for (Test test : listTest) {
+                    if (test.getFilename() == null) {
+                        FileManager.getAvailableFilename(DiakoluoApplication.this, test);
+                    }
+                    try {
+                        FileManager.saveFromPrivateFile(DiakoluoApplication.this, test);
+                        listTestFilename.add(test.getFilename());
+                    } catch (IOException e) {
+                        Log.e("DiakoluoApplication", "Can't saveFromPrivateFile test " + test.getName());
+                        e.printStackTrace();
+                    }
+                }
+
+                if (listTestFilename.size() != numberTestCreated) {
+                    FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(DiakoluoApplication.this);
+                    firebaseAnalytics.setUserProperty(USER_PROPERTY_NUMBER_TEST_CREATED,
+                            String.valueOf(listTestFilename.size()));
+                }
+
+                sharedPreferences
+                        .edit()
+                        .putStringSet(PREFERENCES_LIST_TEST_FILENAMES, listTestFilename)
+                        .putInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, listTestFilename.size())
+                        .apply();
+                Log.i("DiakoluoApplication", "Test saved");
             }
-            try {
-                FileManager.saveFromPrivateFile(this, test);
-                listTestFilename.add(test.getFilename());
-            } catch (IOException e) {
-                Log.e("DiakoluoApplication", "Can't saveFromPrivateFile test " + test.getName());
-                e.printStackTrace();
-            }
-        }
+        }).start();
 
-        if (listTestFilename.size() != numberTestCreated) {
-            FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
-            firebaseAnalytics.setUserProperty(USER_PROPERTY_NUMBER_TEST_CREATED,
-                    String.valueOf(listTestFilename.size()));
-        }
-
-        sharedPreferences
-                .edit()
-                .putStringSet(PREFERENCES_LIST_TEST_FILENAMES, listTestFilename)
-                .putInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, listTestFilename.size())
-                .apply();
-        Log.i("DiakoluoApplication", "Test saved");
     }
 
     private void loadTest() {
