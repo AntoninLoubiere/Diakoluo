@@ -143,7 +143,7 @@ public class ListTestsFragment extends Fragment {
                             @Override
                             public void onClick(View view) {
                                 listTest.add(position, testToDelete);
-
+                                DiakoluoApplication.saveTest(view.getContext());
                                 testRecyclerViewAdapter.notifyItemInserted(position);
                             }
                         })
