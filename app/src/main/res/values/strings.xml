@@ -53,7 +53,6 @@
     <string name="add_column">Add column</string>
     <string name="column_name_format" translatable="false">%s:</string>
     <string name="column_type">Column type:</string>
-    <string name="no_test_selected">No test selected. Select a test to show his informations.</string>
     <string name="export">Export</string>
     <string name="list_test">List of tests</string>
     <string name="test_deleted">\"%s\" has been deleted</string>
@@ -99,7 +98,7 @@
     <string name="dialog_reset_title">Reset stats</string>
     <string name="dialog_reset_message">Are you sure do reset all statistics (number of test done…)</string>
     <string-array name="export_entries">
-        <item>Diakôluo file (.dkl)</item>
+        <item>Diakôluô file (.dkl)</item>
         <item>Csv file (.csv)</item>
     </string-array>
     <string-array name="separatorsCsv">

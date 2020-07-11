@@ -34,7 +34,7 @@ import fr.pyjacpp.diakoluo.R;
 
 public class ViewTestPagerAdapterFragment extends FragmentPagerAdapter {
 
-    private ArrayList<Fragment> fragments = new ArrayList<>();
+    private final ArrayList<Fragment> fragments = new ArrayList<>();
     private static final int NUMBER_VIEW_TEST_TAB = 3;
     private final Context context;
 

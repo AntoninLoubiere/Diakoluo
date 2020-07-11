@@ -154,14 +154,14 @@ public abstract class DataCell {
 
     public abstract void writeXml(OutputStream fileOutputStream) throws IOException;
 
-    public class ShowValueResponse {
+    public static class ShowValueResponse {
         ShowValueResponse(View valueView, boolean answerIsTrue) {
             this.valueView = valueView;
             this.answerIsTrue = answerIsTrue;
         }
 
-        View valueView;
-        boolean answerIsTrue;
+        final View valueView;
+        final boolean answerIsTrue;
 
         public View getValueView() {
             return valueView;

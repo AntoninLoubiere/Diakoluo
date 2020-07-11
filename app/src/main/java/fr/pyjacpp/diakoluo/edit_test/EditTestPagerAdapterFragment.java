@@ -37,7 +37,7 @@ public class EditTestPagerAdapterFragment extends FragmentPagerAdapter {
     private static final int NUMBER_VIEW_TEST_TAB = 3;
     private final Context context;
 
-    private ArrayList<Fragment> fragments = new ArrayList<>();
+    private final ArrayList<Fragment> fragments = new ArrayList<>();
 
     EditTestPagerAdapterFragment(@NonNull FragmentManager fm, int behavior, Context context) {
         super(fm, behavior);

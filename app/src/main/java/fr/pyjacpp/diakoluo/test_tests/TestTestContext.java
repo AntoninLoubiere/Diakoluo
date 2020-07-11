@@ -34,7 +34,7 @@ import fr.pyjacpp.diakoluo.tests.column.Column;
 
 public class TestTestContext {
 
-    static int PROGRESS_BAR_PRECISION = 100;
+    static final int PROGRESS_BAR_PRECISION = 100;
 
     private int score = 0;
     private int maxScore;
