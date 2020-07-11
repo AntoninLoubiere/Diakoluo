@@ -42,6 +42,8 @@ import fr.pyjacpp.diakoluo.tests.Test;
 public class MainInformationEditTestFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private View inflatedView;
+    private TextView numberTestDid;
+    private Test currentEditTest;
 
     public MainInformationEditTestFragment() {
         // Required empty public constructor
@@ -63,9 +65,9 @@ public class MainInformationEditTestFragment extends Fragment {
         EditText description = inflatedView.findViewById(R.id.descriptionEditText);
         TextView createdDate = inflatedView.findViewById(R.id.createdDateTextView);
         TextView lastModification = inflatedView.findViewById(R.id.lastModificationTextView);
-        TextView numberTestDid = inflatedView.findViewById(R.id.numberTestDid);
+        numberTestDid = inflatedView.findViewById(R.id.numberTestDid);
 
-        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(container.getContext());
+        currentEditTest = DiakoluoApplication.getCurrentEditTest(container.getContext());
 
         title.addTextChangedListener(new EditTextTextWatcher(title) {
             @Override
@@ -97,12 +99,7 @@ public class MainInformationEditTestFragment extends Fragment {
                 )
         );
 
-        numberTestDid.setText(
-                String.format(
-                        getString(R.string.number_test_did_format),
-                        currentEditTest.getNumberTestDid()
-                )
-        );
+        updateTestDid();
 
         return inflatedView;
     }
@@ -138,6 +135,15 @@ public class MainInformationEditTestFragment extends Fragment {
 
         title.setText(currentEditTest.getName());
         description.setText(currentEditTest.getDescription());
+    }
+
+    public void updateTestDid() {
+        numberTestDid.setText(
+                String.format(
+                        getString(R.string.number_test_did_format),
+                        currentEditTest.getNumberTestDid()
+                )
+        );
     }
 
     public interface OnFragmentInteractionListener {

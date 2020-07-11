@@ -19,6 +19,7 @@
 
 package fr.pyjacpp.diakoluo.view_test;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -28,10 +29,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.tests.Test;
 
 public class ViewTestActivity extends AppCompatActivity
         implements
@@ -43,14 +46,20 @@ public class ViewTestActivity extends AppCompatActivity
         ColumnDataViewFragment.OnFragmentInteractionListener,
         MainInformationViewTestFragment.OnFragmentInteractionListener{
 
+    private ViewTestPagerAdapterFragment adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_test);
 
+        final Test currentTest = DiakoluoApplication.getCurrentTest(this);
+
         TextView title = findViewById(R.id.title);
         ImageButton navigation = findViewById(R.id.navigationIcon);
-        title.setText(DiakoluoApplication.getCurrentTest(this).getName());
+        ImageButton resetButton = findViewById(R.id.resetButton);
+
+        title.setText(currentTest.getName());
         navigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,10 +74,38 @@ public class ViewTestActivity extends AppCompatActivity
 
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        viewPager.setAdapter(new ViewTestPagerAdapterFragment(
+        adapter = new ViewTestPagerAdapterFragment(
                 getSupportFragmentManager(),
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, this
-        ));
+        );
+        viewPager.setAdapter(adapter);
+
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new MaterialAlertDialogBuilder(ViewTestActivity.this)
+                        .setTitle(R.string.dialog_reset_title)
+                        .setMessage(R.string.dialog_reset_message)
+                        .setIcon(R.drawable.ic_reset_accent_color_24dp)
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setPositiveButton(R.string.reset, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                currentTest.reset();
+                                DiakoluoApplication.saveTest(ViewTestActivity.this);
+                                MainInformationViewTestFragment mainInformationViewTestFragment = (MainInformationViewTestFragment) adapter.getFragmentAtPosition(0);
+                                mainInformationViewTestFragment.updateTestDid();
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        });
 
     }
 

@@ -95,6 +95,9 @@
     <string name="test_default_name">Test</string>
     <string name="default_column_name">Column %d</string>
     <string name="dialog_export_error_csv_message">An error occur during the importation. Check if it is the correct separator. The test hasn\'t been added.</string>
+    <string name="reset">Reset</string>
+    <string name="dialog_reset_title">Reset stats</string>
+    <string name="dialog_reset_message">Are you sure do reset all statistics (number of test done...)</string>
     <string-array name="export_entries">
         <item>Diakôluo file (.dkl)</item>
         <item>Csv file (.csv)</item>

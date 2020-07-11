@@ -27,21 +27,37 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import java.util.ArrayList;
+
 import fr.pyjacpp.diakoluo.R;
 
 
 public class ViewTestPagerAdapterFragment extends FragmentPagerAdapter {
+
+    private ArrayList<Fragment> fragments = new ArrayList<>();
     private static final int NUMBER_VIEW_TEST_TAB = 3;
     private final Context context;
 
     ViewTestPagerAdapterFragment(@NonNull FragmentManager fm, int behavior, Context context) {
         super(fm, behavior);
         this.context = context;
+
+        fragments.clear();
+        for (int i = 0; i < NUMBER_VIEW_TEST_TAB; i++) {
+            fragments.add(null);
+        }
     }
 
     @NonNull
     @Override
     public Fragment getItem(int position) {
+        Fragment f = createItem(position);
+        fragments.set(position, f);
+        return f;
+    }
+
+
+    private Fragment createItem(int position) {
         switch (position) {
             case 1:
                 return new ColumnViewTestFragment();
@@ -76,5 +92,9 @@ public class ViewTestPagerAdapterFragment extends FragmentPagerAdapter {
             default:
                 return null;
         }
+    }
+
+    Fragment getFragmentAtPosition(int position) {
+        return fragments.get(position);
     }
 }

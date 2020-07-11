@@ -228,4 +228,8 @@ public class Test {
                 .replace('/', '_')
                 .replace('.', '_').toLowerCase();
     }
+
+    public void reset() {
+        this.numberTestDid = 0;
+    }
 }

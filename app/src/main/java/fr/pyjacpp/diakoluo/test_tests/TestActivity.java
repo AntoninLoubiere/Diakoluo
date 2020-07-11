@@ -48,6 +48,7 @@ public class TestActivity extends AppCompatActivity implements TestFragment.OnFr
     @Override
     public void showScore(TestTestContext context) {
         context.getTest().addNumberTestDid();
+        DiakoluoApplication.saveTest(this);
         startActivity(new Intent(getApplicationContext(), TestScoreActivity.class));
         finish();
     }
