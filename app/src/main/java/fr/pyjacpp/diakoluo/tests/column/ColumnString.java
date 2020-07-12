@@ -35,20 +35,22 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.Utils;
 import fr.pyjacpp.diakoluo.ViewUtils;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
+import fr.pyjacpp.diakoluo.tests.data.DataCell;
+import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
-class ColumnString extends Column {
+public class ColumnString extends Column {
     private String defaultValue;
 
     private static final int CASE_SENSITIVE = 1;
     private static final int REMOVE_USELESS_SPACES = 1 << 1;
-    private static final int ALLOW_AUTO_COMPLETION = 1 << 2;
 
-    private static final int DEFAULT_SETTINGS = CASE_SENSITIVE | ALLOW_AUTO_COMPLETION;
+    private static final int DEFAULT_SETTINGS = REMOVE_USELESS_SPACES;
 
     private static final String SETTINGS_TAG = "settings";
 
@@ -69,7 +71,24 @@ class ColumnString extends Column {
     @Override
     public void initializeChildValue() {
         defaultValue = "";
-        settings = 0;
+        settings = DEFAULT_SETTINGS;
+    }
+
+    @Override
+    public boolean verifyAnswer(DataCell dataCell, Object answer) {
+        DataCellString dataCellString = (DataCellString) dataCell;
+        String value = dataCellString.getValue();
+        String a = (String) answer;
+        if (isInSettings(REMOVE_USELESS_SPACES)) {
+            value = Utils.removeUselessSpaces(value);
+            a = Utils.removeUselessSpaces(a);
+        }
+
+        if (isInSettings(CASE_SENSITIVE)) {
+            return value.equals(a);
+        } else {
+            return value.equalsIgnoreCase(a);
+        }
     }
 
     @Override
@@ -78,11 +97,9 @@ class ColumnString extends Column {
 
         MaterialTextView caseSensitiveTextView = inflatedView.findViewById(R.id.caseSensitiveTextView);
         MaterialTextView removeUselessSpacesTextView = inflatedView.findViewById(R.id.removeUselessSpaceTextView);
-        MaterialTextView allowAutoCompletionTextView = inflatedView.findViewById(R.id.allowAutoCompletionTextView);
 
         ViewUtils.setBooleanView(parent.getContext(), caseSensitiveTextView, isInSettings(CASE_SENSITIVE));
         ViewUtils.setBooleanView(parent.getContext(), removeUselessSpacesTextView, isInSettings(REMOVE_USELESS_SPACES));
-        ViewUtils.setBooleanView(parent.getContext(), allowAutoCompletionTextView, isInSettings(ALLOW_AUTO_COMPLETION));
     }
 
     @NonNull
@@ -92,11 +109,9 @@ class ColumnString extends Column {
 
         MaterialCheckBox caseSensitiveCheckBox = inflatedView.findViewById(R.id.caseSensitiveCheckBox);
         MaterialCheckBox removeUselessSpacesCheckBox = inflatedView.findViewById(R.id.removeUselessSpaceCheckBox);
-        MaterialCheckBox allowAutoCompletionCheckBox = inflatedView.findViewById(R.id.allowAutoCompletionCheckBox);
 
         caseSensitiveCheckBox.setChecked(isInSettings(CASE_SENSITIVE));
         removeUselessSpacesCheckBox.setChecked(isInSettings(REMOVE_USELESS_SPACES));
-        allowAutoCompletionCheckBox.setChecked(isInSettings(ALLOW_AUTO_COMPLETION));
 
         return inflatedView;
     }
@@ -105,11 +120,9 @@ class ColumnString extends Column {
     public void setEditColumnSettings(View columnSettingsView) {
         MaterialCheckBox caseSensitiveCheckBox = columnSettingsView.findViewById(R.id.caseSensitiveCheckBox);
         MaterialCheckBox removeUselessSpacesCheckBox = columnSettingsView.findViewById(R.id.removeUselessSpaceCheckBox);
-        MaterialCheckBox allowAutoCompletionCheckBox = columnSettingsView.findViewById(R.id.allowAutoCompletionCheckBox);
 
         setSettings(CASE_SENSITIVE, caseSensitiveCheckBox.isChecked());
         setSettings(REMOVE_USELESS_SPACES, removeUselessSpacesCheckBox.isChecked());
-        setSettings(ALLOW_AUTO_COMPLETION, allowAutoCompletionCheckBox.isChecked());
     }
 
     @Override

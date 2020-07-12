@@ -36,11 +36,4 @@
         android:layout_height="wrap_content"
         android:text="@string/remove_useless_spaces"/>
 
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/allowAutoCompletionCheckBox"
-        style="@style/TextAppearance.MaterialComponents.Body1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/allow_auto_completion" />
-
 </LinearLayout>

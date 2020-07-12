@@ -60,7 +60,7 @@ public class DataCellTest {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column currentColumn = Column.newColumn(inputType);
             DataCell dataCell = DataCell.getDefaultValueCell(currentColumn);
-            assertTrue(dataCell.verifyAnswer(dataCell.getValue()));
+            assertTrue(currentColumn.verifyAnswer(dataCell, dataCell.getValue()));
         }
     }
 }

@@ -41,6 +41,7 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
+import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public abstract class Column {
     private String name;
@@ -93,7 +94,7 @@ public abstract class Column {
                 inputType == null);
     }
 
-    public abstract void writeXmlHeader(OutputStream fileOutputStream) throws IOException;
+    public abstract boolean verifyAnswer(DataCell dataCell, Object answer);
 
     public View showColumnName(Context context) {
         TextView columnNameTextView = new TextView(context);
@@ -152,6 +153,8 @@ public abstract class Column {
         newColumn.description = baseColumn.description;
         newColumn.inputType = baseColumn.inputType;
     }
+
+    public abstract void writeXmlHeader(OutputStream fileOutputStream) throws IOException;
 
     private void loopXmlTags(XmlPullParser parser) throws IOException, XmlPullParserException {
         while (parser.next() != XmlPullParser.END_TAG) {
