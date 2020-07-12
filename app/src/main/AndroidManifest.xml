@@ -131,8 +131,7 @@
 
         <activity
             android:name=".view_test.ColumnDataViewActivity"
-            android:parentActivityName=".view_test.ViewTestActivity"
-            android:theme="@style/AppThemeNoActionBar">
+            android:parentActivityName=".view_test.ViewTestActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view_test.ViewTestActivity" />
