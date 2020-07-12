@@ -19,12 +19,23 @@
 
 package fr.pyjacpp.diakoluo.tests.column;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.textview.MaterialTextView;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
+import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.ViewUtils;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
@@ -33,15 +44,19 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 class ColumnString extends Column {
     private String defaultValue;
 
+    private static final int CASE_SENSITIVE = 1;
+    private static final int REMOVE_USELESS_SPACES = 1 << 1;
+    private static final int ALLOW_AUTO_COMPLETION = 1 << 2;
+
+    @Deprecated
+    private static final int DEFAULT_SETTINGS = CASE_SENSITIVE | ALLOW_AUTO_COMPLETION;
+
+    private static final String SETTINGS_TAG = "settings";
+
+    private int settings = -1;
+
     ColumnString() {
         super();
-    }
-
-    @Override
-    void initialize() {
-        super.initialize();
-        defaultValue = null;
-        inputType = ColumnInputType.String;
     }
 
     ColumnString(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -49,13 +64,52 @@ class ColumnString extends Column {
     }
 
     @Override
-    public void setDefaultValue(Object defaultValue) {
-        this.defaultValue = (String) defaultValue;
+    void initialize() {
+        super.initialize();
+        defaultValue = null;
+        settings = -1;
+        inputType = ColumnInputType.String;
     }
 
     @Override
-    public void initializeDefaultValue() {
+    public void initializeChildValue() {
         defaultValue = "";
+        settings = 0;
+    }
+
+    @NonNull
+    @Override
+    public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_string, parent, true);
+
+        MaterialTextView caseSensitiveTextView = inflatedView.findViewById(R.id.caseSensitiveTextView);
+        MaterialTextView removeUselessSpacesTextView = inflatedView.findViewById(R.id.removeUselessSpaceTextView);
+        MaterialTextView allowAutoCompletionTextView = inflatedView.findViewById(R.id.allowAutoCompletionTextView);
+
+        ViewUtils.setBooleanView(parent.getContext(), caseSensitiveTextView, isInSettings(CASE_SENSITIVE));
+        ViewUtils.setBooleanView(parent.getContext(), removeUselessSpacesTextView, isInSettings(REMOVE_USELESS_SPACES));
+        ViewUtils.setBooleanView(parent.getContext(), allowAutoCompletionTextView, isInSettings(ALLOW_AUTO_COMPLETION));
+    }
+
+    @NonNull
+    @Override
+    public View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_edit_string, parent, false);
+
+        MaterialCheckBox caseSensitiveTextView = inflatedView.findViewById(R.id.caseSensitiveCheckBox);
+        MaterialCheckBox removeUselessSpacesTextView = inflatedView.findViewById(R.id.removeUselessSpaceCheckBox);
+        MaterialCheckBox allowAutoCompletionTextView = inflatedView.findViewById(R.id.allowAutoCompletionCheckBox);
+
+        caseSensitiveTextView.setChecked(isInSettings(CASE_SENSITIVE));
+        removeUselessSpacesTextView.setChecked(isInSettings(REMOVE_USELESS_SPACES));
+        allowAutoCompletionTextView.setChecked(isInSettings(ALLOW_AUTO_COMPLETION));
+
+        return inflatedView;
+    }
+
+    @Override
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = (String) defaultValue;
     }
 
     @Override
@@ -65,27 +119,56 @@ class ColumnString extends Column {
 
     @Override
     public boolean isValid() {
-        return super.isValid() && defaultValue != null;
+        return super.isValid() && defaultValue != null && settings >= 0;
+    }
+
+    private boolean isInSettings(int parameter) {
+        return (settings & parameter) == parameter;
+    }
+
+    private void setSettings(int parameter, boolean value) {
+        if (value) {
+            settings = settings | parameter;
+        } else {
+            settings = settings & ~ parameter;
+        }
     }
 
     @Override
     public void writeXmlHeader(OutputStream fileOutputStream) throws IOException {
         fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_DEFAULT_VALUE,
                 defaultValue).getBytes());
+        fileOutputStream.write(XmlSaver.getCoupleBeacon(SETTINGS_TAG,
+                String.valueOf(settings)).getBytes());
     }
 
     @Override
     void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
-        if (FileManager.TAG_DEFAULT_VALUE.equals(parser.getName())) {
-            defaultValue = XmlLoader.readText(parser);
-        } else {
-            super.readColumnXmlTag(parser);
+        switch (parser.getName()) {
+            case FileManager.TAG_DEFAULT_VALUE:
+                defaultValue = XmlLoader.readText(parser);
+                break;
+
+            case SETTINGS_TAG:
+                settings = XmlLoader.readInt(parser);
+                break;
+
+            default:
+                super.readColumnXmlTag(parser);
+                break;
         }
+    }
+
+    @Override
+    protected void setDefaultValueBackWardCompatibility() {
+        super.setDefaultValueBackWardCompatibility();
+        // for version < v0.3.0
+        settings = DEFAULT_SETTINGS;
     }
 
     static ColumnString privateCopyColumn(ColumnString baseColumn) {
         ColumnString newColumn = new ColumnString();
-        newColumn .defaultValue = baseColumn.defaultValue;
+        newColumn.defaultValue = baseColumn.defaultValue;
         Column.privateCopyColumn(baseColumn, newColumn);
         return newColumn;
     }

@@ -20,9 +20,13 @@
 package fr.pyjacpp.diakoluo.tests.column;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -65,6 +69,8 @@ public abstract class Column {
         this.inputType = null;
     }
 
+    public abstract void initializeChildValue();
+
     public String getName() {
         return name;
     }
@@ -92,8 +98,6 @@ public abstract class Column {
     public abstract Object getDefaultValue();
 
     public abstract void setDefaultValue(Object defaultValue);
-
-    public abstract void initializeDefaultValue();
 
     public boolean isValid() {
         return !(name == null ||
@@ -130,6 +134,12 @@ public abstract class Column {
         return inputLayout;
     }
 
+    @NonNull
+    public abstract void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent);
+
+    @NonNull
+    public abstract View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent);
+
     void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
         switch (parser.getName()) {
             case FileManager.TAG_NAME:
@@ -156,7 +166,7 @@ public abstract class Column {
                 ColumnString columnString = new ColumnString();
                 columnString.setName(name);
                 columnString.setDescription(description);
-                columnString.initializeDefaultValue();
+                columnString.initializeChildValue();
                 return columnString;
 
             default:
@@ -190,6 +200,7 @@ public abstract class Column {
                     default:
                         throw new IllegalStateException("InputType " + columnInputType.name() + " not implemented");
                 }
+                column.setDefaultValueBackWardCompatibility();
                 if (column.isValid()) {
                     return column;
                 } else {
@@ -197,6 +208,12 @@ public abstract class Column {
                 }
             }
         }
+    }
+
+    /**
+     * Set default values for backward compatibility
+     */
+    protected void setDefaultValueBackWardCompatibility() {
     }
 
     public static Column copyColumn(Column column) {
