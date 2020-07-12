@@ -265,7 +265,6 @@ public class XmlLoader {
             }
             parser.nextTag();
         }
-
         return result;
     }
 

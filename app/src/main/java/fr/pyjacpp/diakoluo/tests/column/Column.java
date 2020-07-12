@@ -51,18 +51,6 @@ public abstract class Column {
         initialize();
     }
 
-    protected Column(XmlPullParser parser) throws IOException, XmlPullParserException {
-        initialize();
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                // continue until it is a start tag
-                continue;
-            }
-
-            readColumnXmlTag(parser);
-        }
-    }
-
     void initialize() {
         this.name = null;
         this.description = null;
@@ -134,27 +122,12 @@ public abstract class Column {
         return inputLayout;
     }
 
-    @NonNull
     public abstract void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent);
 
     @NonNull
     public abstract View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent);
 
-    void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
-        switch (parser.getName()) {
-            case FileManager.TAG_NAME:
-                name = XmlLoader.readName(parser);
-                break;
-
-            case FileManager.TAG_DESCRIPTION:
-                description = XmlLoader.readDescription(parser);
-                break;
-
-            default:
-                XmlLoader.skip(parser);
-                break;
-        }
-    }
+    public abstract void setEditColumnSettings(View columnSettingsView);
 
     public static Column newColumn(ColumnInputType columnInputType) {
         return newColumn(columnInputType, "", "");
@@ -180,6 +153,33 @@ public abstract class Column {
         newColumn.inputType = baseColumn.inputType;
     }
 
+    private void loopXmlTags(XmlPullParser parser) throws IOException, XmlPullParserException {
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            readColumnXmlTag(parser);
+        }
+    }
+
+    void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
+        switch (parser.getName()) {
+            case FileManager.TAG_NAME:
+                name = XmlLoader.readName(parser);
+                break;
+
+            case FileManager.TAG_DESCRIPTION:
+                description = XmlLoader.readDescription(parser);
+                break;
+
+            default:
+                XmlLoader.skip(parser);
+                break;
+        }
+    }
+
     public static Column readColumnXml(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMN);
         String attributeValue = parser.getAttributeValue(null, FileManager.ATTRIBUTE_INPUT_TYPE);
@@ -194,7 +194,8 @@ public abstract class Column {
                 Column column;
                 switch (columnInputType) {
                     case String:
-                        column = new ColumnString(parser);
+                        column = new ColumnString();
+                        column.loopXmlTags(parser);
                         break;
 
                     default:

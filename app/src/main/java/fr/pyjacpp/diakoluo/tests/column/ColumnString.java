@@ -48,19 +48,14 @@ class ColumnString extends Column {
     private static final int REMOVE_USELESS_SPACES = 1 << 1;
     private static final int ALLOW_AUTO_COMPLETION = 1 << 2;
 
-    @Deprecated
     private static final int DEFAULT_SETTINGS = CASE_SENSITIVE | ALLOW_AUTO_COMPLETION;
 
     private static final String SETTINGS_TAG = "settings";
 
-    private int settings = -1;
+    public int settings = -1;
 
     ColumnString() {
         super();
-    }
-
-    ColumnString(XmlPullParser parser) throws IOException, XmlPullParserException {
-        super(parser);
     }
 
     @Override
@@ -77,7 +72,6 @@ class ColumnString extends Column {
         settings = 0;
     }
 
-    @NonNull
     @Override
     public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
         View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_string, parent, true);
@@ -94,17 +88,28 @@ class ColumnString extends Column {
     @NonNull
     @Override
     public View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
-        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_edit_string, parent, false);
+        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_edit_string, parent, true);
 
-        MaterialCheckBox caseSensitiveTextView = inflatedView.findViewById(R.id.caseSensitiveCheckBox);
-        MaterialCheckBox removeUselessSpacesTextView = inflatedView.findViewById(R.id.removeUselessSpaceCheckBox);
-        MaterialCheckBox allowAutoCompletionTextView = inflatedView.findViewById(R.id.allowAutoCompletionCheckBox);
+        MaterialCheckBox caseSensitiveCheckBox = inflatedView.findViewById(R.id.caseSensitiveCheckBox);
+        MaterialCheckBox removeUselessSpacesCheckBox = inflatedView.findViewById(R.id.removeUselessSpaceCheckBox);
+        MaterialCheckBox allowAutoCompletionCheckBox = inflatedView.findViewById(R.id.allowAutoCompletionCheckBox);
 
-        caseSensitiveTextView.setChecked(isInSettings(CASE_SENSITIVE));
-        removeUselessSpacesTextView.setChecked(isInSettings(REMOVE_USELESS_SPACES));
-        allowAutoCompletionTextView.setChecked(isInSettings(ALLOW_AUTO_COMPLETION));
+        caseSensitiveCheckBox.setChecked(isInSettings(CASE_SENSITIVE));
+        removeUselessSpacesCheckBox.setChecked(isInSettings(REMOVE_USELESS_SPACES));
+        allowAutoCompletionCheckBox.setChecked(isInSettings(ALLOW_AUTO_COMPLETION));
 
         return inflatedView;
+    }
+
+    @Override
+    public void setEditColumnSettings(View columnSettingsView) {
+        MaterialCheckBox caseSensitiveCheckBox = columnSettingsView.findViewById(R.id.caseSensitiveCheckBox);
+        MaterialCheckBox removeUselessSpacesCheckBox = columnSettingsView.findViewById(R.id.removeUselessSpaceCheckBox);
+        MaterialCheckBox allowAutoCompletionCheckBox = columnSettingsView.findViewById(R.id.allowAutoCompletionCheckBox);
+
+        setSettings(CASE_SENSITIVE, caseSensitiveCheckBox.isChecked());
+        setSettings(REMOVE_USELESS_SPACES, removeUselessSpacesCheckBox.isChecked());
+        setSettings(ALLOW_AUTO_COMPLETION, allowAutoCompletionCheckBox.isChecked());
     }
 
     @Override
@@ -163,12 +168,15 @@ class ColumnString extends Column {
     protected void setDefaultValueBackWardCompatibility() {
         super.setDefaultValueBackWardCompatibility();
         // for version < v0.3.0
-        settings = DEFAULT_SETTINGS;
+        if (settings < 0) {
+            settings = DEFAULT_SETTINGS;
+        }
     }
 
     static ColumnString privateCopyColumn(ColumnString baseColumn) {
         ColumnString newColumn = new ColumnString();
         newColumn.defaultValue = baseColumn.defaultValue;
+        newColumn.settings = baseColumn.settings;
         Column.privateCopyColumn(baseColumn, newColumn);
         return newColumn;
     }
