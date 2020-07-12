@@ -20,9 +20,13 @@
 package fr.pyjacpp.diakoluo.tests.column;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -37,6 +41,7 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
+import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public abstract class Column {
     private String name;
@@ -47,23 +52,13 @@ public abstract class Column {
         initialize();
     }
 
-    protected Column(XmlPullParser parser) throws IOException, XmlPullParserException {
-        initialize();
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                // continue until it is a start tag
-                continue;
-            }
-
-            readColumnXmlTag(parser);
-        }
-    }
-
     void initialize() {
         this.name = null;
         this.description = null;
         this.inputType = null;
     }
+
+    public abstract void initializeChildValue();
 
     public String getName() {
         return name;
@@ -93,15 +88,13 @@ public abstract class Column {
 
     public abstract void setDefaultValue(Object defaultValue);
 
-    public abstract void initializeDefaultValue();
-
     public boolean isValid() {
         return !(name == null ||
                 description == null ||
                 inputType == null);
     }
 
-    public abstract void writeXmlHeader(OutputStream fileOutputStream) throws IOException;
+    public abstract boolean verifyAnswer(DataCell dataCell, Object answer);
 
     public View showColumnName(Context context) {
         TextView columnNameTextView = new TextView(context);
@@ -130,6 +123,50 @@ public abstract class Column {
         return inputLayout;
     }
 
+    public abstract void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent);
+
+    @NonNull
+    public abstract View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent);
+
+    public abstract void setEditColumnSettings(View columnSettingsView);
+
+    public static Column newColumn(ColumnInputType columnInputType) {
+        return newColumn(columnInputType, "", "");
+    }
+
+    public static Column newColumn(ColumnInputType columnInputType, String name, String description) {
+        switch (columnInputType) {
+            case String:
+                ColumnString columnString = new ColumnString();
+                columnString.setName(name);
+                columnString.setDescription(description);
+                columnString.initializeChildValue();
+                return columnString;
+
+            default:
+                throw new IllegalStateException("Unexpected value: " + columnInputType);
+        }
+    }
+
+    static void privateCopyColumn(Column baseColumn, Column newColumn) {
+        newColumn.name = baseColumn.name;
+        newColumn.description = baseColumn.description;
+        newColumn.inputType = baseColumn.inputType;
+    }
+
+    public abstract void writeXmlHeader(OutputStream fileOutputStream) throws IOException;
+
+    private void loopXmlTags(XmlPullParser parser) throws IOException, XmlPullParserException {
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            readColumnXmlTag(parser);
+        }
+    }
+
     void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
         switch (parser.getName()) {
             case FileManager.TAG_NAME:
@@ -146,30 +183,6 @@ public abstract class Column {
         }
     }
 
-    public static Column newColumn(ColumnInputType columnInputType) {
-        return newColumn(columnInputType, "", "");
-    }
-
-    public static Column newColumn(ColumnInputType columnInputType, String name, String description) {
-        switch (columnInputType) {
-            case String:
-                ColumnString columnString = new ColumnString();
-                columnString.setName(name);
-                columnString.setDescription(description);
-                columnString.initializeDefaultValue();
-                return columnString;
-
-            default:
-                throw new IllegalStateException("Unexpected value: " + columnInputType);
-        }
-    }
-
-    static void privateCopyColumn(Column baseColumn, Column newColumn) {
-        newColumn.name = baseColumn.name;
-        newColumn.description = baseColumn.description;
-        newColumn.inputType = baseColumn.inputType;
-    }
-
     public static Column readColumnXml(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMN);
         String attributeValue = parser.getAttributeValue(null, FileManager.ATTRIBUTE_INPUT_TYPE);
@@ -184,12 +197,14 @@ public abstract class Column {
                 Column column;
                 switch (columnInputType) {
                     case String:
-                        column = new ColumnString(parser);
+                        column = new ColumnString();
+                        column.loopXmlTags(parser);
                         break;
 
                     default:
                         throw new IllegalStateException("InputType " + columnInputType.name() + " not implemented");
                 }
+                column.setDefaultValueBackWardCompatibility();
                 if (column.isValid()) {
                     return column;
                 } else {
@@ -197,6 +212,12 @@ public abstract class Column {
                 }
             }
         }
+    }
+
+    /**
+     * Set default values for backward compatibility
+     */
+    protected void setDefaultValueBackWardCompatibility() {
     }
 
     public static Column copyColumn(Column column) {

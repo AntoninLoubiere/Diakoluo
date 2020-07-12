@@ -135,7 +135,7 @@ public class CsvLoader {
                 column.setName(csvContext.context.getString(R.string.default_column_name, i + 1));
             }
 
-            column.initializeDefaultValue();
+            column.initializeChildValue();
 
             columns.add(column);
         }

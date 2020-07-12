@@ -255,6 +255,18 @@ public class XmlLoader {
         return result;
     }
 
+    public static int readInt(XmlPullParser parser) throws IOException, XmlPullParserException {
+        int result = -1;
+
+        if (parser.next() == XmlPullParser.TEXT) {
+            try {
+                result = Integer.parseInt(parser.getText());
+            } catch (NumberFormatException ignored) {
+            }
+            parser.nextTag();
+        }
+        return result;
+    }
 
     public static void skip(XmlPullParser parser) throws IOException, XmlPullParserException {
         Log.w("XmlLoader", parser.getName() + " is not handle");

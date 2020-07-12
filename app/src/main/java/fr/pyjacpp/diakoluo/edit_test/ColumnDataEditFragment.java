@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -54,6 +55,8 @@ public class ColumnDataEditFragment extends Fragment {
     private View inflatedView;
     private EditText titleEditText;
     private EditText descriptionEditText;
+
+    private View columnSettingsView;
 
     public ColumnDataEditFragment() {
     }
@@ -89,6 +92,7 @@ public class ColumnDataEditFragment extends Fragment {
             final Test currentEditTest = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext());
             final Column column = currentEditTest
                     .getListColumn().get(columnIndex);
+            LinearLayout columnSettingsParent = inflatedView.findViewById(R.id.columnSettings);
 
             titleEditText.setText(column.getName());
             descriptionEditText.setText(column.getDescription());
@@ -139,6 +143,9 @@ public class ColumnDataEditFragment extends Fragment {
                 public void onNothingSelected(AdapterView<?> adapterView) {
                 }
             });
+
+
+            columnSettingsView = column.getEditColumnSettings(inflater, columnSettingsParent);
         }
 
         inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
@@ -192,6 +199,8 @@ public class ColumnDataEditFragment extends Fragment {
 
             column.setName(titleEditText.getText().toString());
             column.setDescription(descriptionEditText.getText().toString());
+            column.setEditColumnSettings(columnSettingsView);
+
             if (parentListener != null)
                 parentListener.updateItem(columnIndex);
             else {

@@ -81,7 +81,14 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/columnTypeTextView" />
 
-    </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/columnSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/columnTypeSpinner"
+            android:layout_margin="@dimen/default_margin"
+            android:orientation="vertical" />
 
+    </RelativeLayout>
 
 </ScrollView>

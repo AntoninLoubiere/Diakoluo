@@ -58,11 +58,6 @@ public class DataCellString extends DataCell {
     }
 
     @Override
-    public boolean verifyAnswer(Object answer) {
-        return ((String) answer).equalsIgnoreCase(value);
-    }
-
-    @Override
     public void setValueFromCsv(String lineCell) {
         value = lineCell;
     }

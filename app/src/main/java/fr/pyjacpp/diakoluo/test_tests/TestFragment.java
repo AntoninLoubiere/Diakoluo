@@ -133,7 +133,7 @@ public class TestFragment extends Fragment {
                                 Object answer = testTestContext.getUserAnswer().get(column);
                                 if (answer != null) {
                                     DataCell.ShowValueResponse showValueResponse = dataCell.showValue(
-                                            inflatedView.getContext(), answer);
+                                            inflatedView.getContext(), column, answer);
 
                                     answerRow.addView(showValueResponse.getValueView(), params);
                                     if (!showValueResponse.isAnswerTrue()) {
@@ -209,7 +209,7 @@ public class TestFragment extends Fragment {
             DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
 
             if (columnShow != null && answer != null && dataCell != null && !columnShow) {
-                dataCell.verifyAndScoreAnswer(testTestContext, answer);
+                dataCell.verifyAndScoreAnswer(testTestContext, column, answer);
             }
         }
     }

@@ -66,12 +66,12 @@ public class ColumnTest {
     public void initializeDefaultValue() {
         ColumnString columnString = new ColumnString();
         assertNull(columnString.getDefaultValue());
-        columnString.initializeDefaultValue();
+        columnString.initializeChildValue();
         assertNotNull(columnString.getDefaultValue());
 
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column newColumn = Column.newColumn(inputType);
-            newColumn.initializeDefaultValue();
+            newColumn.initializeChildValue();
             assertNotNull(newColumn.getDefaultValue());
         }
     }
@@ -82,7 +82,7 @@ public class ColumnTest {
         assertFalse(column.isValid());
         column.setName("Test");
         column.setDescription("Test");
-        column.initializeDefaultValue();
+        column.initializeChildValue();
         assertTrue(column.isValid());
 
     }

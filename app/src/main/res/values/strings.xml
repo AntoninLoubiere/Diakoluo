@@ -97,6 +97,9 @@
     <string name="reset">Reset</string>
     <string name="dialog_reset_title">Reset stats</string>
     <string name="dialog_reset_message">Are you sure do reset all statistics (number of test done…)</string>
+    <string name="case_sensitive">Case sensitive</string>
+    <string name="remove_useless_spaces">Remove useless spaces</string>
+    <string name="allow_auto_completion">Allow auto completion</string>
     <string-array name="export_entries">
         <item>Diakôluô file (.dkl)</item>
         <item>Csv file (.csv)</item>
