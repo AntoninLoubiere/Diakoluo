@@ -17,37 +17,28 @@
  *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package fr.pyjacpp.diakoluo;
 
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        
+public final class Utils {
+    public static String removeUselessSpaces(String s) {
+        final int length = s.length();
+        int realStart = 0;
+        int realEnd = length - 1;
+
+        while (realStart < length &&
+                (s.charAt(realStart) == ' ' ||
+                        s.charAt(realStart) == '\n' || s.charAt(realStart) == '\t')) {
+            realStart++;
+        }
+
+        if (realStart >= length) {
+            return "";
+        }
+
+        while (s.charAt(realEnd) == ' ' || s.charAt(realEnd) == '\n' || s.charAt(realEnd) == '\t') {
+            realEnd--;
+        }
+
+        return s.substring(realStart, realEnd + 1);
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
-
-        classpath 'com.google.gms:google-services:4.3.3'
-
-        classpath 'com.google.firebase:perf-plugin:1.3.1'
-
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.2.0'
-
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-        
-    }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }

@@ -39,8 +39,8 @@ import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 public class AnswerEditTestRecyclerListFragment extends Fragment {
+    private AnswerAdapter answerRecyclerViewAdapter;
     private OnFragmentInteractionListener mListener;
-    private RecyclerView.Adapter answerRecyclerViewAdapter;
     private OnParentFragmentInteractionListener parentListener;
 
     public AnswerEditTestRecyclerListFragment() {

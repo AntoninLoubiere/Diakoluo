@@ -93,11 +93,11 @@ public abstract class DataCell {
         return valueTextView;
     }
 
-    public ShowValueResponse showValue(Context context, Object answer) {
+    public ShowValueResponse showValue(Context context, Column column, Object answer) {
         String answerString = getStringFromObjectValue(answer);
 
         MaterialTextView valueTextView = (MaterialTextView) showValue(context);
-        boolean answerIsTrue = verifyAnswer(answer);
+        boolean answerIsTrue = column.verifyAnswer(this, answer);
 
         if (answerIsTrue) {
             valueTextView.setTextColor(context.getResources().getColor(R.color.trueAnswer));
@@ -141,12 +141,8 @@ public abstract class DataCell {
             return null;
     }
 
-    public boolean verifyAnswer(Object answer) {
-        return answer == getValue();
-    }
-
-    public void verifyAndScoreAnswer(TestTestContext testTestContext, Object answer) {
-        if (verifyAnswer(answer))
+    public void verifyAndScoreAnswer(TestTestContext testTestContext, Column parent, Object answer) {
+        if (parent.verifyAnswer(this, answer))
             testTestContext.addScore(1);
     }
 
@@ -154,14 +150,14 @@ public abstract class DataCell {
 
     public abstract void writeXml(OutputStream fileOutputStream) throws IOException;
 
-    public class ShowValueResponse {
+    public static class ShowValueResponse {
         ShowValueResponse(View valueView, boolean answerIsTrue) {
             this.valueView = valueView;
             this.answerIsTrue = answerIsTrue;
         }
 
-        View valueView;
-        boolean answerIsTrue;
+        final View valueView;
+        final boolean answerIsTrue;
 
         public View getValueView() {
             return valueView;

@@ -76,6 +76,14 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
         }
 
+        Button validButton = findViewById(R.id.validButton);
+        validButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         if (savedInstanceState == null) {
             createFragment();
         } else {

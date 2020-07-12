@@ -39,15 +39,14 @@ import java.util.HashMap;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.OnSwipeTouchListener;
 import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.RecyclerViewChange;
-import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public class AnswerDataEditFragment extends Fragment {
     static final String ARG_ANSWER_INDEX = "answer_index";
 
-    private HashMap<Column, View> columnAnswerEditHashMap = new HashMap<>();
+    private final HashMap<Column, View> columnAnswerEditHashMap = new HashMap<>();
 
     private OnFragmentInteractionListener mListener;
     @Nullable

@@ -38,7 +38,7 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
 class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder> {
     private final Context context;
 
-    private AnswerViewListener listener;
+    private final AnswerViewListener listener;
 
     interface AnswerViewListener {
         void onItemClick(View view, View itemView);

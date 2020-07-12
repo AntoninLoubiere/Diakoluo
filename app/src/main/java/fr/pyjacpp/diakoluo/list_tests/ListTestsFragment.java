@@ -22,7 +22,6 @@ package fr.pyjacpp.diakoluo.list_tests;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +45,7 @@ import fr.pyjacpp.diakoluo.tests.Test;
 public class ListTestsFragment extends Fragment {
     private OnFragmentInteractionListener listener;
     private RecyclerView testRecyclerView;
-    private RecyclerView.Adapter testRecyclerViewAdapter;
+    private TestAdapter testRecyclerViewAdapter;
 
     public ListTestsFragment() {
         // Required empty public constructor
@@ -128,7 +127,6 @@ public class ListTestsFragment extends Fragment {
         final ArrayList<Test> listTest = DiakoluoApplication.getListTest(view.getContext());
         testRecyclerView.removeViewAt(position);
         testRecyclerViewAdapter.notifyItemRemoved(position);
-        testRecyclerViewAdapter.notifyItemRangeChanged(position, listTest.size());
 
         listener.onDeleteTest(position, listTest.size() - 1);
 
@@ -140,8 +138,16 @@ public class ListTestsFragment extends Fragment {
 
                 Snackbar.make(view, getString(R.string.test_deleted, testToDelete.getName()),
                         Snackbar.LENGTH_LONG)
-                        .setDuration(getResources().getInteger(R.integer.snackbar_deleted_duration)).
-                        setAnchorView(R.id.addFloatingButton).show();
+                        .setDuration(getResources().getInteger(R.integer.snackbar_deleted_duration))
+                        .setAction(R.string.cancel, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                listTest.add(position, testToDelete);
+                                DiakoluoApplication.saveTest(view.getContext());
+                                testRecyclerViewAdapter.notifyItemInserted(position);
+                            }
+                        })
+                        .setAnchorView(R.id.addFloatingButton).show();
             }
         }).start();
     }

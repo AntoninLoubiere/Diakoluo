@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -71,6 +72,7 @@ public class ColumnDataViewFragment extends Fragment {
         TextView titleEditText = inflatedView.findViewById(R.id.titleTextView);
         TextView descriptionEditText = inflatedView.findViewById(R.id.descriptionTextView);
         TextView columnTypeTextView = inflatedView.findViewById(R.id.columnTypeTextView);
+        LinearLayout columnSettingsParent = inflatedView.findViewById(R.id.columnSettings);
 
         final Test currentTest = DiakoluoApplication.getCurrentTest(inflatedView.getContext());
         final Column column = currentTest.getListColumn().get(columnIndex);
@@ -78,6 +80,8 @@ public class ColumnDataViewFragment extends Fragment {
         titleEditText.setText(column.getName());
         descriptionEditText.setText(column.getDescription());
         columnTypeTextView.setText(column.getInputType().name());
+
+        column.getViewColumnSettings(inflater, columnSettingsParent);
 
         inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
             @Override

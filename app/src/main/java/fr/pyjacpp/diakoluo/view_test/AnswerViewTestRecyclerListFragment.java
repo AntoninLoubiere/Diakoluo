@@ -47,7 +47,7 @@ public class AnswerViewTestRecyclerListFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_recycler_list, container, false);
 
         RecyclerView answerRecyclerView = inflatedView.findViewById(R.id.recyclerView);
-        RecyclerView.Adapter answerRecyclerViewAdapter = new AnswerAdapter(answerRecyclerView.getContext());
+        AnswerAdapter answerRecyclerViewAdapter = new AnswerAdapter(answerRecyclerView.getContext());
         LinearLayoutManager answerRecyclerViewLayout = new LinearLayoutManager(answerRecyclerView.getContext());
 
         answerRecyclerView.setHasFixedSize(true);

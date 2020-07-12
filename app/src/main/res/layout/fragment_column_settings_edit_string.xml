@@ -18,36 +18,22 @@
   ~     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rootRelativeLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".edit_test.ColumnDataEditActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/columnDataEditFragmentContainer"
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/caseSensitiveCheckBox"
+        style="@style/TextAppearance.MaterialComponents.Body1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/validButton"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical" />
+        android:text="@string/case_sensitive" />
 
-    <Button
-        android:id="@+id/validButton"
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/removeUselessSpaceCheckBox"
+        style="@style/TextAppearance.MaterialComponents.Body1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/navigationBottomBarLayout"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin"
-        android:layout_marginBottom="@dimen/default_margin"
-        android:text="@string/valid" />
+        android:text="@string/remove_useless_spaces"/>
 
-    <include
-        android:id="@+id/navigationBottomBarLayout"
-        layout="@layout/navigation_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
-
-</RelativeLayout>
+</LinearLayout>

@@ -44,6 +44,7 @@ public class MainInformationViewTestFragment extends Fragment {
     private TextView numberTestDid;
     private View separator1;
     private View separator2;
+    private Test currentTest;
 
     public MainInformationViewTestFragment() {
         // Required empty public constructor
@@ -74,7 +75,7 @@ public class MainInformationViewTestFragment extends Fragment {
         DateFormat dateFormat = android.text.format.DateFormat.getLongDateFormat(context.getApplicationContext());
         DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context.getApplicationContext());
 
-        Test currentTest = DiakoluoApplication.getCurrentTest(context);
+        currentTest = DiakoluoApplication.getCurrentTest(context);
 
         if (currentTest != null) {
             title.setVisibility(View.VISIBLE);
@@ -102,12 +103,7 @@ public class MainInformationViewTestFragment extends Fragment {
             );
 
             numberTestDid.setVisibility(View.VISIBLE);
-            numberTestDid.setText(
-                    String.format(
-                            getString(R.string.number_test_did_format),
-                            currentTest.getNumberTestDid()
-                    )
-            );
+            updateTestDid();
 
             separator1.setVisibility(View.VISIBLE);
             separator2.setVisibility(View.VISIBLE);
@@ -139,6 +135,16 @@ public class MainInformationViewTestFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+    void updateTestDid() {
+        numberTestDid.setText(
+                String.format(
+                        getString(R.string.number_test_did_format),
+                        currentTest.getNumberTestDid()
+                )
+        );
+    }
+
     public interface OnFragmentInteractionListener {
     }
 }
