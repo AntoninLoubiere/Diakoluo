@@ -40,7 +40,7 @@ import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 public class XmlLoader {
 
-    static Test load(InputStream fileInputStream) throws IOException, XmlPullParserException {
+    public static Test load(InputStream fileInputStream) throws IOException, XmlPullParserException {
             // configure parser
         XmlPullParser parser = Xml.newPullParser();
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);

@@ -25,6 +25,8 @@ import android.graphics.Typeface;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.Nullable;
+
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -166,5 +168,10 @@ public abstract class DataCell {
         public boolean isAnswerTrue() {
             return answerIsTrue;
         }
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return obj instanceof DataCell;
     }
 }

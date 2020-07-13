@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textview.MaterialTextView;
@@ -192,5 +193,14 @@ public class ColumnString extends Column {
         newColumn.settings = baseColumn.settings;
         Column.privateCopyColumn(baseColumn, newColumn);
         return newColumn;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof ColumnString && super.equals(obj)) {
+            ColumnString cS = (ColumnString) obj;
+            return cS.defaultValue.equals(defaultValue) && cS.settings == settings;
+        }
+        return false;
     }
 }

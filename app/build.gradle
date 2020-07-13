@@ -43,8 +43,10 @@ android {
             FirebasePerformance {
                 instrumentationEnabled false
             }
-
         }
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 }
 

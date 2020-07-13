@@ -22,7 +22,7 @@
     <description>C'est le test par défaut.</description>
     <createdDate>1581693710347</createdDate>
     <lastModification>1581693710347</lastModification>
-    <numberTestDid>0</numberTestDid>
+    <numberTestDid>1</numberTestDid>
     <columns>
         <column inputType="String">
             <name>Base verbale</name>

@@ -19,6 +19,8 @@
 
 package fr.pyjacpp.diakoluo.tests;
 
+import androidx.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -81,5 +83,40 @@ public class DataRow {
             DataCell dataCell = listCells.get(column);
             CsvSaver.writeCell(csvContext, i, dataCell == null ? "" : dataCell.getStringValue());
         }
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        throw new RuntimeException("Equals(@Nullable Object obj, ArrayList<Column> objColumns, " +
+                "ArrayList<Column> dataRowColumns) should be used instead");
+    }
+
+    public boolean equals(@Nullable Object obj, ArrayList<Column> objColumns,
+                          ArrayList<Column> dataRowColumns) {
+        if (obj instanceof DataRow) {
+            DataRow row = (DataRow) obj;
+            int size = row.listCells.keySet().size();
+            if (row.selected == selected && size == listCells.keySet().size() &&
+                    size == objColumns.size() && size == dataRowColumns.size()) {
+
+                for (int i = 0; i < size; i++) {
+                    Column objColumn = objColumns.get(i);
+                    Column dataRowColumn = dataRowColumns.get(i);
+
+                    DataCell dataCell1 = row.listCells.get(objColumn);
+                    DataCell dataCell2 = listCells.get(dataRowColumn);
+                    if (dataCell1 == null) {
+                        if (dataCell2 != null) {
+                            return false;
+                        }
+                    } else if (!dataCell1.equals(dataCell2)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+        return false;
     }
 }

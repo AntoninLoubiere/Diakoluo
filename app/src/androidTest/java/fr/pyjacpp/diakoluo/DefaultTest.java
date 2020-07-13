@@ -633,9 +633,10 @@ public class DefaultTest extends Test {
         super(defaultTest);
     }
 
-    public static void setTestValue(DataCell dataCell) {
+    public static DataCell setTestValue(DataCell dataCell) {
         if (dataCell instanceof DataCellString) {
             dataCell.setValue("Test Value");
+            return dataCell;
         } else {
             throw new IllegalStateException("This DataCell isn't implemented");
         }

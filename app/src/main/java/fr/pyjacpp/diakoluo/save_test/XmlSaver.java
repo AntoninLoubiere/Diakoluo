@@ -29,7 +29,7 @@ import fr.pyjacpp.diakoluo.tests.column.Column;
 public class XmlSaver {
     private static final String TEST_START = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
-    static void save(OutputStream fileOutputStream, Test test) throws IOException {
+    public static void save(OutputStream fileOutputStream, Test test) throws IOException {
         save(fileOutputStream, test, true);
     }
     static void save(OutputStream fileOutputStream, Test test, boolean saveNumberTestDone) throws IOException {
