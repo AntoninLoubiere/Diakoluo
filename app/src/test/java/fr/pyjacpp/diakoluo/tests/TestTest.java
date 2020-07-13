@@ -11,7 +11,7 @@ import fr.pyjacpp.diakoluo.tests.column.Column;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -163,7 +163,8 @@ public class TestTest {
     @Test
     public void duplicateTest() {
         fr.pyjacpp.diakoluo.tests.Test actual = new fr.pyjacpp.diakoluo.tests.Test(defaultTest);
-        assertNotEquals(defaultTest, actual);
+        assertEquals(defaultTest, actual);
+        assertNotSame(defaultTest, actual);
     }
 
     @Test

@@ -19,6 +19,8 @@
 
 package fr.pyjacpp.diakoluo.tests.data;
 
+import androidx.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -65,5 +67,14 @@ public class DataCellString extends DataCell {
     @Override
     public void writeXml(OutputStream fileOutputStream) throws IOException {
         fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_CELL, value).getBytes());
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof DataCellString) {
+            DataCellString dataCellString = (DataCellString) obj;
+            return super.equals(obj) && value.equals(dataCellString.value);
+        }
+        return false;
     }
 }

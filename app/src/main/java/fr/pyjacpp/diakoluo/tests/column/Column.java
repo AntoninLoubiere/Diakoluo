@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -226,5 +227,14 @@ public abstract class Column {
         } else {
             throw new IllegalStateException("Column type not detected");
         }
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof Column) {
+            Column c = (Column) obj;
+            return c.name.equals(name) && c.description.equals(description);
+        }
+        return false;
     }
 }

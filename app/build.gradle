@@ -40,7 +40,13 @@ android {
         }
         debug {
             ext.enableCrashlytics = false
+            FirebasePerformance {
+                instrumentationEnabled false
+            }
         }
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 }
 

@@ -232,4 +232,36 @@ public class Test {
     public void reset() {
         this.numberTestDid = 0;
     }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof Test) {
+            Test t = (Test) obj;
+            if (t.name.equals(name) &&
+                    t.description.equals(description) &&
+                    t.createdDate.equals(createdDate) &&
+                    t.lastModification.equals(lastModification) &&
+                    t.listColumn.size() == listColumn.size() && t.listRow.size() == listRow.size()) {
+                ArrayList<Column> columns = t.listColumn;
+                for (int i = 0; i < columns.size(); i++) {
+                    Column testC = columns.get(i);
+                    Column thisC = listColumn.get(i);
+                    if (!testC.equals(thisC)) {
+                        return false;
+                    }
+                }
+
+                ArrayList<DataRow> rows = t.listRow;
+                for (int i = 0; i < rows.size(); i++) {
+                    DataRow testR = rows.get(i);
+                    DataRow thisR = listRow.get(i);
+                    if (!testR.equals(thisR, t.listColumn, listColumn)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 }

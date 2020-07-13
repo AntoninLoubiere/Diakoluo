@@ -42,7 +42,7 @@ public class DiakoluoApplication extends Application {
     private static final String GLOBAL_SHARED_PREFERENCES = "diakoluo";
     private static final String PREFERENCES_LIST_TEST_FILENAMES = "testFilenames";
     private static final String PREFERENCES_NUMBER_TEST_CREATED_FILENAMES = "numberTestCreated";
-    private static final String DEFAULT_TEST = "default.dkl";
+    public static final String DEFAULT_TEST = "default.dkl";
     private static final String USER_PROPERTY_NUMBER_TEST_CREATED = "number_test";
 
     private static final String ANALYTICS_ENABLE = "analytics";

@@ -21,11 +21,11 @@ public class ScoreUtilsTest {
     public void setUp(){
         defaultTest = new DefaultTest();
 
-        testTestContextMin = new TestTestTestContext(10, 0);
+        testTestContextMin = new TestTestTestContext(10, 1);
         testTestContextMin.addScore(0);
-        testTestContextMax = new TestTestTestContext(10, 0);
+        testTestContextMax = new TestTestTestContext(10, 1);
         testTestContextMax.addScore(testTestContextMax.getMaxScore());
-        testTestContextRandom = new TestTestTestContext(10, 0);
+        testTestContextRandom = new TestTestTestContext(10, 1);
         testTestContextRandom.addScore(new Random().nextInt(testTestContextRandom.getMaxScore() - 2) + 1);
     }
 
