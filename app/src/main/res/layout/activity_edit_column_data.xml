@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+  ~
+  ~ This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+  ~
+  ~     Diakôluô is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Diakôluô is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     A copy of the license is available in the root folder of Diakôluô, under the
+  ~     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+  -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootRelativeLayout"
@@ -10,6 +29,25 @@
         android:id="@+id/columnDataEditFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@id/validButton"
+        android:layout_alignParentTop="true"
         android:orientation="vertical" />
+
+    <Button
+        android:id="@+id/validButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/navigationBottomBarLayout"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/default_margin"
+        android:text="@string/valid" />
+
+    <include
+        android:id="@+id/navigationBottomBarLayout"
+        layout="@layout/navigation_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

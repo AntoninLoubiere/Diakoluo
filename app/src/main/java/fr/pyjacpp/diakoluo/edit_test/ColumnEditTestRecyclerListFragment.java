@@ -1,7 +1,25 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,13 +36,15 @@ import java.util.Collections;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
-import fr.pyjacpp.diakoluo.tests.Column;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-class ColumnEditTestRecyclerListFragment extends Fragment {
+public class ColumnEditTestRecyclerListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
-    private RecyclerView.Adapter columnRecyclerViewAdapter;
+    private OnParentFragmentInteractionListener parentListener;
+
+    private ColumnAdapter columnRecyclerViewAdapter;
 
     public ColumnEditTestRecyclerListFragment() {
         // Required empty public constructor
@@ -41,9 +61,7 @@ class ColumnEditTestRecyclerListFragment extends Fragment {
                 int position = columnRecyclerView.getChildAdapterPosition(itemView);
 
                 if (position >= 0) {
-                    Intent intent = new Intent(view.getContext(), ColumnDataEditActivity.class);
-                    intent.putExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, position);
-                    startActivity(intent);
+                    parentListener.onItemClick(view, position);
                 }
             }
 
@@ -55,12 +73,14 @@ class ColumnEditTestRecyclerListFragment extends Fragment {
 
                     Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
                     Column columnRemoved = currentEditTest.getListColumn().remove(position);
-                    columnRecyclerViewAdapter.notifyItemRemoved(position);
 
                     // remove all column in memory
                     for (DataRow row : currentEditTest.getListRow()) {
                         row.getListCells().remove(columnRemoved);
                     }
+
+                    parentListener.onDeleteItem(view, position);
+                    columnRecyclerViewAdapter.notifyItemRemoved(position);
 
                     if (position == 0) {
                         RecyclerViewChange setAnswerListChanged = new RecyclerViewChange(
@@ -68,15 +88,13 @@ class ColumnEditTestRecyclerListFragment extends Fragment {
                         );
                         setAnswerListChanged.setPositionStart(0);
                         setAnswerListChanged.setPositionEnd(currentEditTest.getNumberRow() - 1);
-                        DiakoluoApplication.setAnswerListChanged(view.getContext(),
-                                setAnswerListChanged);
+                        mListener.updateAnswerRecycler(setAnswerListChanged);
                     }
                 }
             }
         });
         LinearLayoutManager columnRecyclerViewLayoutManager = new LinearLayoutManager(columnRecyclerView.getContext());
 
-        columnRecyclerView.setHasFixedSize(true);
         columnRecyclerView.setLayoutManager(columnRecyclerViewLayoutManager);
         columnRecyclerView.setAdapter(columnRecyclerViewAdapter);
 
@@ -84,6 +102,10 @@ class ColumnEditTestRecyclerListFragment extends Fragment {
 //                columnRecyclerViewLayoutManager.getOrientation()));
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+
+            private int dragFrom = -1;
+            private int dragTo = -1;
+
             @Override
             public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
                 return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
@@ -93,26 +115,52 @@ class ColumnEditTestRecyclerListFragment extends Fragment {
 
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(recyclerView.getContext());
-                Collections.swap(currentEditTest.getListColumn(), viewHolder.getAdapterPosition(),
-                        target.getAdapterPosition());
-                columnRecyclerViewAdapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                int dragFrom = viewHolder.getAdapterPosition();
+                dragTo = target.getAdapterPosition();
 
-                if (viewHolder.getAdapterPosition() == 0) {
-                    RecyclerViewChange setAnswerListChanged = new RecyclerViewChange(
-                            RecyclerViewChange.ItemRangeChanged
-                    );
-                    setAnswerListChanged.setPositionStart(0);
-                    setAnswerListChanged.setPositionEnd(currentEditTest.getNumberRow());
-                    DiakoluoApplication.setAnswerListChanged(recyclerView.getContext(),
-                            setAnswerListChanged);
+                if (this.dragFrom == -1) {
+                    this.dragFrom = dragFrom;
                 }
+
+                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(recyclerView.getContext());
+
+                Collections.swap(currentEditTest.getListColumn(), dragFrom,
+                        dragTo);
+
+                columnRecyclerViewAdapter.notifyItemMoved(dragFrom, dragTo);
                 return true;
             }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             }
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+
+                if (dragFrom != dragTo) {
+                    if (dragFrom == 0 || dragTo == 0) {
+                        updateAnswerRecycler(recyclerView);
+                    }
+                    parentListener.onSwap(dragFrom, dragTo);
+                }
+
+                dragFrom = -1;
+                dragTo = -1;
+            }
+
+            private void updateAnswerRecycler(@NonNull RecyclerView recyclerView) {
+                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(recyclerView.getContext());
+                RecyclerViewChange setAnswerListChanged = new RecyclerViewChange(
+                        RecyclerViewChange.ItemRangeChanged
+                );
+                setAnswerListChanged.setPositionStart(0);
+                setAnswerListChanged.setPositionEnd(currentEditTest.getNumberRow());
+                mListener.updateAnswerRecycler(setAnswerListChanged);
+
+            }
+
         });
 
         itemTouchHelper.attachToRecyclerView(columnRecyclerView);
@@ -130,19 +178,11 @@ class ColumnEditTestRecyclerListFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        Context context = getContext();
-        if (context != null) {
-            RecyclerViewChange testListChanged = DiakoluoApplication.getColumnListChanged(context);
-            if (testListChanged != null) {
-                testListChanged.apply(columnRecyclerViewAdapter);
-                DiakoluoApplication.setColumnListChanged(context, null);
-            }
+        if (getParentFragment() instanceof OnParentFragmentInteractionListener) {
+            parentListener = (OnParentFragmentInteractionListener) getParentFragment();
+        } else {
+            throw new RuntimeException("Parent listener must implement OnParentFragmentInteractionListener");
         }
     }
 
@@ -152,6 +192,21 @@ class ColumnEditTestRecyclerListFragment extends Fragment {
         mListener = null;
     }
 
+    void updateItem(int position) {
+        columnRecyclerViewAdapter.notifyItemChanged(position);
+    }
+
+    void applyRecyclerChanges(RecyclerViewChange columnListChanged) {
+        columnListChanged.apply(columnRecyclerViewAdapter);
+    }
+
     public interface OnFragmentInteractionListener {
+        void updateAnswerRecycler(RecyclerViewChange recyclerViewChange);
+    }
+
+    public interface OnParentFragmentInteractionListener {
+        void onItemClick(View view, int position);
+        void onSwap(int dragFrom, int dragTo);
+        void onDeleteItem(View view, int position);
     }
 }

@@ -1,20 +1,61 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.tests.data;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.view.View;
 import android.widget.EditText;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
-import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 
-public class DataCell {
+public abstract class DataCell {
+    public DataCell(DataCell dataCell) {
+    }
+
+    public DataCell() {
+    }
+
+    public static DataCell copyDataCell(DataCell dataCell) {
+        if (dataCell == null) {
+            return null;
+        } else {
+            if (dataCell instanceof DataCellString) {
+                return new DataCellString((DataCellString) dataCell);
+            } else {
+                throw new IllegalStateException("Unexpected value: " + dataCell.getClass());
+            }
+        }
+    }
+
     public static DataCell getDefaultValueCell(Column currentColumn) {
         switch (currentColumn.getInputType()) {
             case String:
@@ -26,12 +67,12 @@ public class DataCell {
     }
 
     public static void setDefaultCellFromView(View view, DataRow row, Column column) {
-        row.getListCells().put(column, getDefaultValueCell(column));
+        DataCell cell = getDefaultValueCell(column);
+        row.getListCells().put(column, cell);
+        cell.setValueFromView(view);
     }
 
-    public Object getValue() {
-        throw new RuntimeException("Not implemented");
-    }
+    public abstract Object getValue();
 
     public static Class<? extends DataCell> getClassByColumnType(ColumnInputType inputType) {
         switch (inputType) {
@@ -43,9 +84,7 @@ public class DataCell {
         }
     }
 
-    public void setValue(Object object) {
-        throw new RuntimeException("Not implemented");
-    }
+    public abstract void setValue(Object object);
 
     public View showValue(Context context) {
         MaterialTextView valueTextView = new MaterialTextView(context);
@@ -63,17 +102,21 @@ public class DataCell {
         if (answerIsTrue) {
             valueTextView.setTextColor(context.getResources().getColor(R.color.trueAnswer));
         } else {
-            if (answerString == null || answerString.length() <= 0)
+            if (answerString == null || answerString.length() <= 0) {
                 valueTextView.setText(R.string.skip);
+                valueTextView.setTypeface(null, Typeface.ITALIC);
+            } else {
+                valueTextView.setPaintFlags(valueTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                valueTextView.setText(getStringValue(answer));
+            }
 
             valueTextView.setTextColor(context.getResources().getColor(R.color.wrongAnswer));
-            valueTextView.setPaintFlags(valueTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
         return new ShowValueResponse(valueTextView, answerIsTrue);
     }
 
-    public View showEditValue(Context context, Column column) {
+    public TextInputLayout showEditValue(Context context, Column column) {
         return column.showColumnEditValue(context, getStringValue());
     }
 
@@ -81,9 +124,9 @@ public class DataCell {
         return (String) answer;
     }
 
-    public String getStringValue() {
-        throw new RuntimeException("Not implemented");
-    }
+    public abstract String getStringValue();
+
+    protected abstract String getStringValue(Object answer);
 
     public void setValueFromView(View view) {
         setValue(getValueFromView(view));
@@ -107,14 +150,18 @@ public class DataCell {
             testTestContext.addScore(1);
     }
 
-    public class ShowValueResponse {
+    public abstract void setValueFromCsv(String lineCell);
+
+    public abstract void writeXml(OutputStream fileOutputStream) throws IOException;
+
+    public static class ShowValueResponse {
         ShowValueResponse(View valueView, boolean answerIsTrue) {
             this.valueView = valueView;
             this.answerIsTrue = answerIsTrue;
         }
 
-        View valueView;
-        boolean answerIsTrue;
+        final View valueView;
+        final boolean answerIsTrue;
 
         public View getValueView() {
             return valueView;

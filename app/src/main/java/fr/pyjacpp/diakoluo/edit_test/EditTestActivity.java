@@ -1,6 +1,29 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.edit_test;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,11 +31,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayDeque;
@@ -27,14 +52,24 @@ public class EditTestActivity extends AppCompatActivity
         implements
         AnswerEditTestFragment.OnFragmentInteractionListener,
         AnswerEditTestRecyclerListFragment.OnFragmentInteractionListener,
+        AnswerDataEditFragment.OnFragmentInteractionListener,
         ColumnEditTestFragment.OnFragmentInteractionListener,
+        ColumnDataEditFragment.OnFragmentInteractionListener,
         ColumnEditTestRecyclerListFragment.OnFragmentInteractionListener,
         MainInformationEditTestFragment.OnFragmentInteractionListener {
+
+    public static final String ACTION_BROADCAST_UPDATE_COLUMN_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.UPDATE_COLUMN_RECYCLER";
+    public static final String ACTION_BROADCAST_UPDATE_ANSWER_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.UPDATE_ANSWER_RECYCLER";
+    public static final String ACTION_BROADCAST_NEW_COLUMN_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.NEW_COLUMN_RECYCLER";
+    public static final String ACTION_BROADCAST_NEW_ANSWER_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.NEW_ANSWER_RECYCLER";
+    public static final String EXTRA_INT_POSITION = "position";
 
     private ArrayDeque<EditTestValidator> errorValidatorDeque;
     private boolean errorInDeque;
 
-    class EditTestValidator {
+    private EditTestPagerAdapterFragment adapter;
+
+    static class EditTestValidator {
         private final boolean error;
         private final boolean warning;
         private final Integer errorMessageResourceId;
@@ -78,7 +113,7 @@ public class EditTestActivity extends AppCompatActivity
         TextView title = findViewById(R.id.title);
         ImageButton navigation = findViewById(R.id.navigationIcon);
 
-        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(this);
+        final Test currentEditTest = DiakoluoApplication.getCurrentEditTest(this);
         title.setText(currentEditTest == null || currentEditTest.getName().equals("") ?
                 getString(R.string.app_name) : currentEditTest.getName());
         navigation.setOnClickListener(new View.OnClickListener() {
@@ -92,15 +127,17 @@ public class EditTestActivity extends AppCompatActivity
         ViewPager viewPager = findViewById(R.id.viewTestViewPager);
         Button cancelButton = findViewById(R.id.cancelButton);
         Button validButton = findViewById(R.id.validButton);
+        ImageButton resetButton = findViewById(R.id.resetButton);
 
         viewPager.setOffscreenPageLimit(2);
 
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        viewPager.setAdapter(new EditTestPagerAdapterFragment(
+        adapter = new EditTestPagerAdapterFragment(
                 getSupportFragmentManager(),
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, this
-        ));
+        );
+        viewPager.setAdapter(adapter);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,6 +165,64 @@ public class EditTestActivity extends AppCompatActivity
                 verifyAndAsk();
             }
         });
+
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new MaterialAlertDialogBuilder(EditTestActivity.this)
+                        .setTitle(R.string.dialog_reset_title)
+                        .setMessage(R.string.dialog_reset_message)
+                        .setIcon(R.drawable.ic_reset_accent_color_24dp)
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setPositiveButton(R.string.reset, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (currentEditTest != null) {
+                                    currentEditTest.reset();
+                                    MainInformationEditTestFragment mainInformationEditTestFragment  =
+                                            (MainInformationEditTestFragment) adapter.getFragmentAtPosition(0);
+                                    mainInformationEditTestFragment.updateTestDid();
+                                    dialogInterface.dismiss();
+                                }
+                            }
+                        })
+                        .show();
+            }
+        });
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                updateColumnRecyclerItem(intent.getIntExtra(EXTRA_INT_POSITION, 0));
+            }
+        }, new IntentFilter(ACTION_BROADCAST_UPDATE_COLUMN_RECYCLER));
+
+        localBroadcastManager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                updateAnswerRecyclerItem(intent.getIntExtra(EXTRA_INT_POSITION, 0));
+            }
+        }, new IntentFilter(ACTION_BROADCAST_UPDATE_ANSWER_RECYCLER));
+
+        localBroadcastManager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                updateNewColumn();
+            }
+        }, new IntentFilter(ACTION_BROADCAST_NEW_COLUMN_RECYCLER));
+
+        localBroadcastManager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                updateNewAnswer();
+            }
+        }, new IntentFilter(ACTION_BROADCAST_NEW_ANSWER_RECYCLER));
     }
 
     @Override
@@ -194,7 +289,7 @@ public class EditTestActivity extends AppCompatActivity
             EditTestValidator validator = errorValidatorDeque.pop();
 
             if (validator.isError() && !validator.isWarning()) {
-                new AlertDialog.Builder(this)
+                new MaterialAlertDialogBuilder(this)
                         .setTitle(R.string.error)
                         .setMessage(validator.getErrorMessageResourceId())
                         .setIcon(R.drawable.ic_error_red_24dp)
@@ -208,7 +303,7 @@ public class EditTestActivity extends AppCompatActivity
                         .show();
 
             } else if (validator.isWarning() && !errorInDeque) {
-                new AlertDialog.Builder(this)
+                new MaterialAlertDialogBuilder(this)
                         .setTitle(R.string.warning)
                         .setMessage(validator.getErrorMessageResourceId())
                         .setIcon(R.drawable.ic_warning_yellow_24dp)
@@ -263,5 +358,54 @@ public class EditTestActivity extends AppCompatActivity
     @Override
     public EditTestValidator descriptionEditTestValidator(String text) {
         return new EditTestValidator();
+    }
+
+    @Override
+    public void updateAnswerRecycler(final RecyclerViewChange recyclerViewChange) {
+        Fragment answerEditTestFragment  = adapter.getFragmentAtPosition(2);
+
+        if (answerEditTestFragment != null) {
+            ((AnswerEditTestFragment) answerEditTestFragment).updateAnswerRecycler(recyclerViewChange);
+        }
+    }
+
+    @Override
+    public void updateAnswerRecyclerItem(int position) {
+        RecyclerViewChange change = new RecyclerViewChange(RecyclerViewChange.ItemChanged);
+        change.setPosition(position);
+        updateAnswerRecycler(change);
+    }
+
+    @Override
+    public void updateColumnRecyclerItem(final int position) {
+        Fragment columnEditTestFragment  = adapter.getFragmentAtPosition(1);
+
+        if (columnEditTestFragment != null) {
+            ((ColumnEditTestFragment) columnEditTestFragment).updateItem(position);
+        }
+    }
+
+    @Override
+    public void onSwipeRight() {
+    }
+
+    @Override
+    public void onSwipeLeft() {
+    }
+
+    private void updateNewColumn() {
+        Fragment columnEditTestFragment  = adapter.getFragmentAtPosition(1);
+
+        if (columnEditTestFragment != null) {
+            ((ColumnEditTestFragment) columnEditTestFragment).updateNewItem(this);
+        }
+    }
+
+    private void updateNewAnswer() {
+        Fragment answerEditTestFragment  = adapter.getFragmentAtPosition(2);
+
+        if (answerEditTestFragment != null) {
+            ((AnswerEditTestFragment) answerEditTestFragment).updateNewItem(this);
+        }
     }
 }

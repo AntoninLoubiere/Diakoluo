@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.save_test;
 
 import android.util.Log;
@@ -8,17 +27,18 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 
-import fr.pyjacpp.diakoluo.tests.Column;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
-class XmlLoader {
+public class XmlLoader {
 
     static Test load(InputStream fileInputStream) throws IOException, XmlPullParserException {
             // configure parser
@@ -84,13 +104,13 @@ class XmlLoader {
         }
     }
 
-    private static String readName(XmlPullParser parser) throws IOException, XmlPullParserException {
+    public static String readName(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_NAME);
 
         return readText(parser);
     }
 
-    private static String readDescription(XmlPullParser parser) throws IOException, XmlPullParserException {
+    public static String readDescription(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_DESCRIPTION);
 
         return readText(parser);
@@ -136,7 +156,7 @@ class XmlLoader {
             }
 
             if (FileManager.TAG_COLUMN.equals(parser.getName())) {
-                Column column = readColumn(parser);
+                Column column = Column.readColumnXml(parser);
                 if (column != null) {
                     columnsList.add(column);
                 }
@@ -146,64 +166,6 @@ class XmlLoader {
         }
 
         return  columnsList;
-    }
-
-    private static Column readColumn(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMN);
-
-        Column column = new Column();
-
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                // continue until it is a start tag
-                continue;
-            }
-
-            switch (parser.getName()) {
-                case FileManager.TAG_NAME:
-                    column.setName(readName(parser));
-                    break;
-
-                case FileManager.TAG_DESCRIPTION:
-                    column.setDescription(readDescription(parser));
-                    break;
-
-                case FileManager.TAG_INPUT_TYPE:
-                    ColumnInputType inputType = readInputType(parser);
-                    if (inputType != null) {
-                        column.setInputType(inputType);
-                    }
-                    break;
-
-                case FileManager.TAG_DEFAULT_VALUE:
-                    column.setDefaultValue(readDefaultValue(parser));
-                    break;
-
-                default:
-                    skip(parser);
-                    break;
-            }
-        }
-
-        if (column.isValid()) {
-            return column;
-        } else {
-            return null;
-        }
-    }
-
-    private static ColumnInputType readInputType(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_INPUT_TYPE);
-        try {
-            return ColumnInputType.valueOf(readText(parser));
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
-    private static String readDefaultValue(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_DEFAULT_VALUE);
-        return readText(parser);
     }
 
     private static ArrayList<DataRow> readRows(XmlPullParser parser, Test test) throws IOException, XmlPullParserException {
@@ -223,9 +185,7 @@ class XmlLoader {
 
             if (FileManager.TAG_ROW.equals(parser.getName())) {
                 DataRow row = readRow(parser, test);
-                if (row != null) {
-                    rowsList.add(row);
-                }
+                rowsList.add(row);
             } else {
                 skip(parser);
             }
@@ -286,7 +246,7 @@ class XmlLoader {
         }
     }
 
-    private static String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
+    public static String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
         String result = "";
         if (parser.next() == XmlPullParser.TEXT) {
             result = parser.getText();
@@ -296,7 +256,7 @@ class XmlLoader {
     }
 
 
-    private static void skip(XmlPullParser parser) throws IOException, XmlPullParserException {
+    public static void skip(XmlPullParser parser) throws IOException, XmlPullParserException {
         Log.w("XmlLoader", parser.getName() + " is not handle");
         int depth = 1;
         while (depth > 0) {
@@ -311,5 +271,87 @@ class XmlLoader {
                     break;
             }
         }
+    }
+
+    // Back Support Zone
+
+    @Deprecated
+    public static Column readColumnXml(XmlPullParser parser) throws XmlPullParserException, IOException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMN);
+
+        String name = null;
+        String description = null;
+        ColumnInputType inputType = null;
+        String defaultValue = null;
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            switch (parser.getName()) {
+                case FileManager.TAG_NAME:
+                    name = readName(parser);
+                    break;
+
+                case FileManager.TAG_DESCRIPTION:
+                    description = readDescription(parser);
+                    break;
+
+                case FileManager.ATTRIBUTE_INPUT_TYPE:
+                    inputType = readInputType(parser);
+                    break;
+
+                case FileManager.TAG_DEFAULT_VALUE:
+                    defaultValue = readDefaultValue(parser);
+                    break;
+
+                default:
+                    skip(parser);
+                    break;
+            }
+        }
+
+        if (name == null || description == null || inputType == null || defaultValue == null) {
+            return null;
+        }
+
+        String tag = "<column inputType=\"" +
+                inputType.name() +
+                "\">" +
+                "<name>" +
+                name +
+                "</name>" +
+                "<description>" +
+                description +
+                "</description>" +
+                "<defaultValue>" +
+                defaultValue +
+                "</defaultValue>" +
+                "</column>";
+
+        XmlPullParser parser2 = Xml.newPullParser();
+        parser2.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+        parser2.setInput(new StringReader(tag));
+        parser2.nextTag();
+
+        return Column.readColumnXml(parser2);
+    }
+
+    @Deprecated
+    private static ColumnInputType readInputType(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.ATTRIBUTE_INPUT_TYPE);
+        try {
+            return ColumnInputType.valueOf(XmlLoader.readText(parser));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    @Deprecated
+    private static String readDefaultValue(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_DEFAULT_VALUE);
+        return XmlLoader.readText(parser);
     }
 }

@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.view_test;
 
 import android.content.Context;
@@ -23,9 +42,9 @@ public class MainInformationViewTestFragment extends Fragment {
     private TextView createdDate;
     private TextView lastModification;
     private TextView numberTestDid;
-    private TextView noTestTextView;
     private View separator1;
     private View separator2;
+    private Test currentTest;
 
     public MainInformationViewTestFragment() {
         // Required empty public constructor
@@ -42,7 +61,6 @@ public class MainInformationViewTestFragment extends Fragment {
         createdDate = inflatedView.findViewById(R.id.createdDateTextView);
         lastModification = inflatedView.findViewById(R.id.lastModificationTextView);
         numberTestDid = inflatedView.findViewById(R.id.numberTestDid);
-        noTestTextView = inflatedView.findViewById(R.id.noTestTextView);
 
         separator1 = inflatedView.findViewById(R.id.separator1);
         separator2 = inflatedView.findViewById(R.id.separator2);
@@ -57,11 +75,9 @@ public class MainInformationViewTestFragment extends Fragment {
         DateFormat dateFormat = android.text.format.DateFormat.getLongDateFormat(context.getApplicationContext());
         DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context.getApplicationContext());
 
-        Test currentTest = DiakoluoApplication.getCurrentTest(context);
+        currentTest = DiakoluoApplication.getCurrentTest(context);
 
         if (currentTest != null) {
-            noTestTextView.setVisibility(View.GONE);
-
             title.setVisibility(View.VISIBLE);
             title.setText(currentTest.getName());
 
@@ -87,17 +103,11 @@ public class MainInformationViewTestFragment extends Fragment {
             );
 
             numberTestDid.setVisibility(View.VISIBLE);
-            numberTestDid.setText(
-                    String.format(
-                            getString(R.string.number_test_did_format),
-                            currentTest.getNumberTestDid()
-                    )
-            );
+            updateTestDid();
 
             separator1.setVisibility(View.VISIBLE);
             separator2.setVisibility(View.VISIBLE);
         } else {
-            noTestTextView.setVisibility(View.VISIBLE);
             title.setVisibility(View.GONE);
             description.setVisibility(View.GONE);
             createdDate.setVisibility(View.GONE);
@@ -125,6 +135,16 @@ public class MainInformationViewTestFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+    void updateTestDid() {
+        numberTestDid.setText(
+                String.format(
+                        getString(R.string.number_test_did_format),
+                        currentTest.getNumberTestDid()
+                )
+        );
+    }
+
     public interface OnFragmentInteractionListener {
     }
 }

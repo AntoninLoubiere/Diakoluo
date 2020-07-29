@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.test_tests;
 
 import android.animation.ObjectAnimator;
@@ -16,14 +35,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import java.util.Random;
-
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.ScoreUtils;
 
 
-class TestScoreFragment extends Fragment {
+public class TestScoreFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
@@ -45,7 +62,7 @@ class TestScoreFragment extends Fragment {
         Button restartButton = inflatedView.findViewById(R.id.restartButton);
         Button mainMenuButton = inflatedView.findViewById(R.id.mainMenuButton);
 
-        scoreProgressBar.setMax(testTestContext.getMaxScore());
+        scoreProgressBar.setMax(testTestContext.getMaxProgressScore());
 
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
@@ -88,11 +105,6 @@ class TestScoreFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
         testTestContext = DiakoluoApplication.getTestTestContext(context);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
     }
 
     @Override

@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.list_tests;
 
 import android.content.Context;
@@ -8,11 +27,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -23,10 +42,10 @@ import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 
-class ListTestsFragment extends Fragment {
+public class ListTestsFragment extends Fragment {
     private OnFragmentInteractionListener listener;
     private RecyclerView testRecyclerView;
-    private RecyclerView.Adapter testRecyclerViewAdapter;
+    private TestAdapter testRecyclerViewAdapter;
 
     public ListTestsFragment() {
         // Required empty public constructor
@@ -60,7 +79,7 @@ class ListTestsFragment extends Fragment {
             public void onDeleteMenuItemClick(final View view, final int position) {
                 final ArrayList<Test> listTest = DiakoluoApplication.getListTest(view.getContext());
 
-                new AlertDialog.Builder(view.getContext())
+                new MaterialAlertDialogBuilder(view.getContext())
                         .setTitle(R.string.dialog_delete_test_title)
                         .setMessage(getString(R.string.dialog_delete_test_message, listTest.get(position).getName()))
                         .setCancelable(true)
@@ -85,6 +104,11 @@ class ListTestsFragment extends Fragment {
             public void onEditMenuItemClick(View view, int position) {
                 listener.onEditMenuItemClick(view, position);
             }
+
+            @Override
+            public void onExportMenuItemClick(View view, int position) {
+                listener.onExportMenuItemClick(view, position);
+            }
         });
 
 
@@ -103,7 +127,8 @@ class ListTestsFragment extends Fragment {
         final ArrayList<Test> listTest = DiakoluoApplication.getListTest(view.getContext());
         testRecyclerView.removeViewAt(position);
         testRecyclerViewAdapter.notifyItemRemoved(position);
-        testRecyclerViewAdapter.notifyItemRangeChanged(position, listTest.size());
+
+        listener.onDeleteTest(position, listTest.size() - 1);
 
         new Thread(new Runnable() {
             @Override
@@ -113,8 +138,16 @@ class ListTestsFragment extends Fragment {
 
                 Snackbar.make(view, getString(R.string.test_deleted, testToDelete.getName()),
                         Snackbar.LENGTH_LONG)
-                        .setDuration(getResources().getInteger(R.integer.snackbar_deleted_duration)).
-                        setAnchorView(R.id.addFloatingButton).show();
+                        .setDuration(getResources().getInteger(R.integer.snackbar_deleted_duration))
+                        .setAction(R.string.cancel, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                listTest.add(position, testToDelete);
+                                DiakoluoApplication.saveTest(view.getContext());
+                                testRecyclerViewAdapter.notifyItemInserted(position);
+                            }
+                        })
+                        .setAnchorView(R.id.addFloatingButton).show();
             }
         }).start();
     }
@@ -143,13 +176,16 @@ class ListTestsFragment extends Fragment {
         }
     }
 
+    void notifyUpdateInserted(int position) {
+        testRecyclerViewAdapter.notifyItemInserted(position);
+    }
+
     public interface OnFragmentInteractionListener{
         void onItemClick(View view, int position);
-
         void onPlayButtonClick(View view, int position);
-
         void onSeeButtonClick(View view, int position);
-
         void onEditMenuItemClick(View view, int position);
+        void onDeleteTest(int position, int listTestSize);
+        void onExportMenuItemClick(View view, int position);
     }
 }

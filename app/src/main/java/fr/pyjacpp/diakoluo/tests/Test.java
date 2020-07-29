@@ -1,8 +1,30 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.tests;
+
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Date;
 
+import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public class Test {
@@ -37,8 +59,14 @@ public class Test {
         createdDate = new Date(test.createdDate.getTime());
         lastModification = new Date(test.lastModification.getTime());
         numberTestDid = test.numberTestDid;
-        listColumn = new ArrayList<>(test.listColumn);
-        listRow = new ArrayList<>(test.listRow);
+        listColumn = new ArrayList<>();
+        for (Column column : test.listColumn) {
+            listColumn.add(Column.copyColumn(column));
+        }
+        listRow = new ArrayList<>();
+        for (DataRow dataRow : test.listRow) {
+            listRow.add(new DataRow(dataRow, listColumn, test.listColumn));
+        }
         filename = test.filename;
     }
 
@@ -118,10 +146,6 @@ public class Test {
         this.numberTestDid = numberTestDid;
     }
 
-    public void incrementTestDid() {
-        numberTestDid++;
-    }
-
     public ArrayList<Column> getListColumn() {
         return listColumn;
     }
@@ -180,7 +204,32 @@ public class Test {
         return filename;
     }
 
-    public DataCell getFirstCell(int i) {
-        return listRow.get(i).getListCells().get(listColumn.get(0));
+    @Nullable
+    public DataCell getRowFirstCell(int rowPosition) {
+        if (listColumn.size() > 0) {
+            return listRow.get(rowPosition).getListCells().get(listColumn.get(0));
+        } else {
+            return null;
+        }
+    }
+
+    public String getRowFirstCellString(int rowPosition) {
+        DataCell firstCell = getRowFirstCell(rowPosition);
+        if (firstCell == null) {
+            return String.valueOf(rowPosition);
+        } else {
+            return firstCell.getStringValue();
+        }
+    }
+
+    public String getDefaultFilename() {
+        return name
+                .replace(' ', '_')
+                .replace('/', '_')
+                .replace('.', '_').toLowerCase();
+    }
+
+    public void reset() {
+        this.numberTestDid = 0;
     }
 }

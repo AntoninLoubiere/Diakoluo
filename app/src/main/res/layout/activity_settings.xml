@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+  ~
+  ~ This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+  ~
+  ~     Diakôluô is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Diakôluô is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     A copy of the license is available in the root folder of Diakôluô, under the
+  ~     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".list_tests.SettingsActivity"
+    android:layout_margin="@dimen/default_margin">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/privacyTitle"
+        style="@style/SettingsSubTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy"
+        />
+
+    <CheckBox
+        android:id="@+id/analyticsCheckBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/privacyTitle"
+        android:layout_marginTop="@dimen/default_margin"
+        android:text="@string/check_box_analytics" />
+
+    <CheckBox
+        android:id="@+id/crashCheckBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/analyticsCheckBox"
+        android:text="@string/check_box_crash" />
+
+</RelativeLayout>

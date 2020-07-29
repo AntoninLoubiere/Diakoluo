@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo;
 
 import android.app.Application;
@@ -6,6 +25,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -25,15 +45,19 @@ public class DiakoluoApplication extends Application {
     private static final String DEFAULT_TEST = "default.dkl";
     private static final String USER_PROPERTY_NUMBER_TEST_CREATED = "number_test";
 
+    private static final String ANALYTICS_ENABLE = "analytics";
+    private static final int ANALYTIC = 1 << 1;
+    private static final int CRASHLYTICS = 1 << 2;
+    private static final int ANALYTICS_SET = 1;
+
     private ArrayList<Test> listTest;
-    private Test currentTest;
+    private Test currentTest = null;
+    private Test currentEditTest = null;
+    private FileManager.ImportContext currentImportContext = null;
     private TestTestContext testTestContext;
-    private Test currentEditTest;
     private Integer currentIndexEditTest;
     
     private RecyclerViewChange testListChanged;
-    private RecyclerViewChange answerListChanged;
-    private RecyclerViewChange columnListChanged;
 
     private SharedPreferences sharedPreferences;
 
@@ -58,39 +82,50 @@ public class DiakoluoApplication extends Application {
             }
         }
 
+        FirebaseCrashlytics firebaseCrashlytics = FirebaseCrashlytics.getInstance();
+        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        firebaseAnalytics.setAnalyticsCollectionEnabled(getAnalyticsEnable());
+        firebaseCrashlytics.setCrashlyticsCollectionEnabled(getCrashlyticsEnable());
+
         loadTest();
     }
 
     private void saveTest() {
-        int numberTestCreated = sharedPreferences.getInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, -1);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int numberTestCreated = sharedPreferences.getInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, -1);
 
-        Set<String> listTestFilename = new HashSet<>();
+                Set<String> listTestFilename = new HashSet<>();
 
-        for (Test test : listTest) {
-            if (test.getFilename() == null) {
-                FileManager.getAvailableFilename(this, test);
+                for (Test test : listTest) {
+                    if (test.getFilename() == null) {
+                        FileManager.getAvailableFilename(DiakoluoApplication.this, test);
+                    }
+                    try {
+                        FileManager.saveFromPrivateFile(DiakoluoApplication.this, test);
+                        listTestFilename.add(test.getFilename());
+                    } catch (IOException e) {
+                        Log.e("DiakoluoApplication", "Can't saveFromPrivateFile test " + test.getName());
+                        e.printStackTrace();
+                    }
+                }
+
+                if (listTestFilename.size() != numberTestCreated) {
+                    FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(DiakoluoApplication.this);
+                    firebaseAnalytics.setUserProperty(USER_PROPERTY_NUMBER_TEST_CREATED,
+                            String.valueOf(listTestFilename.size()));
+                }
+
+                sharedPreferences
+                        .edit()
+                        .putStringSet(PREFERENCES_LIST_TEST_FILENAMES, listTestFilename)
+                        .putInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, listTestFilename.size())
+                        .apply();
+                Log.i("DiakoluoApplication", "Test saved");
             }
-            try {
-                FileManager.save(this, test);
-                listTestFilename.add(test.getFilename());
-            } catch (IOException e) {
-                Log.e("DiakoluoApplication", "Can't save test " + test.getName());
-                e.printStackTrace();
-            }
-        }
+        }).start();
 
-        if (listTestFilename.size() != numberTestCreated) {
-            FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
-            firebaseAnalytics.setUserProperty(USER_PROPERTY_NUMBER_TEST_CREATED,
-                    String.valueOf(listTestFilename.size()));
-        }
-
-        sharedPreferences
-                .edit()
-                .putStringSet(PREFERENCES_LIST_TEST_FILENAMES, listTestFilename)
-                .putInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, listTestFilename.size())
-                .apply();
-        Log.i("DiakoluoApplication", "Test saved");
     }
 
     private void loadTest() {
@@ -105,7 +140,7 @@ public class DiakoluoApplication extends Application {
 
         for (String filename : listTestFilename) {
             try {
-                listTest.add(FileManager.load(this, filename));
+                listTest.add(FileManager.loadFromPrivateFile(this, filename));
             } catch (IOException | XmlPullParserException e){
                 Log.e("DiakoluoApplication", "Can't load test " + filename);
                 e.printStackTrace();
@@ -134,7 +169,7 @@ public class DiakoluoApplication extends Application {
         return currentTest;
     }
 
-    private ArrayList<Test> getListTest() {
+    public ArrayList<Test> getListTest() {
         return listTest;
     }
 
@@ -153,6 +188,14 @@ public class DiakoluoApplication extends Application {
     private void setCurrentEditTest(Test currentEditTest) {
         this.currentEditTest = currentEditTest;
         currentIndexEditTest = null;
+    }
+
+    public FileManager.ImportContext getCurrentImportContext() {
+        return currentImportContext;
+    }
+
+    public void setCurrentImportContext(FileManager.ImportContext currentImportTest) {
+        this.currentImportContext = currentImportTest;
     }
 
     private Integer getCurrentIndexEditTest() {
@@ -176,24 +219,68 @@ public class DiakoluoApplication extends Application {
     private void setTestListChanged(RecyclerViewChange testListChanged) {
         this.testListChanged = testListChanged;
     }
-    
-    private RecyclerViewChange getAnswerListChanged() {
-        return answerListChanged;
+
+    private boolean getAnalyticsEnable() {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        if ((i & ANALYTICS_SET) == 0) {
+            return false;
+        } else {
+            return (i & ANALYTIC) == ANALYTIC;
+        }
     }
 
-    private void setAnswerListChanged(RecyclerViewChange answerListChanged) {
-        this.answerListChanged = answerListChanged;
+    private boolean getCrashlyticsEnable() {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        if ((i & ANALYTICS_SET) == 0) {
+            return false;
+        } else {
+            return (i & CRASHLYTICS) == CRASHLYTICS;
+        }
     }
 
-    private RecyclerViewChange getColumnListChanged() {
-        return columnListChanged;
+    private boolean getAnalyticsSet() {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        return (i & ANALYTICS_SET) == ANALYTICS_SET;
     }
 
-    private void setColumnListChanged(RecyclerViewChange columnListChanged) {
-        this.columnListChanged = columnListChanged;
+    private void setAnalyticsEnable(boolean b) {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        int set_i = b ? i | ANALYTIC : i & (~ANALYTIC);
+
+        sharedPreferences.edit().putInt(ANALYTICS_ENABLE, set_i).apply();
+
+        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        firebaseAnalytics.setAnalyticsCollectionEnabled(b);
+    }
+
+    private void setCrashlyticsEnable(boolean b) {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        int set_i = b ? i | CRASHLYTICS : i & (~CRASHLYTICS);
+
+        sharedPreferences.edit().putInt(ANALYTICS_ENABLE, set_i).apply();
+
+        FirebaseCrashlytics firebaseCrashlytics = FirebaseCrashlytics.getInstance();
+        firebaseCrashlytics.setCrashlyticsCollectionEnabled(b);
+    }
+
+    private void setAnalyticsSet(boolean b) {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        int set_i = b ? i | ANALYTICS_SET : i & (~ANALYTICS_SET);
+
+        sharedPreferences.edit().putInt(ANALYTICS_ENABLE, set_i).apply();
     }
 
     // static
+
+    public static DiakoluoApplication getDiakoluoApplication(Context context) {
+        return  (DiakoluoApplication) context.getApplicationContext();
+    }
 
     public static void setCurrentTest(Context context, Test currentTest) {
         ((DiakoluoApplication) context.getApplicationContext()).setCurrentTest(currentTest);
@@ -223,6 +310,14 @@ public class DiakoluoApplication extends Application {
         ((DiakoluoApplication) context.getApplicationContext()).setCurrentEditTest(currentEditTest);
     }
 
+    public static FileManager.ImportContext getCurrentImportContext(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentImportContext();
+    }
+
+    public static void setCurrentImportContext(Context context, FileManager.ImportContext currentEditTest) {
+        ((DiakoluoApplication) context.getApplicationContext()).setCurrentImportContext(currentEditTest);
+    }
+
     public static Integer getCurrentIndexEditTest(Context context) {
         return ((DiakoluoApplication) context.getApplicationContext()).getCurrentIndexEditTest();
     }
@@ -239,22 +334,6 @@ public class DiakoluoApplication extends Application {
         return ((DiakoluoApplication) context.getApplicationContext()).getTestListChanged();
     }
 
-    public static void setAnswerListChanged(Context context, RecyclerViewChange setAnswerListChanged) {
-        ((DiakoluoApplication) context.getApplicationContext()).setAnswerListChanged(setAnswerListChanged);
-    }
-
-    public static RecyclerViewChange getAnswerListChanged(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getAnswerListChanged();
-    }
-
-    public static void setColumnListChanged(Context context, RecyclerViewChange setColumnListChanged) {
-        ((DiakoluoApplication) context.getApplicationContext()).setColumnListChanged(setColumnListChanged);
-    }
-
-    public static RecyclerViewChange getColumnListChanged(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getColumnListChanged();
-    }
-
     public static void saveTest(Context context) {
         ((DiakoluoApplication) context.getApplicationContext()).saveTest();
     }
@@ -262,5 +341,29 @@ public class DiakoluoApplication extends Application {
     public static void removeTest(Context context, int position) {
         ((DiakoluoApplication) context.getApplicationContext()).removeTest(position);
     }
-    
+
+    public static boolean getAnalyticsEnable(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getAnalyticsEnable();
+    }
+
+    public static boolean getCrashlyticsEnable(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getCrashlyticsEnable();
+    }
+
+    public static boolean getAnalyticsSet(Context context) {
+        return ((DiakoluoApplication) context.getApplicationContext()).getAnalyticsSet();
+    }
+
+    public static void setAnalyticsEnable(Context context, boolean b) {
+        ((DiakoluoApplication) context.getApplicationContext()).setAnalyticsEnable(b);
+    }
+
+    public static void setCrashlyticsEnable(Context context, boolean b) {
+        ((DiakoluoApplication) context.getApplicationContext()).setCrashlyticsEnable(b);
+    }
+
+    public static void setAnalyticsSet(Context context, boolean b) {
+        ((DiakoluoApplication) context.getApplicationContext()).setAnalyticsSet(b);
+    }
+
 }

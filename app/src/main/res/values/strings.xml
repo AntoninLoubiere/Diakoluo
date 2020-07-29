@@ -1,6 +1,25 @@
+<!--
+  ~ Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+  ~
+  ~ This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+  ~
+  ~     Diakôluô is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Diakôluô is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     A copy of the license is available in the root folder of Diakôluô, under the
+  ~     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+  -->
+
 <resources>
     <string name="app_name">Diakôluô</string>
-    <string name="information_line">Version 0.1.0 - Antonin LOUBIÈRE - GPL 3</string>
+    <string name="information_line">Version beta-0.2.0 - Antonin LOUBIÈRE - GPL 3</string>
     <string name="title">Title</string>
     <string name="very_long_description">Default description, a description can be very long. When I say very long, it\'s because a description can become very long. But I think I can do less long but it\'s needed to the demo.</string>
     <string name="created_date_test_format">Created the $1%s at $2%s</string>
@@ -23,19 +42,67 @@
     <string name="description">Description</string>
     <string name="dialog_delete_test_title">Delete test</string>
     <string name="dialog_delete_test_message">Are you sure to delete this test : \"%s\" ?</string>
-    <string name="cancel">Cancel</string>
+    <string name="cancel">Cancel</string>check
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
-    <string name="error_label_title_blank">The title can\'t be blank</string>
+    <string name="error_label_title_blank">The name of the test can\'t be blank</string>
     <string name="error_label_title_already_exist">A test with this name already exist.</string>
     <string name="error">Error</string>
     <string name="warning">Warning</string>
     <string name="add_answer">Add answer</string>
     <string name="add_column">Add column</string>
-    <string name="column_name_format">%s:</string>
+    <string name="column_name_format" translatable="false">%s:</string>
     <string name="column_type">Column type:</string>
-    <string name="no_test_selected">No test selected. Select a test to show his informations.</string>
+    <string name="export">Export</string>
     <string name="list_test">List of tests</string>
     <string name="test_deleted">\"%s\" has been deleted</string>
     <string name="close">close</string>
+    <string name="welcome">Welcome</string>
+    <string name="welcome_text">Welcome on Diakôluô ! To start using Diakôluô, you need to set some settings.\n\nDiakôluô is an open source project under the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU Public License 3.0</a>. Source code is available on <a href="https://github.com/AntoninLoubiere/Diakoluo">GitHub</a>.</string>
+    <string name="accept_and_continue">Accept and continue</string>
+    <string name="data_caption">Note: you can change this in settings at any point</string>
+    <string name="check_box_crash">Allow the send of crash report for development purpose only.</string>
+    <string name="check_box_analytics">Allow the send of anonymous non-sensible data for development purpose only.</string>
+    <string name="settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="privacy">Privacy</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="navigation_info" translatable="false">%1$d/%2$d</string>
+    <string name="create_new_data_edit">New</string>
+    <string name="dialog_new_column_title">Create new column</string>
+    <string name="dialog_new_column_message">Do you want to create a new column ?</string>
+    <string name="dialog_create_new_data_edit">Create</string>
+    <string name="dialog_new_answer_title">Create new Answer</string>
+    <string name="dialog_new_answer_message">Do you want to create a new answer ?</string>
+    <string name="select_export">Select export file type:</string>
+    <string name="all_features_may_not_be_available_in_this_format">All features may not be available in this format !</string>
+    <string name="save_test_done">Save number of test done</string>
+    <string name="save_column_header_save">Save column name at the top of the file</string>
+    <string name="save_column_type_header_save">Save column type at the top of the file</string>
+    <string name="separator">Separator:</string>
+    <string name="dialog_export_error_title">Export error</string>
+    <string name="dialog_export_error_message">An error occur during the exportation. The file may not work.</string>
+    <string name="test_exported">The test has been successfully exported</string>
+    <string name="import_text">Import</string>
+    <string name="dialog_import_error_title">Import error</string>
+    <string name="dialog_import_error_message">An error occur during the importation. The test hasn\'t been added.</string>
+    <string name="import_hint_title_test">Name of the test</string>
+    <string name="save_column_header_load">Load column name at the top of the file</string>
+    <string name="save_column_type_header_load">Load column type at the top of the file</string>
+    <string name="file_preview">File preview:</string>
+    <string name="test_default_name">Test</string>
+    <string name="default_column_name">Column %d</string>
+    <string name="dialog_export_error_csv_message">An error occur during the importation. Check if it is the correct separator. The test hasn\'t been added.</string>
+    <string name="reset">Reset</string>
+    <string name="dialog_reset_title">Reset stats</string>
+    <string name="dialog_reset_message">Are you sure do reset all statistics (number of test done…)</string>
+    <string-array name="export_entries">
+        <item>Diakôluô file (.dkl)</item>
+        <item>Csv file (.csv)</item>
+    </string-array>
+    <string-array name="separatorsCsv">
+        <item>Comma (\",\")</item>
+        <item>Semi-colon (\";\")</item>
+    </string-array>
 </resources>

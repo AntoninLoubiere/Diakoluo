@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+  ~
+  ~ This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+  ~
+  ~     Diakôluô is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Diakôluô is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     A copy of the license is available in the root folder of Diakôluô, under the
+  ~     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+  -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.pyjacpp.diakoluo">
 
@@ -11,23 +30,94 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".edit_test.ColumnDataEditActivity" />
-        <activity android:name=".test_tests.TestScoreActivity" />
+
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
+
+        <activity
+            android:name=".list_tests.SettingsActivity"
+            android:parentActivityName=".list_tests.ListTestActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".list_tests.ListTestActivity" />
+        </activity>
+
+        <activity android:name=".test_tests.StarterActivity" />
+
+        <activity
+            android:name=".edit_test.ColumnDataEditActivity"
+            android:parentActivityName=".edit_test.EditTestActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".edit_test.EditTestActivity" />
+        </activity>
+
+        <activity
+            android:name=".test_tests.TestScoreActivity"
+            android:parentActivityName=".list_tests.ListTestActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".list_tests.ListTestActivity" />
+        </activity>
+
         <activity
             android:name=".test_tests.TestActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:parentActivityName=".list_tests.ListTestActivity"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".list_tests.ListTestActivity" />
+        </activity>
+
         <activity
             android:name=".test_tests.TestSettingsActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".view_test.AnswerDataViewActivity" />
+            android:parentActivityName=".list_tests.ListTestActivity"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".list_tests.ListTestActivity" />
+        </activity>
+
+        <activity
+            android:name=".view_test.AnswerDataViewActivity"
+            android:parentActivityName=".view_test.ViewTestActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view_test.ViewTestActivity" />
+        </activity>
+
         <activity
             android:name=".view_test.ViewTestActivity"
-            android:theme="@style/AppThemeNoActionBar" />
-        <activity android:name=".edit_test.AnswerDataEditActivity" />
+            android:parentActivityName=".list_tests.ListTestActivity"
+            android:theme="@style/AppThemeNoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".list_tests.ListTestActivity" />
+        </activity>
+
+        <activity
+            android:name=".edit_test.AnswerDataEditActivity"
+            android:parentActivityName=".edit_test.EditTestActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".edit_test.EditTestActivity" />
+        </activity>
+
         <activity
             android:name=".edit_test.EditTestActivity"
-            android:theme="@style/AppThemeNoActionBar" />
+            android:parentActivityName=".list_tests.ListTestActivity"
+            android:theme="@style/AppThemeNoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".list_tests.ListTestActivity" />
+        </activity>
+
         <activity android:name=".list_tests.ListTestActivity" />
+
         <activity
             android:name=".SplashScreenActivity"
             android:theme="@style/AppThemeNoActionBar">
@@ -38,7 +128,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view_test.ColumnDataViewActivity" />
+
+        <activity
+            android:name=".view_test.ColumnDataViewActivity"
+            android:parentActivityName=".view_test.ViewTestActivity"
+            android:theme="@style/AppThemeNoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view_test.ViewTestActivity" />
+        </activity>
     </application>
 
 </manifest>

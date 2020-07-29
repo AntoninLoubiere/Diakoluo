@@ -1,19 +1,40 @@
+/*
+ * Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
+ *
+ * This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
+ *
+ *     Diakôluô is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Diakôluô is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     A copy of the license is available in the root folder of Diakôluô, under the
+ *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
+ */
+
 package fr.pyjacpp.diakoluo.test_tests;
 
 import android.content.Context;
+
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
-import fr.pyjacpp.diakoluo.tests.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 
 public class TestTestContext {
 
-    static int PROGRESS_BAR_PRECISION = 100;
+    static final int PROGRESS_BAR_PRECISION = 100;
 
     private int score = 0;
     private int maxScore;
@@ -31,7 +52,15 @@ public class TestTestContext {
     private HashMap<Column, Object> userAnswer = new HashMap<>();
     private HashMap<Column, Boolean> showColumn = new HashMap<>();
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    protected TestTestContext(Test test, int numberQuestionToAsk, int numberColumnToShow) {
+        this.test = test;
+        this.numberQuestionToAsk = numberQuestionToAsk;
+        this.numberColumnToShow = numberColumnToShow;
 
+        // initialize
+        reset();
+    }
 
     TestTestContext(Context context, int numberQuestionToAsk, int numberColumnToShow) {
         this.numberQuestionToAsk = numberQuestionToAsk;
@@ -64,11 +93,11 @@ public class TestTestContext {
         return score;
     }
 
-    public int getProgressScore() {
+    int getProgressScore() {
         return score * PROGRESS_BAR_PRECISION;
     }
 
-    public int getMaxProgressScore() {
+    int getMaxProgressScore() {
         return maxScore * PROGRESS_BAR_PRECISION;
     }
 
@@ -167,5 +196,13 @@ public class TestTestContext {
             userAnswer.put(column, null);
             showColumn.put(column, false);
         }
+    }
+
+    int getProgress() {
+        return currentIndex * PROGRESS_BAR_PRECISION;
+    }
+
+    int getMaxProgress() {
+        return numberQuestionToAsk * PROGRESS_BAR_PRECISION;
     }
 }
