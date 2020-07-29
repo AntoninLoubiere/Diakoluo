@@ -19,7 +19,7 @@
 
 <resources>
     <string name="app_name">Diakôluô</string>
-    <string name="information_line">Version beta-0.2.0 - Antonin LOUBIÈRE - GPL 3</string>
+    <string name="information_line">Version 0.2.0 - Antonin LOUBIÈRE - GPL 3</string>
     <string name="title">Titre</string>
     <string name="very_long_description">"Phrase très très longue traduite de la version anglaise pour simuler une description, du coup j\'éssaye de garder la touche humoristique de la version anglaise alors qu\'en réalité je ne suis qu\'en train de décrire que mon manque d\'humour. "</string>
     <string name="created_date_test_format">Créé le %1$s à %2$s</string>
