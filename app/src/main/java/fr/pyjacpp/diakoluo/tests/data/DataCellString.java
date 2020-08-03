@@ -20,9 +20,13 @@
 package fr.pyjacpp.diakoluo.tests.data;
 
 import android.content.Context;
+import android.view.View;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -35,6 +39,10 @@ import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 
+/**
+ * A cell that contain a string value.
+ * @see fr.pyjacpp.diakoluo.tests.column.ColumnString
+ */
 public class DataCellString extends DataCell {
     private String value;
 
@@ -53,7 +61,8 @@ public class DataCellString extends DataCell {
         value = XmlLoader.readText(parser);
     }
 
-    public DataCellString(@SuppressWarnings("unused") Column newColumn, @NonNull String migrationString) {
+    public DataCellString(@SuppressWarnings("unused") Column newColumn,
+                          @NonNull String migrationString) {
         super();
         value = migrationString;
     }
@@ -64,8 +73,8 @@ public class DataCellString extends DataCell {
     }
 
     @Override
-    public void setValue(Object object) {
-        value = (String) object;
+    public void setValue(Object value) {
+        this.value = (String) value;
     }
 
     @NonNull
@@ -74,16 +83,19 @@ public class DataCellString extends DataCell {
         return value;
     }
 
+    @NonNull
     @Override
     public String getStringValue(Context context, Column column) {
         return value;
     }
 
+    @NonNull
     @Override
     protected String getStringValue(Context context, Column column, Object answer) {
         return (String) answer;
     }
 
+    @NonNull
     public String getCsvValue(Column column) {
         return value;
     }
@@ -96,6 +108,16 @@ public class DataCellString extends DataCell {
     @Override
     public void writeXml(OutputStream fileOutputStream) throws IOException {
         fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_CELL, value).getBytes());
+    }
+
+    @Override
+    public Object getValueFromView(View view)  {
+        TextInputLayout inputLayout = (TextInputLayout) view;
+        EditText editText = inputLayout.getEditText();
+        if (editText != null)
+            return editText.getText().toString();
+        else
+            return null;
     }
 
     @Override

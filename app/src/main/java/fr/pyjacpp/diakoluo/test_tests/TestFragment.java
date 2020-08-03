@@ -136,7 +136,7 @@ public class TestFragment extends Fragment {
                                             inflatedView.getContext(), column, answer);
 
                                     answerRow.addView(showValueResponse.getValueView(), params);
-                                    if (!showValueResponse.isAnswerTrue()) {
+                                    if (!showValueResponse.isAnswerRight()) {
                                         addAnswer(column, answerRow, params);
                                     }
                                 }

@@ -107,11 +107,12 @@ public class AnswerDataEditFragment extends Fragment {
                 layout.addView(columnTitle);
 
                 if (dataCell == null) {
-                    dataCell = DataCell.getDefaultValueCell(column);
+                    dataCell = DataCell.newCellWithDefaultValue(column);
                     row.getListCells().put(column, dataCell);
                 }
 
-                View columnValue = dataCell.showEditValue(inflatedView.getContext(), column);
+                View columnValue = column.showColumnEditValue(inflatedView.getContext(),
+                        dataCell.getValue());
                 columnAnswerEditHashMap.put(column, columnValue);
                 columnValue.setOnFocusChangeListener(onFocusChangeListener);
                 layout.addView(columnValue);

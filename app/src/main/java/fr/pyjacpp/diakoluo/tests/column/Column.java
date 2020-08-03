@@ -255,7 +255,7 @@ public abstract class Column {
             HashMap<Column, DataCell> listCells = row.getListCells();
             DataCell dataCell = listCells.get(previousColumn);
             if (dataCell == null) {
-                listCells.put(this, DataCell.getDefaultValueCell(this));
+                listCells.put(this, DataCell.newCellWithDefaultValue(this));
             } else {
                 listCells.remove(previousColumn); // should be remove before put in case of previousColumn == this
                 listCells.put(this, DataCell.newCellMigrate(this, previousColumn, dataCell));

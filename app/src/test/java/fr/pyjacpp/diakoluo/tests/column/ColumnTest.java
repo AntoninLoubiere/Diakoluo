@@ -135,10 +135,10 @@ public class ColumnTest {
             excepted.addColumn(column);
             test.addColumn(column1);
             excepted.addColumn(column1);
-            row.getListCells().put(column, DefaultTest.setTestValue(DataCell.getDefaultValueCell(column)));
-            exceptedRow.getListCells().put(column, DefaultTest.setTestValue(DataCell.getDefaultValueCell(column)));
-            row.getListCells().put(column1, DefaultTest.setTestValue(DataCell.getDefaultValueCell(column1)));
-            exceptedRow.getListCells().put(column1, DefaultTest.setTestValue(DataCell.getDefaultValueCell(column1)));
+            row.getListCells().put(column, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column)));
+            exceptedRow.getListCells().put(column, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column)));
+            row.getListCells().put(column1, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column1)));
+            exceptedRow.getListCells().put(column1, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column1)));
 
             column.updateCells(test, column);
             column1.updateCells(test, column1);

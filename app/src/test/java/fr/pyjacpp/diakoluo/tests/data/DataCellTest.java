@@ -34,7 +34,7 @@ public class DataCellTest {
     @Test
     public void copyDataCell() {
         for (ColumnInputType inputType : ColumnInputType.values()) {
-            DataCell dataCell = DataCell.getDefaultValueCell(Column.newColumn(inputType));
+            DataCell dataCell = DataCell.newCellWithDefaultValue(Column.newColumn(inputType));
             DataCell dataCell1 = DataCell.copyDataCell(dataCell);
             assertNotSame(inputType.name(), dataCell, dataCell1);
         }
@@ -44,7 +44,7 @@ public class DataCellTest {
     public void value() {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column currentColumn = Column.newColumn(inputType);
-            DataCell dataCell = DataCell.getDefaultValueCell(currentColumn);
+            DataCell dataCell = DataCell.newCellWithDefaultValue(currentColumn);
             assertEquals(inputType.name(), currentColumn.getDefaultValue(), dataCell.getValue());
         }
     }
@@ -53,7 +53,7 @@ public class DataCellTest {
     public void getStringValue() {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column currentColumn = Column.newColumn(inputType);
-            DataCell dataCell = DataCell.getDefaultValueCell(currentColumn);
+            DataCell dataCell = DataCell.newCellWithDefaultValue(currentColumn);
             assertNotNull(inputType.name(), dataCell.getStringValue(null, currentColumn));
         }
     }
@@ -62,7 +62,7 @@ public class DataCellTest {
     public void verifyAnswer() {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column currentColumn = Column.newColumn(inputType);
-            DataCell dataCell = DataCell.getDefaultValueCell(currentColumn);
+            DataCell dataCell = DataCell.newCellWithDefaultValue(currentColumn);
             assertTrue(inputType.name(), currentColumn.verifyAnswer(dataCell, dataCell.getValue()));
         }
     }

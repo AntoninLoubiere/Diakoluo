@@ -37,11 +37,13 @@ import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.column.ColumnList;
-import fr.pyjacpp.diakoluo.tests.column.ColumnString;
-import fr.pyjacpp.diakoluo.tests.column.IntSettingsColumn;
 
+/**
+ * A cell that contain a index of value in list. The list is own by {@link ColumnList}
+ * @see ColumnList
+ */
 public class DataCellList extends DataCell {
-    private int valueIndex = -1;
+    private int valueIndex;
 
     public DataCellList(int valueIndex) {
         super();
@@ -69,8 +71,8 @@ public class DataCellList extends DataCell {
     }
 
     @Override
-    public void setValue(Object object) {
-        valueIndex = (int) object;
+    public void setValue(Object value) {
+        valueIndex = (int) value;
     }
 
     @NonNull
@@ -79,17 +81,14 @@ public class DataCellList extends DataCell {
         return ((ColumnList) column).getStringValue(null, valueIndex);
     }
 
-    @Override
-    protected String getStringFromObjectValue(Context context, Column currentColumn, Object answer) {
-        return ((ColumnList) currentColumn).getStringValue(context, (int) answer);
-    }
-
+    @NonNull
     @Override
     public String getStringValue(Context context, Column column) {
         ColumnList columnList = (ColumnList) column;
         return columnList.getStringValue(context, valueIndex);
     }
 
+    @NonNull
     @Override
     protected String getStringValue(Context context, Column column, Object answer) {
         ColumnList columnList = (ColumnList) column;
@@ -101,6 +100,7 @@ public class DataCellList extends DataCell {
         return spinner.getSelectedItemPosition();
     }
 
+    @NonNull
     @Override
     public String getCsvValue(Column column) {
         ColumnList columnList = (ColumnList) column;
@@ -115,7 +115,8 @@ public class DataCellList extends DataCell {
 
     @Override
     public void writeXml(OutputStream fileOutputStream) throws IOException {
-        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_CELL, String.valueOf(valueIndex)).getBytes());
+        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_CELL,
+                String.valueOf(valueIndex)).getBytes());
     }
 
     @Override

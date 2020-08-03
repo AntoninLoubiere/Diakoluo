@@ -226,7 +226,7 @@ public class XmlLoader {
             Log.w("XmlLoader", "Too few cells");
             for (int i = indexColumn; i < test.getNumberColumn(); i++) {
                 Column currentColumn = test.getListColumn().get(indexColumn);
-                DataCell cell = DataCell.getDefaultValueCell(currentColumn);
+                DataCell cell = DataCell.newCellWithDefaultValue(currentColumn);
                 dataRow.getListCells().put(currentColumn, cell);
             }
         }
