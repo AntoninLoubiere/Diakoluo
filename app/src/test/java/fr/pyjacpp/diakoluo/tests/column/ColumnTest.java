@@ -21,9 +21,17 @@ package fr.pyjacpp.diakoluo.tests.column;
 
 import org.junit.Test;
 
+import fr.pyjacpp.diakoluo.DefaultTest;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
+import fr.pyjacpp.diakoluo.tests.DataRow;
+import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ColumnTest {
 
@@ -93,19 +101,49 @@ public class ColumnTest {
         String description = "Description";
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column column = Column.newColumn(inputType);
-            assertTrue(column.isValid());
+            assertTrue(inputType.name(), column.isValid());
             column = Column.newColumn(inputType, name, description);
-            assertTrue(column.isValid());
-            assertEquals(name, column.getName());
-            assertEquals(description, column.getDescription());
+            assertTrue(inputType.name(), column.isValid());
+            assertEquals(inputType.name(), name, column.getName());
+            assertEquals(inputType.name(), description, column.getDescription());
         }
     }
 
     @Test
     public void copyColumn() {
-        Column column = new ColumnString();
-        Column column1 = Column.copyColumn(column);
+        for (ColumnInputType inputType : ColumnInputType.values()) {
+            Column column = Column.newColumn(inputType);
+            Column column1 = Column.copyColumn(column);
 
-        assertNotSame(column, column1);
+            assertNotSame(inputType.name(), column, column1);
+            assertEquals(inputType.name(), column, column1);
+        }
+    }
+
+    @Test
+    public void updateCells() {
+        fr.pyjacpp.diakoluo.tests.Test excepted = new fr.pyjacpp.diakoluo.tests.Test("Test", "Test");
+        fr.pyjacpp.diakoluo.tests.Test test = new fr.pyjacpp.diakoluo.tests.Test("Test", "Test");
+        DataRow exceptedRow = new DataRow();
+        DataRow row = new DataRow();
+        excepted.addRow(exceptedRow);
+        test.addRow(row);
+        for (ColumnInputType inputType : ColumnInputType.values()) {
+            Column column = DefaultTest.setTestValue(Column.newColumn(inputType));
+            Column column1 = DefaultTest.setTestValueEmpty(Column.newColumn(inputType));
+            test.addColumn(column);
+            excepted.addColumn(column);
+            test.addColumn(column1);
+            excepted.addColumn(column1);
+            row.getListCells().put(column, DefaultTest.setTestValue(DataCell.getDefaultValueCell(column)));
+            exceptedRow.getListCells().put(column, DefaultTest.setTestValue(DataCell.getDefaultValueCell(column)));
+            row.getListCells().put(column1, DefaultTest.setTestValue(DataCell.getDefaultValueCell(column1)));
+            exceptedRow.getListCells().put(column1, DefaultTest.setTestValue(DataCell.getDefaultValueCell(column1)));
+
+            column.updateCells(test, column);
+            column1.updateCells(test, column1);
+
+            assertEquals(inputType.name(), excepted, test); // assert that no data is lost when migrate is use
+        }
     }
 }

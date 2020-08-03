@@ -81,7 +81,11 @@ public class DataRow {
         for (int i = 0, listColumnSize = listColumn.size(); i < listColumnSize; i++) {
             Column column = listColumn.get(i);
             DataCell dataCell = listCells.get(column);
-            CsvSaver.writeCell(csvContext, i, dataCell == null ? "" : dataCell.getStringValue());
+            if (dataCell == null) CsvSaver.writeCell(csvContext, i, "");
+            else {
+                String csvValue = dataCell.getCsvValue(column);
+                CsvSaver.writeCell(csvContext, i, csvValue);
+            }
         }
     }
 

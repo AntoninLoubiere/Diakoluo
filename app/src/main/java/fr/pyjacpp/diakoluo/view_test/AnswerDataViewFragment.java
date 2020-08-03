@@ -92,7 +92,7 @@ public class AnswerDataViewFragment extends Fragment {
                     columnTitle.setLayoutParams(params);
 
                 layout.addView(columnTitle);
-                layout.addView(dataCell.showValue(inflatedView.getContext()));
+                layout.addView(dataCell.showValue(inflatedView.getContext(), column));
             }
         }
 

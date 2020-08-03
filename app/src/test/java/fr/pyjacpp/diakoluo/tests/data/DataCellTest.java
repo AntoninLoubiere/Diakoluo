@@ -24,7 +24,10 @@ import org.junit.Test;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 public class DataCellTest {
 
@@ -33,7 +36,7 @@ public class DataCellTest {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             DataCell dataCell = DataCell.getDefaultValueCell(Column.newColumn(inputType));
             DataCell dataCell1 = DataCell.copyDataCell(dataCell);
-            assertNotSame(dataCell, dataCell1);
+            assertNotSame(inputType.name(), dataCell, dataCell1);
         }
     }
 
@@ -42,7 +45,7 @@ public class DataCellTest {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column currentColumn = Column.newColumn(inputType);
             DataCell dataCell = DataCell.getDefaultValueCell(currentColumn);
-            assertEquals(currentColumn.getDefaultValue(), dataCell.getValue());
+            assertEquals(inputType.name(), currentColumn.getDefaultValue(), dataCell.getValue());
         }
     }
 
@@ -51,7 +54,7 @@ public class DataCellTest {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column currentColumn = Column.newColumn(inputType);
             DataCell dataCell = DataCell.getDefaultValueCell(currentColumn);
-            assertNotNull(dataCell.getStringValue());
+            assertNotNull(inputType.name(), dataCell.getStringValue(null, currentColumn));
         }
     }
 
@@ -60,7 +63,7 @@ public class DataCellTest {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column currentColumn = Column.newColumn(inputType);
             DataCell dataCell = DataCell.getDefaultValueCell(currentColumn);
-            assertTrue(currentColumn.verifyAnswer(dataCell, dataCell.getValue()));
+            assertTrue(inputType.name(), currentColumn.verifyAnswer(dataCell, dataCell.getValue()));
         }
     }
 }

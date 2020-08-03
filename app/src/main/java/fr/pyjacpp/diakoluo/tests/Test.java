@@ -19,6 +19,8 @@
 
 package fr.pyjacpp.diakoluo.tests;
 
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -213,12 +215,12 @@ public class Test {
         }
     }
 
-    public String getRowFirstCellString(int rowPosition) {
+    public String getRowFirstCellString(Context context, int rowPosition) {
         DataCell firstCell = getRowFirstCell(rowPosition);
         if (firstCell == null) {
             return String.valueOf(rowPosition);
         } else {
-            return firstCell.getStringValue();
+            return firstCell.getStringValue(context, listColumn.get(0));
         }
     }
 

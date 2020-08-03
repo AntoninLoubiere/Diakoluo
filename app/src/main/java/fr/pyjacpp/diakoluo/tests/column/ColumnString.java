@@ -45,17 +45,14 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
-public class ColumnString extends Column {
+
+public class ColumnString extends IntSettingsColumn {
     private String defaultValue;
 
     private static final int CASE_SENSITIVE = 1;
     private static final int REMOVE_USELESS_SPACES = 1 << 1;
 
     private static final int DEFAULT_SETTINGS = REMOVE_USELESS_SPACES;
-
-    private static final String SETTINGS_TAG = "settings";
-
-    public int settings = -1;
 
     ColumnString() {
         super();
@@ -141,40 +138,18 @@ public class ColumnString extends Column {
         return super.isValid() && defaultValue != null && settings >= 0;
     }
 
-    private boolean isInSettings(int parameter) {
-        return (settings & parameter) == parameter;
-    }
-
-    private void setSettings(int parameter, boolean value) {
-        if (value) {
-            settings = settings | parameter;
-        } else {
-            settings = settings & ~ parameter;
-        }
-    }
-
     @Override
     public void writeXmlHeader(OutputStream fileOutputStream) throws IOException {
         fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_DEFAULT_VALUE,
                 defaultValue).getBytes());
-        fileOutputStream.write(XmlSaver.getCoupleBeacon(SETTINGS_TAG,
-                String.valueOf(settings)).getBytes());
     }
 
     @Override
     void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
-        switch (parser.getName()) {
-            case FileManager.TAG_DEFAULT_VALUE:
-                defaultValue = XmlLoader.readText(parser);
-                break;
-
-            case SETTINGS_TAG:
-                settings = XmlLoader.readInt(parser);
-                break;
-
-            default:
-                super.readColumnXmlTag(parser);
-                break;
+        if (FileManager.TAG_DEFAULT_VALUE.equals(parser.getName())) {
+            defaultValue = XmlLoader.readText(parser);
+        } else {
+            super.readColumnXmlTag(parser);
         }
     }
 
@@ -189,9 +164,8 @@ public class ColumnString extends Column {
 
     static ColumnString privateCopyColumn(ColumnString baseColumn) {
         ColumnString newColumn = new ColumnString();
-        newColumn.defaultValue = baseColumn.defaultValue;
-        newColumn.settings = baseColumn.settings;
-        Column.privateCopyColumn(baseColumn, newColumn);
+        newColumn .defaultValue = baseColumn.defaultValue;
+        IntSettingsColumn.privateCopyColumn(baseColumn, newColumn);
         return newColumn;
     }
 
@@ -199,7 +173,7 @@ public class ColumnString extends Column {
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof ColumnString && super.equals(obj)) {
             ColumnString cS = (ColumnString) obj;
-            return cS.defaultValue.equals(defaultValue) && cS.settings == settings;
+            return cS.defaultValue.equals(defaultValue);
         }
         return false;
     }

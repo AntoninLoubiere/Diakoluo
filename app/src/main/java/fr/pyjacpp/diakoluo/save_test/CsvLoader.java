@@ -97,7 +97,7 @@ public class CsvLoader {
                 for (int i = 0; i < numberColumns; i++) {
                     Column currentColumn = columns.get(i);
                     DataCell cell = DataCell.getDefaultValueCell(currentColumn);
-                    cell.setValueFromCsv(line.get(i));
+                    cell.setValueFromCsv(line.get(i), currentColumn);
                     listCells.put(currentColumn, cell);
                 }
                 rows.add(row);

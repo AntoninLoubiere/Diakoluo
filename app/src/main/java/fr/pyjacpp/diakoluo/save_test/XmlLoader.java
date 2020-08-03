@@ -31,12 +31,11 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 
-import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
-import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 public class XmlLoader {
 
@@ -213,7 +212,7 @@ public class XmlLoader {
                     continue;
                 }
                 Column currentColumn = test.getListColumn().get(indexColumn);
-                DataCell cell = readCell(parser, currentColumn.getInputType());
+                DataCell cell = DataCell.readCell(parser, currentColumn.getInputType());
                 dataRow.getListCells().put(currentColumn, cell);
 
                 indexColumn++;
@@ -233,17 +232,6 @@ public class XmlLoader {
         }
 
         return dataRow;
-    }
-
-    private static DataCell readCell(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_CELL);
-        switch (inputType) {
-            case String:
-                return new DataCellString(readText(parser));
-
-            default:
-                throw new IllegalStateException("Unexpected value: " + inputType);
-        }
     }
 
     public static String readText(XmlPullParser parser) throws IOException, XmlPullParserException {

@@ -178,7 +178,7 @@ public class TestFragment extends Fragment {
     private void addAnswer(Column column, LinearLayout row, LinearLayout.LayoutParams params) {
         DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
         if (dataCell != null) {
-            View answer = dataCell.showValue(row.getContext());
+            View answer = dataCell.showValue(row.getContext(), column);
             row.addView(answer, params);
             columnViewHashMap.put(column, answer);
         }

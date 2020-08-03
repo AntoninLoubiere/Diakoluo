@@ -23,7 +23,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.view.ViewParent;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,26 +37,44 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
+import fr.pyjacpp.diakoluo.tests.DataRow;
+import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public abstract class Column {
     private String name;
     private String description;
 
+    /**
+     * When a edit text with a layout is clicked send focus change to the parent
+     */
+    private static final View.OnFocusChangeListener editTextListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            ViewParent parent = v.getParent();
+            if (parent instanceof View) {
+                View parent1 = (View) parent;
+                View.OnFocusChangeListener onFocusChangeListener = parent1.getOnFocusChangeListener();
+                if (onFocusChangeListener != null) onFocusChangeListener.onFocusChange(parent1, true);
+            }
+        }
+    };
+
     protected ColumnInputType inputType;
     protected Column() {
         initialize();
     }
 
-    void initialize() {
+    protected void initialize() {
         this.name = null;
         this.description = null;
-        this.inputType = null;
     }
 
     public abstract void initializeChildValue();
@@ -81,10 +99,6 @@ public abstract class Column {
         return inputType;
     }
 
-    public void setInputType(ColumnInputType inputType) {
-        this.inputType = inputType;
-    }
-
     public abstract Object getDefaultValue();
 
     public abstract void setDefaultValue(Object defaultValue);
@@ -104,21 +118,15 @@ public abstract class Column {
         return columnNameTextView;
     }
 
-    private TextInputLayout showColumnEditValue(Context context) {
+
+    public View showColumnEditValue(Context context, @Nullable Object defaultValue) {
         TextInputLayout inputLayout = new TextInputLayout(context, null, R.style.Widget_MaterialComponents_TextInputLayout_OutlinedBox);
         TextInputEditText inputField = new TextInputEditText(context);
         inputLayout.setHint(name);
-
         inputLayout.addView(inputField);
+        inputField.setOnFocusChangeListener(editTextListener);
 
-        return inputLayout;
-    }
-
-
-    public TextInputLayout showColumnEditValue(Context context, Object defaultValue) {
-        TextInputLayout inputLayout = showColumnEditValue(context);
-        EditText inputField = inputLayout.getEditText();
-        if (inputField != null && defaultValue != null)
+        if (defaultValue != null)
             inputField.setText((String) defaultValue);
 
         return inputLayout;
@@ -136,20 +144,27 @@ public abstract class Column {
     }
 
     public static Column newColumn(ColumnInputType columnInputType, String name, String description) {
+        Column column;
         switch (columnInputType) {
             case String:
-                ColumnString columnString = new ColumnString();
-                columnString.setName(name);
-                columnString.setDescription(description);
-                columnString.initializeChildValue();
-                return columnString;
+                column = new ColumnString();
+                break;
+
+            case List:
+                column = new ColumnList();
+                break;
 
             default:
                 throw new IllegalStateException("Unexpected value: " + columnInputType);
         }
+
+        column.setName(name);
+        column.setDescription(description);
+        column.initializeChildValue();
+        return column;
     }
 
-    static void privateCopyColumn(Column baseColumn, Column newColumn) {
+    protected static void privateCopyColumn(Column baseColumn, Column newColumn) {
         newColumn.name = baseColumn.name;
         newColumn.description = baseColumn.description;
         newColumn.inputType = baseColumn.inputType;
@@ -168,7 +183,7 @@ public abstract class Column {
         }
     }
 
-    void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
+    protected void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
         switch (parser.getName()) {
             case FileManager.TAG_NAME:
                 name = XmlLoader.readName(parser);
@@ -195,16 +210,9 @@ public abstract class Column {
             if (columnInputType == null) {
                 throw new XmlPullParserException("Column input type error");
             } else {
-                Column column;
-                switch (columnInputType) {
-                    case String:
-                        column = new ColumnString();
-                        column.loopXmlTags(parser);
-                        break;
+                Column column = Column.newColumn(columnInputType); // TODO CHANGE
 
-                    default:
-                        throw new IllegalStateException("InputType " + columnInputType.name() + " not implemented");
-                }
+                column.loopXmlTags(parser);
                 column.setDefaultValueBackWardCompatibility();
                 if (column.isValid()) {
                     return column;
@@ -224,6 +232,8 @@ public abstract class Column {
     public static Column copyColumn(Column column) {
         if (column instanceof ColumnString) {
             return ColumnString.privateCopyColumn((ColumnString) column);
+        } else if (column instanceof ColumnList){
+            return ColumnList.privateCopyColumn((ColumnList) column);
         } else {
             throw new IllegalStateException("Column type not detected");
         }
@@ -236,5 +246,20 @@ public abstract class Column {
             return c.name.equals(name) && c.description.equals(description);
         }
         return false;
+    }
+
+    public void updateCells(Test currentEditTest, Column previousColumn) {
+        ArrayList<DataRow> listRow = currentEditTest.getListRow();
+        for (int i = 0, listRowSize = listRow.size(); i < listRowSize; i++) {
+            DataRow row = listRow.get(i);
+            HashMap<Column, DataCell> listCells = row.getListCells();
+            DataCell dataCell = listCells.get(previousColumn);
+            if (dataCell == null) {
+                listCells.put(this, DataCell.getDefaultValueCell(this));
+            } else {
+                listCells.remove(previousColumn); // should be remove before put in case of previousColumn == this
+                listCells.put(this, DataCell.newCellMigrate(this, previousColumn, dataCell));
+            }
+        }
     }
 }

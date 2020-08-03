@@ -25,25 +25,33 @@ import android.graphics.Typeface;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 
 public abstract class DataCell {
-    public DataCell(DataCell dataCell) {
+    protected DataCell(DataCell dataCell) {
     }
 
-    public DataCell() {
+    protected DataCell(XmlPullParser parser) {
+    }
+
+    protected DataCell() {
     }
 
     public static DataCell copyDataCell(DataCell dataCell) {
@@ -52,6 +60,8 @@ public abstract class DataCell {
         } else {
             if (dataCell instanceof DataCellString) {
                 return new DataCellString((DataCellString) dataCell);
+            } else if (dataCell instanceof DataCellList) {
+                return new DataCellList((DataCellList) dataCell);
             } else {
                 throw new IllegalStateException("Unexpected value: " + dataCell.getClass());
             }
@@ -62,6 +72,9 @@ public abstract class DataCell {
         switch (currentColumn.getInputType()) {
             case String:
                 return new DataCellString((String) currentColumn.getDefaultValue());
+
+            case List:
+                return new DataCellList((int) currentColumn.getDefaultValue());
 
             default:
                 throw new IllegalStateException("Unexpected value: " + currentColumn.getInputType());
@@ -74,31 +87,37 @@ public abstract class DataCell {
         cell.setValueFromView(view);
     }
 
-    public abstract Object getValue();
-
     public static Class<? extends DataCell> getClassByColumnType(ColumnInputType inputType) {
         switch (inputType) {
             case String:
                 return DataCellString.class;
+
+            case List:
+                return DataCellList.class;
 
             default:
                 throw new RuntimeException("Unknown inputType !");
         }
     }
 
+    public abstract Object getValue();
+
     public abstract void setValue(Object object);
 
-    public View showValue(Context context) {
+    @NonNull
+    protected abstract String getMigrationString(Column column);
+
+    public View showValue(Context context, Column column) {
         MaterialTextView valueTextView = new MaterialTextView(context);
         valueTextView.setTextAppearance(context, R.style.Body0);
-        valueTextView.setText(getStringValue());
+        valueTextView.setText(getStringValue(context, column));
         return valueTextView;
     }
 
     public ShowValueResponse showValue(Context context, Column column, Object answer) {
-        String answerString = getStringFromObjectValue(answer);
+        String answerString = getStringFromObjectValue(context, column, answer);
 
-        MaterialTextView valueTextView = (MaterialTextView) showValue(context);
+        MaterialTextView valueTextView = (MaterialTextView) showValue(context, column);
         boolean answerIsTrue = column.verifyAnswer(this, answer);
 
         if (answerIsTrue) {
@@ -109,7 +128,7 @@ public abstract class DataCell {
                 valueTextView.setTypeface(null, Typeface.ITALIC);
             } else {
                 valueTextView.setPaintFlags(valueTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                valueTextView.setText(getStringValue(answer));
+                valueTextView.setText(getStringValue(context, column, answer));
             }
 
             valueTextView.setTextColor(context.getResources().getColor(R.color.wrongAnswer));
@@ -118,17 +137,17 @@ public abstract class DataCell {
         return new ShowValueResponse(valueTextView, answerIsTrue);
     }
 
-    public TextInputLayout showEditValue(Context context, Column column) {
-        return column.showColumnEditValue(context, getStringValue());
+    public View showEditValue(Context context, Column column) {
+        return column.showColumnEditValue(context, getValue());
     }
 
-    private String getStringFromObjectValue(Object answer) {
+    protected String getStringFromObjectValue(Context context, Column currentColumn, Object answer) {
         return (String) answer;
     }
 
-    public abstract String getStringValue();
+    public abstract String getStringValue(Context context, Column column);
 
-    protected abstract String getStringValue(Object answer);
+    protected abstract String getStringValue(Context context, Column column, Object answer);
 
     public void setValueFromView(View view) {
         setValue(getValueFromView(view));
@@ -148,9 +167,10 @@ public abstract class DataCell {
             testTestContext.addScore(1);
     }
 
-    public abstract void setValueFromCsv(String lineCell);
-
+    public abstract String getCsvValue(Column column);
+    public abstract void setValueFromCsv(String lineCell, Column column);
     public abstract void writeXml(OutputStream fileOutputStream) throws IOException;
+
 
     public static class ShowValueResponse {
         ShowValueResponse(View valueView, boolean answerIsTrue) {
@@ -173,5 +193,36 @@ public abstract class DataCell {
     @Override
     public boolean equals(@Nullable Object obj) {
         return obj instanceof DataCell;
+    }
+
+    public static DataCell newCellMigrate(Column newColumn, Column previousColumn, @NonNull DataCell previousDataCell) {
+        switch (newColumn.getInputType()) {
+            case String:
+                return new DataCellString(newColumn, previousDataCell.getMigrationString(previousColumn));
+
+            case List:
+                return new DataCellList(newColumn, previousDataCell.getMigrationString(previousColumn));
+
+            default:
+                throw new IllegalStateException("Unexpected value: " + newColumn.getInputType());
+        }
+    }
+
+    private static DataCell newCell(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
+        switch (inputType) {
+            case String:
+                return new DataCellString(parser);
+
+            case List:
+                return new DataCellList(parser);
+
+            default:
+                throw new IllegalStateException("Unexpected value: " + inputType);
+        }
+    }
+
+    public static DataCell readCell(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_CELL);
+        return DataCell.newCell(parser, inputType);
     }
 }

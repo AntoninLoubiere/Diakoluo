@@ -20,6 +20,8 @@
 package fr.pyjacpp.diakoluo.tests.data;
 
 import android.content.Context;
+import android.view.View;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,75 +36,93 @@ import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.column.Column;
+import fr.pyjacpp.diakoluo.tests.column.ColumnList;
+import fr.pyjacpp.diakoluo.tests.column.ColumnString;
+import fr.pyjacpp.diakoluo.tests.column.IntSettingsColumn;
 
-public class DataCellString extends DataCell {
-    private String value;
+public class DataCellList extends DataCell {
+    private int valueIndex = -1;
 
-    DataCellString(DataCellString dataCellString) {
-        super(dataCellString);
-        value = dataCellString.value;
-    }
-
-    public DataCellString(String value) {
+    public DataCellList(int valueIndex) {
         super();
-        this.value = value;
+        this.valueIndex = valueIndex;
     }
 
-    public DataCellString(XmlPullParser parser) throws IOException, XmlPullParserException {
+    DataCellList(DataCellList dataCellList) {
+        super(dataCellList);
+        valueIndex = dataCellList.valueIndex;
+    }
+
+    public DataCellList(XmlPullParser parser) throws IOException, XmlPullParserException {
         super(parser);
-        value = XmlLoader.readText(parser);
+        valueIndex = XmlLoader.readInt(parser);
     }
 
-    public DataCellString(@SuppressWarnings("unused") Column newColumn, @NonNull String migrationString) {
+    public DataCellList(Column newColumn, @NonNull String migration) {
         super();
-        value = migrationString;
+        valueIndex = ((ColumnList) newColumn).getMigrationIndex(migration);
     }
 
     @Override
-    public String getValue() {
-        return value;
+    public Object getValue() {
+        return valueIndex;
     }
 
     @Override
     public void setValue(Object object) {
-        value = (String) object;
+        valueIndex = (int) object;
     }
 
     @NonNull
     @Override
     protected String getMigrationString(Column column) {
-        return value;
+        return ((ColumnList) column).getStringValue(null, valueIndex);
+    }
+
+    @Override
+    protected String getStringFromObjectValue(Context context, Column currentColumn, Object answer) {
+        return ((ColumnList) currentColumn).getStringValue(context, (int) answer);
     }
 
     @Override
     public String getStringValue(Context context, Column column) {
-        return value;
+        ColumnList columnList = (ColumnList) column;
+        return columnList.getStringValue(context, valueIndex);
     }
 
     @Override
     protected String getStringValue(Context context, Column column, Object answer) {
-        return (String) answer;
+        ColumnList columnList = (ColumnList) column;
+        return columnList.getStringValue(context, (int) answer);
     }
 
+    public Object getValueFromView(View view) {
+        Spinner spinner = (Spinner) view;
+        return spinner.getSelectedItemPosition();
+    }
+
+    @Override
     public String getCsvValue(Column column) {
-        return value;
+        ColumnList columnList = (ColumnList) column;
+        return columnList.getStringValue(null, valueIndex);
     }
 
     @Override
     public void setValueFromCsv(String lineCell, Column column) {
-        value = lineCell;
+        ColumnList columnList = (ColumnList) column;
+        valueIndex = columnList.setValueFromCsvGetIndex(lineCell);
     }
 
     @Override
     public void writeXml(OutputStream fileOutputStream) throws IOException {
-        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_CELL, value).getBytes());
+        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_CELL, String.valueOf(valueIndex)).getBytes());
     }
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj instanceof DataCellString) {
-            DataCellString dataCellString = (DataCellString) obj;
-            return super.equals(obj) && value.equals(dataCellString.value);
+        if (obj instanceof DataCellList) {
+            DataCellList dataCellList = (DataCellList) obj;
+            return super.equals(obj) && valueIndex == dataCellList.valueIndex;
         }
         return false;
     }
