@@ -111,7 +111,7 @@ public class AnswerDataEditFragment extends Fragment {
                     row.getListCells().put(column, dataCell);
                 }
 
-                View columnValue = column.showColumnEditValue(inflatedView.getContext(),
+                View columnValue = column.showEditValueView(inflatedView.getContext(),
                         dataCell.getValue());
                 columnAnswerEditHashMap.put(column, columnValue);
                 columnValue.setOnFocusChangeListener(onFocusChangeListener);
@@ -179,7 +179,7 @@ public class AnswerDataEditFragment extends Fragment {
                     if (dataCell == null) {
                         DataCell.setDefaultCellFromView(answerEdit, row, column);
                     } else {
-                        dataCell.setValueFromView(answerEdit);
+                        column.setValueFromView(dataCell, answerEdit);
                     }
                 }
             }

@@ -161,7 +161,7 @@ public class TestFragment extends Fragment {
                         if (columnShow != null && columnShow) {
                             addAnswer(column, answerRow, params);
                         } else {
-                            View answerEdit = column.showColumnEditValue(
+                            View answerEdit = column.showEditValueView(
                                     inflatedView.getContext(),
                                     testTestContext.getUserAnswer().get(column));
 
@@ -221,7 +221,7 @@ public class TestFragment extends Fragment {
             DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
 
             if (columnShow != null && valueView != null && dataCell != null && !columnShow) {
-                testTestContext.getUserAnswer().put(column, dataCell.getValueFromView(valueView));
+                testTestContext.getUserAnswer().put(column, column.getValueFromView(valueView));
             }
         }
     }

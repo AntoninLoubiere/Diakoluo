@@ -19,6 +19,7 @@
 
 package fr.pyjacpp.diakoluo.tests.column;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -29,10 +30,19 @@ import java.io.OutputStream;
 
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
+import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 
 public abstract class IntSettingsColumn extends Column {
     protected int settings = -1;
     private static final String TAG_SETTINGS = "settings";
+
+    /**
+     * Default constructor that initialize a non-valid column
+     * @param inputType the input type of the column
+     */
+    protected IntSettingsColumn(@NonNull ColumnInputType inputType) {
+        super(inputType);
+    }
 
     protected boolean isInSettings(int parameter) {
         return (settings & parameter) == parameter;
@@ -47,9 +57,15 @@ public abstract class IntSettingsColumn extends Column {
     }
 
     @Override
-    void initialize() {
+    public void initialize() {
         super.initialize();
         settings = -1;
+    }
+
+    @Override
+    protected void initialize(String name, String description) {
+        super.initialize(name, description);
+        settings = 0;
     }
 
     @Override
@@ -58,13 +74,14 @@ public abstract class IntSettingsColumn extends Column {
     }
 
     @Override
-    public void writeXmlHeader(OutputStream fileOutputStream) throws IOException {
+    public void writeXml(OutputStream fileOutputStream) throws IOException {
         fileOutputStream.write(XmlSaver.getCoupleBeacon(TAG_SETTINGS,
                 String.valueOf(settings)).getBytes());
     }
 
     @Override
-    void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
+    protected void readColumnXmlTag(XmlPullParser parser)
+            throws IOException, XmlPullParserException {
         if (parser.getName().equals(TAG_SETTINGS)) {
             settings = XmlLoader.readInt(parser);
         } else {
@@ -82,8 +99,9 @@ public abstract class IntSettingsColumn extends Column {
         }
     }
 
-    static void privateCopyColumn(IntSettingsColumn baseColumn, IntSettingsColumn newColumn) {
-        newColumn.settings = baseColumn.settings;
-        Column.privateCopyColumn(baseColumn, newColumn);
+    @Override
+    protected void copyColumn(Column newColumn) {
+        super.copyColumn(newColumn);
+        ((IntSettingsColumn) newColumn).settings = settings;
     }
 }

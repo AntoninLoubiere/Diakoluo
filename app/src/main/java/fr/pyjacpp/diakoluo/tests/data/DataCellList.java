@@ -20,8 +20,6 @@
 package fr.pyjacpp.diakoluo.tests.data;
 
 import android.content.Context;
-import android.view.View;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -93,11 +91,6 @@ public class DataCellList extends DataCell {
     protected String getStringValue(Context context, Column column, Object answer) {
         ColumnList columnList = (ColumnList) column;
         return columnList.getStringValue(context, (int) answer);
-    }
-
-    public Object getValueFromView(View view) {
-        Spinner spinner = (Spinner) view;
-        return spinner.getSelectedItemPosition();
     }
 
     @NonNull

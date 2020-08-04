@@ -55,11 +55,11 @@ public class ColumnString extends IntSettingsColumn {
     private static final int DEFAULT_SETTINGS = REMOVE_USELESS_SPACES;
 
     ColumnString() {
-        super();
+        super(ColumnInputType.String);
     }
 
     @Override
-    void initialize() {
+    public void initialize() {
         super.initialize();
         defaultValue = null;
         settings = -1;
@@ -67,7 +67,8 @@ public class ColumnString extends IntSettingsColumn {
     }
 
     @Override
-    public void initializeChildValue() {
+    public void initialize(String name, String description) {
+        super.initialize(name, description);
         defaultValue = "";
         settings = DEFAULT_SETTINGS;
     }
@@ -91,22 +92,30 @@ public class ColumnString extends IntSettingsColumn {
 
     @Override
     public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
-        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_string, parent, true);
+        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_string,
+                parent, true);
 
-        MaterialTextView caseSensitiveTextView = inflatedView.findViewById(R.id.caseSensitiveTextView);
-        MaterialTextView removeUselessSpacesTextView = inflatedView.findViewById(R.id.removeUselessSpaceTextView);
+        MaterialTextView caseSensitiveTextView =
+                inflatedView.findViewById(R.id.caseSensitiveTextView);
+        MaterialTextView removeUselessSpacesTextView =
+                inflatedView.findViewById(R.id.removeUselessSpaceTextView);
 
-        ViewUtils.setBooleanView(parent.getContext(), caseSensitiveTextView, isInSettings(CASE_SENSITIVE));
-        ViewUtils.setBooleanView(parent.getContext(), removeUselessSpacesTextView, isInSettings(REMOVE_USELESS_SPACES));
+        ViewUtils.setBooleanView(parent.getContext(),
+                caseSensitiveTextView, isInSettings(CASE_SENSITIVE));
+        ViewUtils.setBooleanView(parent.getContext(),
+                removeUselessSpacesTextView, isInSettings(REMOVE_USELESS_SPACES));
     }
 
     @NonNull
     @Override
     public View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
-        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_edit_string, parent, true);
+        View inflatedView =
+                layoutInflater.inflate(R.layout.fragment_column_settings_edit_string, parent, true);
 
-        MaterialCheckBox caseSensitiveCheckBox = inflatedView.findViewById(R.id.caseSensitiveCheckBox);
-        MaterialCheckBox removeUselessSpacesCheckBox = inflatedView.findViewById(R.id.removeUselessSpaceCheckBox);
+        MaterialCheckBox caseSensitiveCheckBox =
+                inflatedView.findViewById(R.id.caseSensitiveCheckBox);
+        MaterialCheckBox removeUselessSpacesCheckBox =
+                inflatedView.findViewById(R.id.removeUselessSpaceCheckBox);
 
         caseSensitiveCheckBox.setChecked(isInSettings(CASE_SENSITIVE));
         removeUselessSpacesCheckBox.setChecked(isInSettings(REMOVE_USELESS_SPACES));
@@ -116,8 +125,10 @@ public class ColumnString extends IntSettingsColumn {
 
     @Override
     public void setEditColumnSettings(View columnSettingsView) {
-        MaterialCheckBox caseSensitiveCheckBox = columnSettingsView.findViewById(R.id.caseSensitiveCheckBox);
-        MaterialCheckBox removeUselessSpacesCheckBox = columnSettingsView.findViewById(R.id.removeUselessSpaceCheckBox);
+        MaterialCheckBox caseSensitiveCheckBox =
+                columnSettingsView.findViewById(R.id.caseSensitiveCheckBox);
+        MaterialCheckBox removeUselessSpacesCheckBox =
+                columnSettingsView.findViewById(R.id.removeUselessSpaceCheckBox);
 
         setSettings(CASE_SENSITIVE, caseSensitiveCheckBox.isChecked());
         setSettings(REMOVE_USELESS_SPACES, removeUselessSpacesCheckBox.isChecked());
@@ -139,13 +150,14 @@ public class ColumnString extends IntSettingsColumn {
     }
 
     @Override
-    public void writeXmlHeader(OutputStream fileOutputStream) throws IOException {
+    public void writeXml(OutputStream fileOutputStream) throws IOException {
         fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_DEFAULT_VALUE,
                 defaultValue).getBytes());
     }
 
     @Override
-    void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
+    protected void readColumnXmlTag(XmlPullParser parser)
+            throws IOException, XmlPullParserException {
         if (FileManager.TAG_DEFAULT_VALUE.equals(parser.getName())) {
             defaultValue = XmlLoader.readText(parser);
         } else {
@@ -162,11 +174,17 @@ public class ColumnString extends IntSettingsColumn {
         }
     }
 
-    static ColumnString privateCopyColumn(ColumnString baseColumn) {
+    @Override
+    public Column copyColumn() {
         ColumnString newColumn = new ColumnString();
-        newColumn .defaultValue = baseColumn.defaultValue;
-        IntSettingsColumn.privateCopyColumn(baseColumn, newColumn);
+        copyColumn(newColumn);
         return newColumn;
+    }
+
+    @Override
+    protected void copyColumn(Column newColumn) {
+        super.copyColumn(newColumn);
+        ((ColumnString) newColumn).defaultValue = defaultValue;
     }
 
     @Override

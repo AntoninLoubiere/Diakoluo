@@ -80,7 +80,7 @@ public class XmlSaver {
         fileOutputStream.write(getCoupleBeacon(FileManager.TAG_DESCRIPTION,
                 column.getDescription()).getBytes());
 
-        column.writeXmlHeader(fileOutputStream);
+        column.writeXml(fileOutputStream);
 
         fileOutputStream.write(getEndBeacon(FileManager.TAG_COLUMN).getBytes());
     }

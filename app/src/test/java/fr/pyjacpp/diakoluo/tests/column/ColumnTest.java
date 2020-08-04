@@ -74,25 +74,23 @@ public class ColumnTest {
     public void initializeDefaultValue() {
         ColumnString columnString = new ColumnString();
         assertNull(columnString.getDefaultValue());
-        columnString.initializeChildValue();
+        columnString.initialize("", "");
         assertNotNull(columnString.getDefaultValue());
 
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column newColumn = Column.newColumn(inputType);
-            newColumn.initializeChildValue();
             assertNotNull(newColumn.getDefaultValue());
         }
     }
 
     @Test
     public void isValid() {
-        Column column = new ColumnString();
-        assertFalse(column.isValid());
-        column.setName("Test");
-        column.setDescription("Test");
-        column.initializeChildValue();
-        assertTrue(column.isValid());
-
+        for (ColumnInputType inputType : ColumnInputType.values()) {
+            Column column = Column.newColumn(inputType, null, null);
+            assertFalse(column.isValid());
+            column = Column.newColumn(inputType, "Test", "Test");
+            assertTrue(column.isValid());
+        }
     }
 
     @Test
@@ -113,7 +111,7 @@ public class ColumnTest {
     public void copyColumn() {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column column = Column.newColumn(inputType);
-            Column column1 = Column.copyColumn(column);
+            Column column1 = column.copyColumn();
 
             assertNotSame(inputType.name(), column, column1);
             assertEquals(inputType.name(), column, column1);
@@ -122,7 +120,8 @@ public class ColumnTest {
 
     @Test
     public void updateCells() {
-        fr.pyjacpp.diakoluo.tests.Test excepted = new fr.pyjacpp.diakoluo.tests.Test("Test", "Test");
+        fr.pyjacpp.diakoluo.tests.Test excepted = new fr.pyjacpp.diakoluo.tests.Test("Test",
+                "Test");
         fr.pyjacpp.diakoluo.tests.Test test = new fr.pyjacpp.diakoluo.tests.Test("Test", "Test");
         DataRow exceptedRow = new DataRow();
         DataRow row = new DataRow();
@@ -135,15 +134,20 @@ public class ColumnTest {
             excepted.addColumn(column);
             test.addColumn(column1);
             excepted.addColumn(column1);
-            row.getListCells().put(column, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column)));
-            exceptedRow.getListCells().put(column, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column)));
-            row.getListCells().put(column1, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column1)));
-            exceptedRow.getListCells().put(column1, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column1)));
+            row.getListCells().put(column, DefaultTest.setTestValue(
+                    DataCell.newCellWithDefaultValue(column)));
+            exceptedRow.getListCells().put(column, DefaultTest.setTestValue(
+                    DataCell.newCellWithDefaultValue(column)));
+            row.getListCells().put(column1, DefaultTest.setTestValue(
+                    DataCell.newCellWithDefaultValue(column1)));
+            exceptedRow.getListCells().put(column1, DefaultTest.setTestValue(
+                    DataCell.newCellWithDefaultValue(column1)));
 
             column.updateCells(test, column);
             column1.updateCells(test, column1);
 
-            assertEquals(inputType.name(), excepted, test); // assert that no data is lost when migrate is use
+            assertEquals(inputType.name(), excepted, test); // assert that no data is lost when
+            // migrate is use
         }
     }
 }

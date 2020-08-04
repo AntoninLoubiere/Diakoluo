@@ -51,20 +51,20 @@ public class ColumnList extends IntSettingsColumn {
     private static final String TAG_VALUE = "value";
 
     protected ColumnList() {
-        super();
+        super(ColumnInputType.List);
     }
 
     @Override
-    void initialize() {
+    public void initialize() {
         super.initialize();
         defaultValue = -1;
         values = null;
         settings = -1;
-        inputType = ColumnInputType.List;
     }
 
     @Override
-    public void initializeChildValue() {
+    public void initialize(String name, String description) {
+        super.initialize(name, description);
         defaultValue = 0;
         values = new ArrayList<>();
         settings = DEFAULT_SETTINGS;
@@ -133,7 +133,7 @@ public class ColumnList extends IntSettingsColumn {
     }
 
     @Override
-    public View showColumnEditValue(Context context, @Nullable Object defaultValue) {
+    public View showEditValueView(Context context, @Nullable Object defaultValue) {
         Spinner spinner = new Spinner(context);
         spinner.setAdapter(new ArrayAdapter<>(context,
                 android.R.layout.simple_spinner_dropdown_item, values));
@@ -143,7 +143,13 @@ public class ColumnList extends IntSettingsColumn {
     }
 
     @Override
-    public void writeXmlHeader(OutputStream fileOutputStream) throws IOException {
+    public Object getValueFromView(View view) {
+        Spinner spinner = (Spinner) view;
+        return spinner.getSelectedItemPosition();
+    }
+
+    @Override
+    public void writeXml(OutputStream fileOutputStream) throws IOException {
         fileOutputStream.write(XmlSaver.getStartBeacon(TAG_VALUES).getBytes());
         for (int i = 0, valuesSize = values.size(); i < valuesSize; i++) {
             fileOutputStream.write(XmlSaver.getCoupleBeacon(TAG_VALUE,
@@ -153,7 +159,8 @@ public class ColumnList extends IntSettingsColumn {
     }
 
     @Override
-    void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
+    protected void readColumnXmlTag(XmlPullParser parser)
+            throws IOException, XmlPullParserException {
         if (TAG_VALUES.equals(parser.getName())) {
             readXmlValuesTag(parser);
         } else {
@@ -177,12 +184,19 @@ public class ColumnList extends IntSettingsColumn {
         }
     }
 
-    static ColumnList privateCopyColumn(ColumnList baseColumn) {
-        ColumnList newColumn = new ColumnList();
-        newColumn.defaultValue = baseColumn.defaultValue;
-        newColumn.values = new ArrayList<>(baseColumn.values);
-        IntSettingsColumn.privateCopyColumn(baseColumn, newColumn);
-        return newColumn;
+    @Override
+    public Column copyColumn() {
+        Column column = new ColumnList();
+        copyColumn(column);
+        return column;
+    }
+
+    @Override
+    protected void copyColumn(Column newColumn) {
+        super.copyColumn(newColumn);
+        ColumnList column = (ColumnList) newColumn;
+        column.defaultValue = defaultValue;
+        column.values = new ArrayList<>(values);
     }
 
     @Override

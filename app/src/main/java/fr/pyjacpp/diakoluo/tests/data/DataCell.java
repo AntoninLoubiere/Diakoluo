@@ -45,6 +45,7 @@ import fr.pyjacpp.diakoluo.tests.column.Column;
 /**
  * Cell that contain a value of the test.
  * Can have different type (String, list, int)...
+ * @see Column
  */
 public abstract class DataCell {
     /**
@@ -161,7 +162,7 @@ public abstract class DataCell {
     public static void setDefaultCellFromView(View view, DataRow row, Column column) {
         DataCell cell = newCellWithDefaultValue(column);
         row.getListCells().put(column, cell);
-        cell.setValueFromView(view);
+        column.setValueFromView(cell, view);
     }
 
     /**
@@ -208,23 +209,6 @@ public abstract class DataCell {
      * @param value the value (type variable)
      */
     public abstract void setValue(Object value);
-
-    /**
-     * Get the value of the data cell from a view (type depend on the column)
-     * @param view the view which contain the value of the cell
-     * @return the value in the view (type variable)
-     * @see #setValueFromView(View)
-     */
-    public abstract Object getValueFromView(View view);
-
-    /**
-     * Set the value from a view.
-     * @param view the view which contain the value
-     * @see #getValueFromView(View)
-     */
-    public void setValueFromView(View view) {
-        setValue(getValueFromView(view));
-    }
 
     /**
      * Get the migration string to migrate from different cell types (ex: String -> List).
@@ -282,7 +266,7 @@ public abstract class DataCell {
 
     /**
      * Show the value to the user (view only).
-     * @see Column#showColumnEditValue(Context, Object)
+     * @see Column#showEditValueView(Context, Object)
      * @param context the context to show the value cell
      * @param column the column attached to the cell
      * @return the view which contain the value
