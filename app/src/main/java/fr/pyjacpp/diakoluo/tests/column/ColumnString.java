@@ -94,22 +94,30 @@ public class ColumnString extends Column {
 
     @Override
     public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
-        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_string, parent, true);
+        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_string,
+                parent, true);
 
-        MaterialTextView caseSensitiveTextView = inflatedView.findViewById(R.id.caseSensitiveTextView);
-        MaterialTextView removeUselessSpacesTextView = inflatedView.findViewById(R.id.removeUselessSpaceTextView);
+        MaterialTextView caseSensitiveTextView =
+                inflatedView.findViewById(R.id.caseSensitiveTextView);
+        MaterialTextView removeUselessSpacesTextView =
+                inflatedView.findViewById(R.id.removeUselessSpaceTextView);
 
-        ViewUtils.setBooleanView(parent.getContext(), caseSensitiveTextView, isInSettings(CASE_SENSITIVE));
-        ViewUtils.setBooleanView(parent.getContext(), removeUselessSpacesTextView, isInSettings(REMOVE_USELESS_SPACES));
+        ViewUtils.setBooleanView(parent.getContext(), caseSensitiveTextView,
+                isInSettings(CASE_SENSITIVE));
+        ViewUtils.setBooleanView(parent.getContext(), removeUselessSpacesTextView,
+                isInSettings(REMOVE_USELESS_SPACES));
     }
 
     @NonNull
     @Override
     public View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
-        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_edit_string, parent, true);
+        View inflatedView =
+                layoutInflater.inflate(R.layout.fragment_column_settings_edit_string, parent, true);
 
-        MaterialCheckBox caseSensitiveCheckBox = inflatedView.findViewById(R.id.caseSensitiveCheckBox);
-        MaterialCheckBox removeUselessSpacesCheckBox = inflatedView.findViewById(R.id.removeUselessSpaceCheckBox);
+        MaterialCheckBox caseSensitiveCheckBox =
+                inflatedView.findViewById(R.id.caseSensitiveCheckBox);
+        MaterialCheckBox removeUselessSpacesCheckBox =
+                inflatedView.findViewById(R.id.removeUselessSpaceCheckBox);
 
         caseSensitiveCheckBox.setChecked(isInSettings(CASE_SENSITIVE));
         removeUselessSpacesCheckBox.setChecked(isInSettings(REMOVE_USELESS_SPACES));
@@ -119,8 +127,10 @@ public class ColumnString extends Column {
 
     @Override
     public void setEditColumnSettings(View columnSettingsView) {
-        MaterialCheckBox caseSensitiveCheckBox = columnSettingsView.findViewById(R.id.caseSensitiveCheckBox);
-        MaterialCheckBox removeUselessSpacesCheckBox = columnSettingsView.findViewById(R.id.removeUselessSpaceCheckBox);
+        MaterialCheckBox caseSensitiveCheckBox =
+                columnSettingsView.findViewById(R.id.caseSensitiveCheckBox);
+        MaterialCheckBox removeUselessSpacesCheckBox =
+                columnSettingsView.findViewById(R.id.removeUselessSpaceCheckBox);
 
         setSettings(CASE_SENSITIVE, caseSensitiveCheckBox.isChecked());
         setSettings(REMOVE_USELESS_SPACES, removeUselessSpacesCheckBox.isChecked());
