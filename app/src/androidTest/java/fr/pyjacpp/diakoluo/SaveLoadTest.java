@@ -74,7 +74,8 @@ public class SaveLoadTest {
             assertEquals(test, loadedTest);
             assertNotSame(test, loadedTest);
 
-            loadedTest = XmlLoader.load(context.getResources().getAssets().open(DiakoluoApplication.DEFAULT_TEST));
+            loadedTest = XmlLoader.load(context.getResources().getAssets()
+                    .open(DiakoluoApplication.DEFAULT_TEST));
             assertEquals(test, loadedTest);
             assertNotSame(test, loadedTest);
 
@@ -108,8 +109,10 @@ public class SaveLoadTest {
                 outputStream.close();
                 outputStream = new FileOutputStream(file);
 
-                CsvSaver.save(outputStream, test, true, true, CsvSaver.DEFAULT_LINE_SEPARATOR, separator);
-                loadedTest = CsvLoader.load(context, new FileInputStream(file), separator.charAt(0), true, true, test.getName());
+                CsvSaver.save(outputStream, test, true, true,
+                        CsvSaver.DEFAULT_LINE_SEPARATOR, separator);
+                loadedTest = CsvLoader.load(context, new FileInputStream(file), separator.charAt(0),
+                        true, true, test.getName());
 
                 assertNotNull(loadedTest);
 
