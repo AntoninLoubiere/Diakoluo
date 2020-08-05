@@ -34,6 +34,9 @@ public class DataRow {
     private HashMap<Column, DataCell> listCells;
     private boolean selected;
 
+    /**
+     * Default constructor.
+     */
     public DataRow() {
         selected = true;
         listCells = new HashMap<>();
@@ -43,6 +46,12 @@ public class DataRow {
         this.selected = selected;
     }
 
+    /**
+     * Copy a data row need the new list of column and the previous list of column.
+     * @param dataRow the dataRow to copy
+     * @param newListColumn the new list of columns
+     * @param previousListColumn the previous list of columns
+     */
     public DataRow(DataRow dataRow, ArrayList<Column> newListColumn,
                    ArrayList<Column> previousListColumn) {
         // ASSERT if (newListColumn.size() != previousListColumn.size()) throw new AssertionError();
@@ -54,6 +63,10 @@ public class DataRow {
         }
     }
 
+    /**
+     * Get list of cells.
+     * @return the list of cells
+     */
     public HashMap<Column, DataCell> getListCells() {
         return listCells;
     }
@@ -66,6 +79,12 @@ public class DataRow {
         this.selected = selected;
     }
 
+    /**
+     * Write the data row in an xml file.
+     * @param fileOutputStream the file output stream of the file
+     * @param test the test to save
+     * @throws IOException if an exception occur while writing the file
+     */
     public void writeXml(OutputStream fileOutputStream, Test test) throws IOException {
         ArrayList<Column> listColumn = test.getListColumn();
         for (int i = 0, listColumnSize = listColumn.size(); i < listColumnSize; i++) {
@@ -76,6 +95,12 @@ public class DataRow {
         }
     }
 
+    /**
+     * Write the row in a csv file.
+     * @param csvContext the CsvContext to write
+     * @param test the test to save
+     * @throws IOException if an exception occur while writing the file
+     */
     public void writeCsv(CsvSaver.CsvContext csvContext, Test test) throws IOException {
         ArrayList<Column> listColumn = test.getListColumn();
         for (int i = 0, listColumnSize = listColumn.size(); i < listColumnSize; i++) {
