@@ -136,7 +136,7 @@ public class TestFragment extends Fragment {
                                             inflatedView.getContext(), column, answer);
 
                                     answerRow.addView(showValueResponse.getValueView(), params);
-                                    if (!showValueResponse.isAnswerTrue()) {
+                                    if (!showValueResponse.isAnswerRight()) {
                                         addAnswer(column, answerRow, params);
                                     }
                                 }
@@ -161,7 +161,7 @@ public class TestFragment extends Fragment {
                         if (columnShow != null && columnShow) {
                             addAnswer(column, answerRow, params);
                         } else {
-                            View answerEdit = column.showColumnEditValue(
+                            View answerEdit = column.showEditValueView(
                                     inflatedView.getContext(),
                                     testTestContext.getUserAnswer().get(column));
 
@@ -178,7 +178,7 @@ public class TestFragment extends Fragment {
     private void addAnswer(Column column, LinearLayout row, LinearLayout.LayoutParams params) {
         DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
         if (dataCell != null) {
-            View answer = dataCell.showValue(row.getContext());
+            View answer = dataCell.showValue(row.getContext(), column);
             row.addView(answer, params);
             columnViewHashMap.put(column, answer);
         }
@@ -221,7 +221,7 @@ public class TestFragment extends Fragment {
             DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
 
             if (columnShow != null && valueView != null && dataCell != null && !columnShow) {
-                testTestContext.getUserAnswer().put(column, dataCell.getValueFromView(valueView));
+                testTestContext.getUserAnswer().put(column, column.getValueFromView(valueView));
             }
         }
     }

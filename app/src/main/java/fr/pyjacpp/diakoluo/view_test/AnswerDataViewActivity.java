@@ -105,7 +105,8 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
             if (firstCell == null)
                 actionBar.setTitle(R.string.app_name);
             else
-                actionBar.setTitle(firstCell.getStringValue());
+                actionBar.setTitle(firstCell.getStringValue(this,
+                        currentTest.getListColumn().get(0)));
         }
 
         navigationTextView.setText(getString(R.string.navigation_info, answerIndex + 1,
@@ -121,7 +122,7 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
             if (firstCell == null)
                 previousButton.setText(R.string.previous);
             else
-                previousButton.setText(firstCell.getStringValue());
+                previousButton.setText(firstCell.getStringValue(this, currentTest.getListColumn().get(0)));
         } else {
             previousButton.setEnabled(false);
             previousButton.setVisibility(View.GONE);
@@ -136,7 +137,7 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
             if (firstCell == null)
                 nextButton.setText(R.string.next);
             else
-                nextButton.setText(firstCell.getStringValue());
+                nextButton.setText(firstCell.getStringValue(this, currentTest.getListColumn().get(0)));
         } else {
             nextButton.setEnabled(false);
             nextButton.setVisibility(View.GONE);

@@ -85,10 +85,12 @@ public class SaveLoadTest {
             test.addRow(dataRow);
 
             for (ColumnInputType inputType : ColumnInputType.values()) {
-                Column column = Column.newColumn(inputType);
+                Column column = DefaultTest.setTestValue(Column.newColumn(inputType));
+                Column column1 = DefaultTest.setTestValueEmpty(Column.newColumn(inputType));
                 test.addColumn(column);
-                dataRow.getListCells().put(column,
-                        DefaultTest.setTestValue(DataCell.getDefaultValueCell(column)));
+                test.addColumn(column1);
+                dataRow.getListCells().put(column, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column)));
+                dataRow.getListCells().put(column1, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column1)));
             }
 
             outputStream.close();

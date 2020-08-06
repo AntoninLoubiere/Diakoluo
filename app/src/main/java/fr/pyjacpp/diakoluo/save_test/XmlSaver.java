@@ -80,7 +80,7 @@ public class XmlSaver {
         fileOutputStream.write(getCoupleBeacon(FileManager.TAG_DESCRIPTION,
                 column.getDescription()).getBytes());
 
-        column.writeXmlHeader(fileOutputStream);
+        column.writeXml(fileOutputStream);
 
         fileOutputStream.write(getEndBeacon(FileManager.TAG_COLUMN).getBytes());
     }
@@ -93,15 +93,15 @@ public class XmlSaver {
         fileOutputStream.write(getEndBeacon(FileManager.TAG_ROW).getBytes());
     }
 
-    private static String getStartBeacon(String beaconName) {
+    public static String getStartBeacon(String beaconName) {
         return "<" + beaconName + ">";
     }
 
-    private static String getStartBeacon(String beaconName, String attributeName, String attributeValue) {
+    public static String getStartBeacon(String beaconName, String attributeName, String attributeValue) {
         return "<" + beaconName + " " + attributeName + "=\"" + attributeValue + "\">";
     }
 
-    private static String getEndBeacon(String beaconName) {
+    public static String getEndBeacon(String beaconName) {
         return "</" + beaconName + ">";
     }
 

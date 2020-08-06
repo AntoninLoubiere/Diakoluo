@@ -23,7 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public enum ColumnInputType {
-    String;
+    String, List;
 
     public static final ColumnInputType DEFAULT_INPUT_TYPE = String;
 
@@ -32,6 +32,9 @@ public enum ColumnInputType {
         switch (attributeValue) {
             case "String":
                 return String;
+
+            case "List":
+                return List;
 
             default:
                 return null;

@@ -23,93 +23,287 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.view.View;
-import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 
+/**
+ * Cell that contain a value of the test.
+ * Can have different type (String, list, int)...
+ * @see Column
+ */
 public abstract class DataCell {
-    public DataCell(DataCell dataCell) {
+    /**
+     * Create a new instance from a DataCell.
+     * @param dataCell the dataCell to copy
+     */
+    protected DataCell(DataCell dataCell) {
     }
 
-    public DataCell() {
+    /**
+     * Load a DataCell form xml.
+     * @param parser The xml parser
+     */
+    protected DataCell(XmlPullParser parser) {
     }
 
+
+    /**
+     * Default initializer.
+     */
+    protected DataCell() {
+    }
+
+    /**
+     * Copy a DataCell.
+     * @param dataCell the DataCell to copy
+     * @return the DataCell copied
+     */
     public static DataCell copyDataCell(DataCell dataCell) {
         if (dataCell == null) {
             return null;
         } else {
             if (dataCell instanceof DataCellString) {
                 return new DataCellString((DataCellString) dataCell);
+            } else if (dataCell instanceof DataCellList) {
+                return new DataCellList((DataCellList) dataCell);
             } else {
                 throw new IllegalStateException("Unexpected value: " + dataCell.getClass());
             }
         }
     }
 
-    public static DataCell getDefaultValueCell(Column currentColumn) {
+    /**
+     * Create a new cell with default value of the parent column.
+     * The DataCell returned is valid
+     * @param currentColumn the column attached with the DataCell
+     * @return the DataCell created (is valid)
+     */
+    public static DataCell newCellWithDefaultValue(Column currentColumn) {
         switch (currentColumn.getInputType()) {
             case String:
                 return new DataCellString((String) currentColumn.getDefaultValue());
 
+            case List:
+                return new DataCellList((int) currentColumn.getDefaultValue());
+
             default:
-                throw new IllegalStateException("Unexpected value: " + currentColumn.getInputType());
+                throw new IllegalStateException("Unexpected value: " +
+                        currentColumn.getInputType());
         }
     }
 
-    public static void setDefaultCellFromView(View view, DataRow row, Column column) {
-        DataCell cell = getDefaultValueCell(column);
-        row.getListCells().put(column, cell);
-        cell.setValueFromView(view);
+    /**
+     * Create a new cell from another cell (different type).
+     * @param newColumn the new column where the cell will be attached
+     * @param previousColumn the previous cell where the cell was attached
+     * @param previousDataCell the previous data cell
+     * @return the new DataCell
+     */
+    public static DataCell newCellMigrate(Column newColumn, Column previousColumn,
+                                          @NonNull DataCell previousDataCell) {
+        switch (newColumn.getInputType()) {
+            case String:
+                return new DataCellString(newColumn, previousDataCell.getMigrationString(
+                        previousColumn));
+
+            case List:
+                return new DataCellList(newColumn, previousDataCell.getMigrationString(
+                        previousColumn));
+
+            default:
+                throw new IllegalStateException("Unexpected value: " + newColumn.getInputType());
+        }
     }
 
-    public abstract Object getValue();
+    /**
+     * Create a new cell from a xml file.
+     * @param parser the XmlPullParser of the file
+     * @param inputType the input type of the column
+     * @return the new DataCell
+     * @throws IOException if when reading an exception occur
+     * @throws XmlPullParserException if when reading the xml file an exception occur
+     */
+    private static DataCell newCell(XmlPullParser parser, ColumnInputType inputType)
+            throws IOException, XmlPullParserException {
+        switch (inputType) {
+            case String:
+                return new DataCellString(parser);
 
+            case List:
+                return new DataCellList(parser);
+
+            default:
+                throw new IllegalStateException("Unexpected value: " + inputType);
+        }
+    }
+
+    /**
+     * Create a new cell and initialize it's value from a view.
+     * @param view the view which contains the value
+     * @param row the row where the cell will be added
+     * @param column the column attached to the new cell
+     */
+    public static void setDefaultCellFromView(View view, DataRow row, Column column) {
+        DataCell cell = newCellWithDefaultValue(column);
+        row.getListCells().put(column, cell);
+        column.setValueFromView(cell, view);
+    }
+
+    /**
+     * Get the class from the column type.
+     * @param inputType the column input type
+     * @return the class referring to the column type
+     */
     public static Class<? extends DataCell> getClassByColumnType(ColumnInputType inputType) {
         switch (inputType) {
             case String:
                 return DataCellString.class;
+
+            case List:
+                return DataCellList.class;
 
             default:
                 throw new RuntimeException("Unknown inputType !");
         }
     }
 
-    public abstract void setValue(Object object);
+    /**
+     * Read a cell from a xml file
+     * @param parser the parser of the xml file
+     * @param inputType the column input type
+     * @return the new DataCell
+     * @throws IOException if while reading the file an exception occur
+     * @throws XmlPullParserException if while reading an exception occur
+     */
+    @NonNull
+    public static DataCell readCell(XmlPullParser parser, ColumnInputType inputType)
+            throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_CELL);
+        return DataCell.newCell(parser, inputType);
+    }
 
-    public View showValue(Context context) {
+    /**
+     * Get the value of the cell (type depend on the column).
+     * @return the value (type variable)
+     */
+    public abstract Object getValue();
+
+    /**
+     * Set the value of the cell (type depend on the column).
+     * @param value the value (type variable)
+     */
+    public abstract void setValue(Object value);
+
+    /**
+     * Get the migration string to migrate from different cell types (ex: String -> List).
+     * @param column the column attached with the cell
+     * @return the migration string
+     */
+    @NonNull
+    protected abstract String getMigrationString(Column column);
+
+    /**
+     * Get the string representation of the value.
+     * @param context the context to get a user response (if error ex: list empty) or if null get
+     *                a empty string
+     * @param column the column attached with the cell
+     * @return the string representation of the value
+     */
+    @NonNull
+    public abstract String getStringValue(@Nullable Context context, Column column);
+
+    /**
+     * Get the string representation of the answer. Different from
+     * {@link #getStringValue(Context, Column)} because it does not use the value of the cell but
+     * the answer instead.
+     * @param context the context to get a user response (if error ex: list empty) or if null get a
+     *                empty string
+     * @param column the column attached with the cell
+     * @param answer a value object
+     * @return the string representation of the answer
+     */
+    @NonNull
+    protected abstract String getStringValue(@Nullable Context context, Column column,
+                                             Object answer);
+
+    /**
+     * Get the value to write in csv file.
+     * @param column the column attached to file
+     * @return the value to write in csv file
+     */
+    @NonNull
+    public abstract String getCsvValue(Column column);
+
+    /**
+     * Set the value from the value get in csv file.
+     * @param lineCell the value write in csv file
+     * @param column the column attached to the cell
+     */
+    public abstract void setValueFromCsv(String lineCell, Column column);
+
+    /**
+     * Write the cell in the xml file.
+     * @param fileOutputStream the xml file output stream
+     * @throws IOException if an error occur while reading the file
+     */
+    public abstract void writeXml(OutputStream fileOutputStream) throws IOException;
+
+    /**
+     * Show the value to the user (view only).
+     * @see Column#showEditValueView(Context, Object)
+     * @param context the context to show the value cell
+     * @param column the column attached to the cell
+     * @return the view which contain the value
+     */
+    @NonNull
+    public View showValue(Context context, Column column) {
         MaterialTextView valueTextView = new MaterialTextView(context);
         valueTextView.setTextAppearance(context, R.style.Body0);
-        valueTextView.setText(getStringValue());
+        valueTextView.setText(getStringValue(context, column));
         return valueTextView;
     }
 
+    /**
+     * Show the value formatted given by the user in test. Show the value stroked if the user has
+     * wrong, green or red...
+     * @see #showValue(Context, Column, Object)
+     * @param context the context to show the value cell
+     * @param column the column attached to the cell
+     * @param answer the answer of the user
+     * @return the view which contain the value of the user
+     */
     public ShowValueResponse showValue(Context context, Column column, Object answer) {
-        String answerString = getStringFromObjectValue(answer);
+        String answerString = getStringValue(context, column, answer);
 
-        MaterialTextView valueTextView = (MaterialTextView) showValue(context);
+        MaterialTextView valueTextView = (MaterialTextView) showValue(context, column);
         boolean answerIsTrue = column.verifyAnswer(this, answer);
 
         if (answerIsTrue) {
             valueTextView.setTextColor(context.getResources().getColor(R.color.trueAnswer));
         } else {
-            if (answerString == null || answerString.length() <= 0) {
+            if (answerString.length() <= 0) {
                 valueTextView.setText(R.string.skip);
                 valueTextView.setTypeface(null, Typeface.ITALIC);
             } else {
-                valueTextView.setPaintFlags(valueTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                valueTextView.setText(getStringValue(answer));
+                valueTextView.setPaintFlags(valueTextView.getPaintFlags() |
+                        Paint.STRIKE_THRU_TEXT_FLAG);
+                valueTextView.setText(getStringValue(context, column, answer));
             }
 
             valueTextView.setTextColor(context.getResources().getColor(R.color.wrongAnswer));
@@ -118,54 +312,49 @@ public abstract class DataCell {
         return new ShowValueResponse(valueTextView, answerIsTrue);
     }
 
-    public TextInputLayout showEditValue(Context context, Column column) {
-        return column.showColumnEditValue(context, getStringValue());
-    }
-
-    private String getStringFromObjectValue(Object answer) {
-        return (String) answer;
-    }
-
-    public abstract String getStringValue();
-
-    protected abstract String getStringValue(Object answer);
-
-    public void setValueFromView(View view) {
-        setValue(getValueFromView(view));
-    }
-
-    public Object getValueFromView(View view) {
-        TextInputLayout inputLayout = (TextInputLayout) view;
-        EditText editText = inputLayout.getEditText();
-        if (editText != null)
-            return editText.getText().toString();
-        else
-            return null;
-    }
-
-    public void verifyAndScoreAnswer(TestTestContext testTestContext, Column parent, Object answer) {
+    /**
+     * Verify if the answer is correct and give score depending
+     * @param testTestContext the test context
+     * @param parent the column attached with the cell
+     * @param answer the answer given by the user
+     */
+    public void verifyAndScoreAnswer(TestTestContext testTestContext, Column parent,
+                                     Object answer) {
         if (parent.verifyAnswer(this, answer))
             testTestContext.addScore(1);
     }
 
-    public abstract void setValueFromCsv(String lineCell);
 
-    public abstract void writeXml(OutputStream fileOutputStream) throws IOException;
-
+    /**
+     * An response object in test
+     */
     public static class ShowValueResponse {
-        ShowValueResponse(View valueView, boolean answerIsTrue) {
+        /**
+         * Constructor
+         * @param valueView the view which contain the value
+         * @param answerIsRight if the answer is right
+         */
+        ShowValueResponse(View valueView, boolean answerIsRight) {
             this.valueView = valueView;
-            this.answerIsTrue = answerIsTrue;
+            this.answerIsTrue = answerIsRight;
         }
 
         final View valueView;
         final boolean answerIsTrue;
 
+        /**
+         * Get the view which contain the value to show
+         * @return the view to show
+         */
         public View getValueView() {
             return valueView;
         }
 
-        public boolean isAnswerTrue() {
+        /**
+         * Get if the answer is right
+         * @return if the answer is right
+         */
+        public boolean isAnswerRight() {
             return answerIsTrue;
         }
     }

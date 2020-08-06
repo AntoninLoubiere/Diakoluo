@@ -45,7 +45,8 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
-public class ColumnString extends Column {
+
+public class ColumnString extends IntSettingsColumn {
     private String defaultValue;
 
     private static final int CASE_SENSITIVE = 1;
@@ -53,16 +54,12 @@ public class ColumnString extends Column {
 
     private static final int DEFAULT_SETTINGS = REMOVE_USELESS_SPACES;
 
-    private static final String SETTINGS_TAG = "settings";
-
-    public int settings = -1;
-
     ColumnString() {
-        super();
+        super(ColumnInputType.String);
     }
 
     @Override
-    void initialize() {
+    public void initialize() {
         super.initialize();
         defaultValue = null;
         settings = -1;
@@ -70,7 +67,8 @@ public class ColumnString extends Column {
     }
 
     @Override
-    public void initializeChildValue() {
+    public void initialize(String name, String description) {
+        super.initialize(name, description);
         defaultValue = "";
         settings = DEFAULT_SETTINGS;
     }
@@ -102,10 +100,10 @@ public class ColumnString extends Column {
         MaterialTextView removeUselessSpacesTextView =
                 inflatedView.findViewById(R.id.removeUselessSpaceTextView);
 
-        ViewUtils.setBooleanView(parent.getContext(), caseSensitiveTextView,
-                isInSettings(CASE_SENSITIVE));
-        ViewUtils.setBooleanView(parent.getContext(), removeUselessSpacesTextView,
-                isInSettings(REMOVE_USELESS_SPACES));
+        ViewUtils.setBooleanView(parent.getContext(),
+                caseSensitiveTextView, isInSettings(CASE_SENSITIVE));
+        ViewUtils.setBooleanView(parent.getContext(),
+                removeUselessSpacesTextView, isInSettings(REMOVE_USELESS_SPACES));
     }
 
     @NonNull
@@ -151,40 +149,19 @@ public class ColumnString extends Column {
         return super.isValid() && defaultValue != null && settings >= 0;
     }
 
-    private boolean isInSettings(int parameter) {
-        return (settings & parameter) == parameter;
-    }
-
-    private void setSettings(int parameter, boolean value) {
-        if (value) {
-            settings = settings | parameter;
-        } else {
-            settings = settings & ~ parameter;
-        }
-    }
-
     @Override
-    public void writeXmlHeader(OutputStream fileOutputStream) throws IOException {
+    public void writeXml(OutputStream fileOutputStream) throws IOException {
         fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_DEFAULT_VALUE,
                 defaultValue).getBytes());
-        fileOutputStream.write(XmlSaver.getCoupleBeacon(SETTINGS_TAG,
-                String.valueOf(settings)).getBytes());
     }
 
     @Override
-    void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
-        switch (parser.getName()) {
-            case FileManager.TAG_DEFAULT_VALUE:
-                defaultValue = XmlLoader.readText(parser);
-                break;
-
-            case SETTINGS_TAG:
-                settings = XmlLoader.readInt(parser);
-                break;
-
-            default:
-                super.readColumnXmlTag(parser);
-                break;
+    protected void readColumnXmlTag(XmlPullParser parser)
+            throws IOException, XmlPullParserException {
+        if (FileManager.TAG_DEFAULT_VALUE.equals(parser.getName())) {
+            defaultValue = XmlLoader.readText(parser);
+        } else {
+            super.readColumnXmlTag(parser);
         }
     }
 
@@ -197,19 +174,24 @@ public class ColumnString extends Column {
         }
     }
 
-    static ColumnString privateCopyColumn(ColumnString baseColumn) {
+    @Override
+    public Column copyColumn() {
         ColumnString newColumn = new ColumnString();
-        newColumn.defaultValue = baseColumn.defaultValue;
-        newColumn.settings = baseColumn.settings;
-        Column.privateCopyColumn(baseColumn, newColumn);
+        copyColumn(newColumn);
         return newColumn;
+    }
+
+    @Override
+    protected void copyColumn(Column newColumn) {
+        super.copyColumn(newColumn);
+        ((ColumnString) newColumn).defaultValue = defaultValue;
     }
 
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof ColumnString && super.equals(obj)) {
             ColumnString cS = (ColumnString) obj;
-            return cS.defaultValue.equals(defaultValue) && cS.settings == settings;
+            return cS.defaultValue.equals(defaultValue);
         }
         return false;
     }

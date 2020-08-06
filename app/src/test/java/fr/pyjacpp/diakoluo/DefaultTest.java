@@ -7,7 +7,9 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.column.Column;
+import fr.pyjacpp.diakoluo.tests.column.ColumnList;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
+import fr.pyjacpp.diakoluo.tests.data.DataCellList;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 public class DefaultTest extends Test {
@@ -633,11 +635,32 @@ public class DefaultTest extends Test {
         super(defaultTest);
     }
 
-    public static void setTestValue(DataCell dataCell) {
+    public static DataCell setTestValue(DataCell dataCell) {
         if (dataCell instanceof DataCellString) {
             dataCell.setValue("Test Value");
+            return dataCell;
+        } else if (dataCell instanceof DataCellList) {
+            dataCell.setValue(1);
+            return dataCell;
         } else {
             throw new IllegalStateException("This DataCell isn't implemented");
         }
+    }
+
+    public static Column setTestValue(Column newColumn)  {
+        if (newColumn instanceof ColumnList) {
+            ArrayList<String> values = new ArrayList<>();
+            values.add("Test");
+            ((ColumnList) newColumn).setValues(values);
+        }
+
+        return newColumn;
+    }
+
+    public static Column setTestValueEmpty(Column newColumn) {
+        if (newColumn instanceof ColumnList) {
+            return setTestValue(newColumn); // some problem with empty column list
+        }
+        return newColumn;
     }
 }

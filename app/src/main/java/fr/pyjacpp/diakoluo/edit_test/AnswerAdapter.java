@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder> {
@@ -78,12 +79,13 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
         Test currentTest = DiakoluoApplication.getCurrentEditTest(context);
 
         if (currentTest.getNumberColumn() >= 1) {
+            Column column = currentTest.getListColumn().get(0);
             DataCell dataCell = currentTest.getListRow().get(position).getListCells().get(
-                    currentTest.getListColumn().get(0)
+                    column
             );
             if (dataCell != null)
                 holder.textView.setText(
-                        dataCell.getStringValue()
+                        dataCell.getStringValue(context, column)
                 );
             else
                 holder.textView.setText(

@@ -24,16 +24,19 @@ import org.junit.Test;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 public class DataCellTest {
 
     @Test
     public void copyDataCell() {
         for (ColumnInputType inputType : ColumnInputType.values()) {
-            DataCell dataCell = DataCell.getDefaultValueCell(Column.newColumn(inputType));
+            DataCell dataCell = DataCell.newCellWithDefaultValue(Column.newColumn(inputType));
             DataCell dataCell1 = DataCell.copyDataCell(dataCell);
-            assertNotSame(dataCell, dataCell1);
+            assertNotSame(inputType.name(), dataCell, dataCell1);
         }
     }
 
@@ -41,8 +44,8 @@ public class DataCellTest {
     public void value() {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column currentColumn = Column.newColumn(inputType);
-            DataCell dataCell = DataCell.getDefaultValueCell(currentColumn);
-            assertEquals(currentColumn.getDefaultValue(), dataCell.getValue());
+            DataCell dataCell = DataCell.newCellWithDefaultValue(currentColumn);
+            assertEquals(inputType.name(), currentColumn.getDefaultValue(), dataCell.getValue());
         }
     }
 
@@ -50,8 +53,8 @@ public class DataCellTest {
     public void getStringValue() {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column currentColumn = Column.newColumn(inputType);
-            DataCell dataCell = DataCell.getDefaultValueCell(currentColumn);
-            assertNotNull(dataCell.getStringValue());
+            DataCell dataCell = DataCell.newCellWithDefaultValue(currentColumn);
+            assertNotNull(inputType.name(), dataCell.getStringValue(null, currentColumn));
         }
     }
 
@@ -59,8 +62,8 @@ public class DataCellTest {
     public void verifyAnswer() {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column currentColumn = Column.newColumn(inputType);
-            DataCell dataCell = DataCell.getDefaultValueCell(currentColumn);
-            assertTrue(currentColumn.verifyAnswer(dataCell, dataCell.getValue()));
+            DataCell dataCell = DataCell.newCellWithDefaultValue(currentColumn);
+            assertTrue(inputType.name(), currentColumn.verifyAnswer(dataCell, dataCell.getValue()));
         }
     }
 }

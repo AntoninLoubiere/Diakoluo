@@ -96,8 +96,8 @@ public class CsvLoader {
 
                 for (int i = 0; i < numberColumns; i++) {
                     Column currentColumn = columns.get(i);
-                    DataCell cell = DataCell.getDefaultValueCell(currentColumn);
-                    cell.setValueFromCsv(line.get(i));
+                    DataCell cell = DataCell.newCellWithDefaultValue(currentColumn);
+                    cell.setValueFromCsv(line.get(i), currentColumn);
                     listCells.put(currentColumn, cell);
                 }
                 rows.add(row);
@@ -122,20 +122,16 @@ public class CsvLoader {
     private static void createColumns(CsvContext csvContext, boolean loadColumnName, boolean loadColumnType, int numberColumns, ArrayList<Column> columns, ArrayList<String> columnNames, ArrayList<String> columnType) {
         for (int i = 0; i < numberColumns; i++) {
             Column column;
+            String columnName = loadColumnName ?
+                    columnNames.get(i) :
+                    csvContext.context.getString(R.string.default_column_name, i + 1);
+
             if (loadColumnType) {
                 ColumnInputType cit = ColumnInputType.get(columnType.get(i));
-                column = Column.newColumn(cit == null ? ColumnInputType.DEFAULT_INPUT_TYPE : cit);
+                column = Column.newColumn(cit == null ? ColumnInputType.DEFAULT_INPUT_TYPE : cit, columnName, "");
             } else {
-                column = Column.newColumn(ColumnInputType.DEFAULT_INPUT_TYPE);
+                column = Column.newColumn(ColumnInputType.DEFAULT_INPUT_TYPE, columnName, "");
             }
-
-            if (loadColumnName) {
-                column.setName(columnNames.get(i));
-            } else {
-                column.setName(csvContext.context.getString(R.string.default_column_name, i + 1));
-            }
-
-            column.initializeChildValue();
 
             columns.add(column);
         }
