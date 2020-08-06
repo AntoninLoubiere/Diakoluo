@@ -20,6 +20,7 @@
 package fr.pyjacpp.diakoluo.test_tests;
 
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,27 +57,58 @@ public class TestScoreFragment extends Fragment {
                              Bundle savedInstanceState) {
         View inflatedView = inflater.inflate(R.layout.fragment_test_score, container, false);
 
-        TextView primaryScoreTextView = inflatedView.findViewById(R.id.scoreTextView);
-        TextView secondaryScoreTextView = inflatedView.findViewById(R.id.secondaryScoreTextView);
+        final TextView primaryScoreTextView = inflatedView.findViewById(R.id.scoreTextView);
+        final TextView secondaryScoreTextView = inflatedView.findViewById(R.id.secondaryScoreTextView);
         scoreProgressBar = inflatedView.findViewById(R.id.scoreProgressBar);
         Button restartButton = inflatedView.findViewById(R.id.restartButton);
         Button mainMenuButton = inflatedView.findViewById(R.id.mainMenuButton);
 
         scoreProgressBar.setMax(testTestContext.getMaxProgressScore());
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ObjectAnimator animation = ObjectAnimator.ofInt(scoreProgressBar, "progress", testTestContext.getProgressScore());
-                animation.setDuration(3000);
-                animation.setInterpolator(new DecelerateInterpolator());
-                animation.start();
-                scoreProgressBar.setProgress(testTestContext.getProgressScore());
-            }
-        }, 1000);
-        secondaryScoreTextView.setText(getString(R.string.score_precise, testTestContext.getScore(), testTestContext.getMaxScore()));
+        final int maxScore = testTestContext.getMaxScore();
+        if (savedInstanceState == null) {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ObjectAnimator animation = ObjectAnimator.ofInt(scoreProgressBar, "progress", testTestContext.getProgressScore());
+                    animation.setDuration(3000);
+                    animation.setInterpolator(new DecelerateInterpolator());
+                    animation.start();
+                    scoreProgressBar.setProgress(testTestContext.getProgressScore());
 
-        primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20(testTestContext)));
+                    ValueAnimator primaryValueAnimator = ValueAnimator.ofFloat(0, testTestContext.getScore());
+                    primaryValueAnimator.setDuration(3000);
+                    primaryValueAnimator.setInterpolator(new DecelerateInterpolator());
+
+                    primaryValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                            primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20((Float) valueAnimator.getAnimatedValue(), maxScore)));
+                        }
+                    });
+                    primaryValueAnimator.start();
+
+                    final ValueAnimator secondaryValueAnimator = ValueAnimator.ofInt(0, testTestContext.getScore());
+                    secondaryValueAnimator.setDuration(3000);
+                    secondaryValueAnimator.setInterpolator(new DecelerateInterpolator());
+
+                    secondaryValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                            secondaryScoreTextView.setText(getString(R.string.score_precise, (Integer) valueAnimator.getAnimatedValue(), maxScore));
+                        }
+                    });
+                    secondaryValueAnimator.start();
+                }
+            }, 1000);
+            primaryScoreTextView.setText(getString(R.string.score_20, 0.0f));
+            secondaryScoreTextView.setText(getString(R.string.score_precise, 0, maxScore));
+        } else {
+            primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20(testTestContext)));
+            secondaryScoreTextView.setText(getString(R.string.score_precise, testTestContext.getScore(), maxScore));
+        }
+
+
 
         restartButton.setOnClickListener(new View.OnClickListener() {
             @Override
