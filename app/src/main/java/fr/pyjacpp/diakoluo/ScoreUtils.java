@@ -22,7 +22,7 @@ package fr.pyjacpp.diakoluo;
 import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 
 public class ScoreUtils {
-    private static float getScore20(float score, float max) {
+    public static float getScore20(float score, float max) {
         return score / max * 20;
     }
 
