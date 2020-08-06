@@ -100,7 +100,12 @@
     <string name="case_sensitive">Case sensitive</string>
     <string name="remove_useless_spaces">Remove useless spaces</string>
     <string name="allow_auto_completion">Allow auto completion</string>
-    <string name="default_string_list">No value - Empty</string>
+    <string name="default_string_list">No option - List empty</string>
+    <string name="options">Options:</string>
+    <string name="add_option">Add an option</string>
+    <string name="option">Option</string>
+    <string name="up">Up</string>
+    <string name="down">Down</string>
     <string-array name="export_entries">
         <item>Diakôluô file (.dkl)</item>
         <item>Csv file (.csv)</item>
