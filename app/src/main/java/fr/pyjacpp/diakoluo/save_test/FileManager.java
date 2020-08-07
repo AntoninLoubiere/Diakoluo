@@ -64,6 +64,7 @@ public class FileManager {
     public static final String TAG_CELL             = "cell";
     public static final String ATTRIBUTE_INPUT_TYPE = "inputType";
     public static final String TAG_DEFAULT_VALUE    = "defaultValue";
+    public static final String TAG_SETTINGS        = "settings";
 
     private static final String MIME_TYPE = "*/*";
 

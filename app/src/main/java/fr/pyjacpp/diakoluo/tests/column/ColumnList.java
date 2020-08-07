@@ -50,7 +50,7 @@ import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
-public class ColumnList extends IntSettingsColumn {
+public class ColumnList extends Column {
     private static final int DEFAULT_SETTINGS = 0;
     @NonNull private ArrayList<String> values = new ArrayList<>();
     private int defaultValue = -1;

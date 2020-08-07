@@ -45,6 +45,7 @@ import java.util.Objects;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
@@ -76,6 +77,7 @@ public abstract class Column {
     @NonNull protected ColumnInputType inputType;
     @Nullable private String name;
     @Nullable private String description;
+    protected int settings = -1;
 
     /**
      * Default constructor that initialize a non-valid column.
@@ -219,14 +221,8 @@ public abstract class Column {
         newColumn.name = name;
         newColumn.description = description;
         newColumn.inputType = inputType;
+        newColumn.settings = settings;
     }
-
-    /**
-     * Write the column into a xml file.
-     * @param fileOutputStream the FileOutputStream of the xml file
-     * @throws IOException if while writing the file an error occur
-     */
-    public abstract void writeXml(OutputStream fileOutputStream) throws IOException;
 
     /**
      * Initialize a non-valid column. Inverse of {@link #initialize(String, String)}
@@ -235,6 +231,7 @@ public abstract class Column {
     public void initialize() {
         this.name = null;
         this.description = null;
+        settings = -1;
     }
 
     /**
@@ -244,6 +241,7 @@ public abstract class Column {
     protected void initialize(String name, String description) {
         this.name = name;
         this.description = description;
+        settings = 0;
     }
 
     /**
@@ -294,7 +292,7 @@ public abstract class Column {
      * @return if the column is valid
      */
     public boolean isValid() {
-        return !(name == null || description == null);
+        return !(name == null || description == null) && settings >= 0;
     }
 
     /**
@@ -358,6 +356,38 @@ public abstract class Column {
     }
 
     /**
+     * If a settings is true
+     * @param parameter the settings wanted
+     * @return if the settings is true
+     */
+    protected boolean isInSettings(int parameter) {
+        return (settings & parameter) == parameter;
+    }
+
+    /**
+     * Set the settings to a value
+     * @param parameter the settings to set
+     * @param value the value of the settings
+     */
+    protected void setSettings(int parameter, boolean value) {
+        if (value) {
+            settings = settings | parameter;
+        } else {
+            settings = settings & ~parameter;
+        }
+    }
+
+    /**
+     * Write the column into a xml file.
+     * @param fileOutputStream the FileOutputStream of the xml file
+     * @throws IOException if while writing the file an error occur
+     */
+    public void writeXml(OutputStream fileOutputStream) throws IOException {
+        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_SETTINGS,
+                String.valueOf(settings)).getBytes());
+    }
+
+    /**
      * Get columns params from a xml file.
      * @param parser the parser of the xml file
      * @throws IOException if an error occur while the file reading the file
@@ -373,6 +403,9 @@ public abstract class Column {
             case FileManager.TAG_DESCRIPTION:
                 description = XmlLoader.readDescription(parser);
                 break;
+
+            case FileManager.TAG_SETTINGS:
+                settings = XmlLoader.readInt(parser);
 
             default:
                 XmlLoader.skip(parser);
@@ -430,7 +463,8 @@ public abstract class Column {
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof Column) {
             Column c = (Column) obj;
-            return Objects.equals(c.name, name) && Objects.equals(c.description, description);
+            return Objects.equals(c.name, name) && Objects.equals(c.description, description) &&
+                    c.settings == settings;
         }
         return false;
     }

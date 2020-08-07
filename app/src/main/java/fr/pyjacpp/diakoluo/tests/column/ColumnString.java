@@ -46,7 +46,7 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 
-public class ColumnString extends IntSettingsColumn {
+public class ColumnString extends Column {
     private String defaultValue;
 
     private static final int CASE_SENSITIVE = 1;
