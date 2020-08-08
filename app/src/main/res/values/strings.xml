@@ -106,6 +106,8 @@
     <string name="option">Option</string>
     <string name="up">Up</string>
     <string name="down">Down</string>
+    <string name="can_be_hide">Can be asked during a test</string>
+    <string name="can_be_show">Can be reveal during a test</string>
     <string-array name="export_entries">
         <item>Diakôluô file (.dkl)</item>
         <item>Csv file (.csv)</item>

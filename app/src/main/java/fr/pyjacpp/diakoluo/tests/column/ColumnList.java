@@ -51,12 +51,12 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public class ColumnList extends Column {
-    private static final int DEFAULT_SETTINGS = 0;
     @NonNull private ArrayList<String> values = new ArrayList<>();
     private int defaultValue = -1;
 
     private static final String TAG_VALUES = "values";
     private static final String TAG_VALUE = "value";
+    // private static final int SET_DEFAULT = Column.SET_DEFAULT;
 
     protected ColumnList() {
         super(ColumnInputType.List);
@@ -66,14 +66,13 @@ public class ColumnList extends Column {
     public void initialize() {
         super.initialize();
         defaultValue = -1;
-        settings = -1;
     }
 
     @Override
     public void initialize(String name, String description) {
         super.initialize(name, description);
         defaultValue = 0;
-        settings = DEFAULT_SETTINGS;
+        // settings = SET_DEFAULT;
     }
 
     @Override
@@ -124,6 +123,7 @@ public class ColumnList extends Column {
 
     @Override
     public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+        super.getViewColumnSettings(layoutInflater, parent);
         View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_list,
                 parent, true);
         RecyclerView recyclerView = inflatedView.findViewById(R.id.recyclerView);
@@ -135,9 +135,9 @@ public class ColumnList extends Column {
         recyclerView.setAdapter(adapter);
     }
 
-    @NonNull
     @Override
-    public View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+    public void getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+        super.getEditColumnSettings(layoutInflater, parent);
         View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_edit_list,
                 parent, true);
         RecyclerView recyclerView = inflatedView.findViewById(R.id.recyclerView);
@@ -155,13 +155,12 @@ public class ColumnList extends Column {
                 adapter.notifyItemInserted(values.size() - 1);
             }
         });
-
-        return inflatedView;
     }
 
     @Override
-    public void setEditColumnSettings(View columnSettingsView) {
-        RecyclerView recyclerView = columnSettingsView.findViewById(R.id.recyclerView);
+    public void setEditColumnSettings(ViewGroup parent) {
+        super.setEditColumnSettings(parent);
+        RecyclerView recyclerView = parent.findViewById(R.id.recyclerView);
 
         for (int i = 0, valuesSize = values.size(); i < valuesSize; i++) {
             RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
@@ -223,6 +222,7 @@ public class ColumnList extends Column {
 
             default:
                 super.readColumnXmlTag(parser);
+                break;
         }
 
     }

@@ -30,8 +30,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textview.MaterialTextView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -43,6 +45,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.ViewUtils;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
@@ -56,6 +59,14 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
  * @see DataCell
  */
 public abstract class Column {
+    /**
+     * Settings 1 << 0 to 1 << 1 (included) are reserved
+     * SET_DEFAULT should be | with the SET_DEFAULT of the child class
+     */
+    private static final int SET_CAN_BE_HIDE = 1;
+    private static final int SET_CAN_BE_SHOW = 1 << 1;
+    protected static final int SET_DEFAULT = SET_CAN_BE_HIDE | SET_CAN_BE_SHOW;
+
     /**
      * When a edit text with a layout is clicked send focus change to the parent so it can be
      * receive from other class
@@ -168,38 +179,6 @@ public abstract class Column {
     public abstract void setDefaultValue(Object defaultValue);
 
     /**
-     * Set the settings view of the column.
-     * Override method must add to root the view.
-     * @param layoutInflater a layout inflater to inflate the layout
-     * @param parent the parent which receive the inflated layout
-     * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
-     * @see #setEditColumnSettings(View)
-     */
-    public abstract void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent);
-
-    /**
-     * Set and return the edit settings view of the column
-     * Override method must add to root the view.
-     * Params are updated by {@link #setEditColumnSettings}.
-     * @param layoutInflater a layout inflater to inflate the layout
-     * @param parent the parent which receive the inflated layout
-     * @return the view that was generated
-     * @see #getViewColumnSettings(LayoutInflater, ViewGroup)
-     * @see #setEditColumnSettings(View)
-     */
-    @NonNull
-    public abstract View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent);
-
-    /**
-     * Set column params from view. Params inputted by the user are update there.
-     * @param columnSettingsView the view which contain edit view (generated from
-     * {@link #getEditColumnSettings(LayoutInflater, ViewGroup)}).
-     * @see #getViewColumnSettings(LayoutInflater, ViewGroup)
-     * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
-     */
-    public abstract void setEditColumnSettings(View columnSettingsView);
-
-    /**
      * Verify if a answer inputted by the user is the same that the value stored.
      * @param dataCell the DataCell that hold the value
      * @param answer the value inputted by the user
@@ -241,7 +220,7 @@ public abstract class Column {
     protected void initialize(String name, String description) {
         this.name = name;
         this.description = description;
-        settings = 0;
+        settings = SET_DEFAULT;
     }
 
     /**
@@ -356,6 +335,67 @@ public abstract class Column {
     }
 
     /**
+     * Set the settings view of the column.
+     * Override method must add to root the view and must call the super method
+     * @param layoutInflater a layout inflater to inflate the layout
+     * @param parent the parent which receive the inflated layout
+     * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
+     * @see #setEditColumnSettings(ViewGroup)
+     */
+    public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_default,
+                parent, true);
+        MaterialTextView canBeHideTextView =
+                inflatedView.findViewById(R.id.canBeHideTextView);
+        MaterialTextView canBeShowTextView =
+                inflatedView.findViewById(R.id.canBeShowTextView);
+
+        ViewUtils.setBooleanView(parent.getContext(),
+                canBeHideTextView, isInSettings(SET_CAN_BE_HIDE));
+        ViewUtils.setBooleanView(parent.getContext(),
+                canBeShowTextView, isInSettings(SET_CAN_BE_SHOW));
+    }
+
+    /**
+     * Set and return the edit settings view of the column
+     * Override method must add to root the view.
+     * Params are updated by {@link #setEditColumnSettings}.
+     * @param layoutInflater a layout inflater to inflate the layout
+     * @param parent the parent which receive the inflated layout
+     * @see #getViewColumnSettings(LayoutInflater, ViewGroup)
+     * @see #setEditColumnSettings(ViewGroup)
+     */
+    public void getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+        View inflatedView =
+                layoutInflater.inflate(R.layout.fragment_column_settings_edit_default, parent, true);
+
+        MaterialCheckBox canBeHideTextView =
+                inflatedView.findViewById(R.id.canBeHideCheckBox);
+        MaterialCheckBox canBeShowTextView =
+                inflatedView.findViewById(R.id.canBeShowCheckBox);
+
+        canBeHideTextView.setChecked(isInSettings(SET_CAN_BE_HIDE));
+        canBeShowTextView.setChecked(isInSettings(SET_CAN_BE_SHOW));
+    }
+
+    /**
+     * Set column params from view. Params inputted by the user are update there.
+     * @param parent the parent which contain inflated layouts (generated from
+     * {@link #getEditColumnSettings(LayoutInflater, ViewGroup)}).
+     * @see #getViewColumnSettings(LayoutInflater, ViewGroup)
+     * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
+     */
+    public void setEditColumnSettings(ViewGroup parent) {
+        MaterialCheckBox canBeHideTextView =
+                parent.findViewById(R.id.canBeHideCheckBox);
+        MaterialCheckBox canBeShowTextView =
+                parent.findViewById(R.id.canBeShowCheckBox);
+
+        setSettings(SET_CAN_BE_HIDE, canBeHideTextView.isChecked());
+        setSettings(SET_CAN_BE_SHOW, canBeShowTextView.isChecked());
+    }
+
+    /**
      * If a settings is true
      * @param parameter the settings wanted
      * @return if the settings is true
@@ -406,6 +446,7 @@ public abstract class Column {
 
             case FileManager.TAG_SETTINGS:
                 settings = XmlLoader.readInt(parser);
+                break;
 
             default:
                 XmlLoader.skip(parser);

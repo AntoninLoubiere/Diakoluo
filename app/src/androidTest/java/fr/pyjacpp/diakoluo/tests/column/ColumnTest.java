@@ -57,8 +57,10 @@ public class ColumnTest {
             column.getViewColumnSettings(layoutInflater, linearLayout);
             column1.getViewColumnSettings(layoutInflater, linearLayout);
 
-            column.setEditColumnSettings(column.getEditColumnSettings(layoutInflater, linearLayout));
-            column1.setEditColumnSettings(column1.getEditColumnSettings(layoutInflater, linearLayout));
+            column.getEditColumnSettings(layoutInflater, linearLayout);
+            column.setEditColumnSettings(linearLayout);
+            column1.getEditColumnSettings(layoutInflater, linearLayout);
+            column1.setEditColumnSettings(linearLayout);
             assertEquals(inputType.name(), DefaultTest.setTestValue(Column.newColumn(inputType)), column);
             assertEquals(inputType.name(), DefaultTest.setTestValueEmpty(Column.newColumn(inputType)), column1);
         }

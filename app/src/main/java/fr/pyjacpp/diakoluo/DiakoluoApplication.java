@@ -140,7 +140,9 @@ public class DiakoluoApplication extends Application {
 
         for (String filename : listTestFilename) {
             try {
-                listTest.add(FileManager.loadFromPrivateFile(this, filename));
+                Test e = FileManager.loadFromPrivateFile(this, filename);
+                if (e != null)
+                    listTest.add(e);
             } catch (IOException | XmlPullParserException e){
                 Log.e("DiakoluoApplication", "Can't load test " + filename);
                 e.printStackTrace();

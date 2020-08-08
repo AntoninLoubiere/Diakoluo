@@ -23,7 +23,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.checkbox.MaterialCheckBox;
@@ -49,10 +48,10 @@ import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 public class ColumnString extends Column {
     private String defaultValue;
 
-    private static final int CASE_SENSITIVE = 1;
-    private static final int REMOVE_USELESS_SPACES = 1 << 1;
+    private static final int SET_CASE_SENSITIVE = 1 << 2;
+    private static final int SET_REMOVE_USELESS_SPACES = 1 << 3;
 
-    private static final int DEFAULT_SETTINGS = REMOVE_USELESS_SPACES;
+    private static final int SET_DEFAULT = SET_REMOVE_USELESS_SPACES | Column.SET_DEFAULT;
 
     ColumnString() {
         super(ColumnInputType.String);
@@ -62,7 +61,6 @@ public class ColumnString extends Column {
     public void initialize() {
         super.initialize();
         defaultValue = null;
-        settings = -1;
         inputType = ColumnInputType.String;
     }
 
@@ -70,7 +68,7 @@ public class ColumnString extends Column {
     public void initialize(String name, String description) {
         super.initialize(name, description);
         defaultValue = "";
-        settings = DEFAULT_SETTINGS;
+        settings = SET_DEFAULT;
     }
 
     @Override
@@ -78,12 +76,12 @@ public class ColumnString extends Column {
         DataCellString dataCellString = (DataCellString) dataCell;
         String value = dataCellString.getValue();
         String a = (String) answer;
-        if (isInSettings(REMOVE_USELESS_SPACES)) {
+        if (isInSettings(SET_REMOVE_USELESS_SPACES)) {
             value = Utils.removeUselessSpaces(value);
             a = Utils.removeUselessSpaces(a);
         }
 
-        if (isInSettings(CASE_SENSITIVE)) {
+        if (isInSettings(SET_CASE_SENSITIVE)) {
             return value.equals(a);
         } else {
             return value.equalsIgnoreCase(a);
@@ -92,6 +90,7 @@ public class ColumnString extends Column {
 
     @Override
     public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+        super.getViewColumnSettings(layoutInflater, parent);
         View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_string,
                 parent, true);
 
@@ -101,14 +100,14 @@ public class ColumnString extends Column {
                 inflatedView.findViewById(R.id.removeUselessSpaceTextView);
 
         ViewUtils.setBooleanView(parent.getContext(),
-                caseSensitiveTextView, isInSettings(CASE_SENSITIVE));
+                caseSensitiveTextView, isInSettings(SET_CASE_SENSITIVE));
         ViewUtils.setBooleanView(parent.getContext(),
-                removeUselessSpacesTextView, isInSettings(REMOVE_USELESS_SPACES));
+                removeUselessSpacesTextView, isInSettings(SET_REMOVE_USELESS_SPACES));
     }
 
-    @NonNull
     @Override
-    public View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+    public void getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+        super.getEditColumnSettings(layoutInflater, parent);
         View inflatedView =
                 layoutInflater.inflate(R.layout.fragment_column_settings_edit_string, parent, true);
 
@@ -117,21 +116,20 @@ public class ColumnString extends Column {
         MaterialCheckBox removeUselessSpacesCheckBox =
                 inflatedView.findViewById(R.id.removeUselessSpaceCheckBox);
 
-        caseSensitiveCheckBox.setChecked(isInSettings(CASE_SENSITIVE));
-        removeUselessSpacesCheckBox.setChecked(isInSettings(REMOVE_USELESS_SPACES));
-
-        return inflatedView;
+        caseSensitiveCheckBox.setChecked(isInSettings(SET_CASE_SENSITIVE));
+        removeUselessSpacesCheckBox.setChecked(isInSettings(SET_REMOVE_USELESS_SPACES));
     }
 
     @Override
-    public void setEditColumnSettings(View columnSettingsView) {
+    public void setEditColumnSettings(ViewGroup parent) {
+        super.setEditColumnSettings(parent);
         MaterialCheckBox caseSensitiveCheckBox =
-                columnSettingsView.findViewById(R.id.caseSensitiveCheckBox);
+                parent.findViewById(R.id.caseSensitiveCheckBox);
         MaterialCheckBox removeUselessSpacesCheckBox =
-                columnSettingsView.findViewById(R.id.removeUselessSpaceCheckBox);
+                parent.findViewById(R.id.removeUselessSpaceCheckBox);
 
-        setSettings(CASE_SENSITIVE, caseSensitiveCheckBox.isChecked());
-        setSettings(REMOVE_USELESS_SPACES, removeUselessSpacesCheckBox.isChecked());
+        setSettings(SET_CASE_SENSITIVE, caseSensitiveCheckBox.isChecked());
+        setSettings(SET_REMOVE_USELESS_SPACES, removeUselessSpacesCheckBox.isChecked());
     }
 
     @Override
@@ -146,11 +144,12 @@ public class ColumnString extends Column {
 
     @Override
     public boolean isValid() {
-        return super.isValid() && defaultValue != null && settings >= 0;
+        return super.isValid() && defaultValue != null;
     }
 
     @Override
     public void writeXml(OutputStream fileOutputStream) throws IOException {
+        super.writeXml(fileOutputStream);
         fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_DEFAULT_VALUE,
                 defaultValue).getBytes());
     }
@@ -170,7 +169,7 @@ public class ColumnString extends Column {
         super.setDefaultValueBackWardCompatibility();
         // for version < v0.3.0
         if (settings < 0) {
-            settings = DEFAULT_SETTINGS;
+            settings = SET_DEFAULT;
         }
     }
 
