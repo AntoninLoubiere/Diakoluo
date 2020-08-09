@@ -19,6 +19,8 @@
 
 package fr.pyjacpp.diakoluo;
 
+import android.view.animation.Interpolator;
+
 public final class Utils {
     public static String removeUselessSpaces(String s) {
         final int length = s.length();
@@ -40,5 +42,14 @@ public final class Utils {
         }
 
         return s.substring(realStart, realEnd + 1);
+    }
+
+    public static class ExtremeDeceleratorInterpolator implements Interpolator {
+
+        @Override
+        public float getInterpolation(float v) {
+            float v1 = v - 1;
+            return -(v1 * v1 * v1 * v1) + 1;
+        }
     }
 }
