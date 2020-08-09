@@ -48,6 +48,9 @@ public class TestScoreFragment extends Fragment {
     private TestTestContext testTestContext;
 
     private ProgressBar scoreProgressBar;
+    private ObjectAnimator animation = null;
+    private ValueAnimator primaryValueAnimator = null;
+    private ValueAnimator secondaryValueAnimator = null;
 
     public TestScoreFragment() {
     }
@@ -70,13 +73,13 @@ public class TestScoreFragment extends Fragment {
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    ObjectAnimator animation = ObjectAnimator.ofInt(scoreProgressBar, "progress", testTestContext.getProgressScore());
+                    animation = ObjectAnimator.ofInt(scoreProgressBar, "progress", testTestContext.getProgressScore());
                     animation.setDuration(3000);
                     animation.setInterpolator(new DecelerateInterpolator());
                     animation.start();
                     scoreProgressBar.setProgress(testTestContext.getProgressScore());
 
-                    ValueAnimator primaryValueAnimator = ValueAnimator.ofFloat(0, testTestContext.getScore());
+                    primaryValueAnimator = ValueAnimator.ofFloat(0, testTestContext.getScore());
                     primaryValueAnimator.setDuration(3000);
                     primaryValueAnimator.setInterpolator(new DecelerateInterpolator());
 
@@ -88,7 +91,7 @@ public class TestScoreFragment extends Fragment {
                     });
                     primaryValueAnimator.start();
 
-                    final ValueAnimator secondaryValueAnimator = ValueAnimator.ofInt(0, testTestContext.getScore());
+                    secondaryValueAnimator = ValueAnimator.ofInt(0, testTestContext.getScore());
                     secondaryValueAnimator.setDuration(3000);
                     secondaryValueAnimator.setInterpolator(new DecelerateInterpolator());
 
@@ -137,6 +140,14 @@ public class TestScoreFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
         testTestContext = DiakoluoApplication.getTestTestContext(context);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (animation != null) animation.cancel();
+        if (primaryValueAnimator != null) primaryValueAnimator.cancel();
+        if (secondaryValueAnimator != null) secondaryValueAnimator.cancel();
     }
 
     @Override
