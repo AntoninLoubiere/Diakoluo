@@ -23,9 +23,13 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
+import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.test_tests.ColumnToShow;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
@@ -437,6 +441,33 @@ public class Test {
             if (numberColumnToShowMax <= 0) numberColumnToShowMax = 1;
         }
         return new ColumnToShow(numberColumnToShowMin, numberColumnToShowMax, numberColumnTotal);
+    }
+
+    public void writeXml(OutputStream fileOutputStream, boolean saveNumberTestDone) throws IOException {
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_TEST);
+
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_CREATED_DATE, createdDate);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_LAST_MODIFICATION, lastModification);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
+
+        if (saveNumberTestDone)
+            XmlSaver.writeData(fileOutputStream, FileManager.TAG_NUMBER_TEST_DID, numberTestDid);
+
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_COLUMNS);
+        for (Column column : listColumn) {
+            column.writeXml(fileOutputStream);
+        }
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_COLUMNS);
+
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_ROWS);
+        for (DataRow row : listRow) {
+            row.writeXml(fileOutputStream, this);
+        }
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_ROWS);
+
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_TEST);
     }
 
     @Override

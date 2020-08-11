@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import fr.pyjacpp.diakoluo.save_test.CsvSaver;
+import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
@@ -86,13 +88,18 @@ public class DataRow {
      * @throws IOException if an exception occur while writing the file
      */
     public void writeXml(OutputStream fileOutputStream, Test test) throws IOException {
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_ROW);
+
         ArrayList<Column> listColumn = test.getListColumn();
         for (int i = 0, listColumnSize = listColumn.size(); i < listColumnSize; i++) {
             Column column = listColumn.get(i);
             DataCell dataCell = listCells.get(column);
-            if (dataCell != null)
+            if (dataCell != null) {
                 dataCell.writeXml(fileOutputStream);
+            }
         }
+
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_ROW);
     }
 
     /**

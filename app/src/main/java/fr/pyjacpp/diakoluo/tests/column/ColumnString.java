@@ -148,10 +148,9 @@ public class ColumnString extends Column {
     }
 
     @Override
-    public void writeXml(OutputStream fileOutputStream) throws IOException {
-        super.writeXml(fileOutputStream);
-        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_DEFAULT_VALUE,
-                defaultValue).getBytes());
+    public void writeXmlInternal(OutputStream fileOutputStream) throws IOException {
+        super.writeXmlInternal(fileOutputStream);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_DEFAULT_VALUE, defaultValue);
     }
 
     @Override

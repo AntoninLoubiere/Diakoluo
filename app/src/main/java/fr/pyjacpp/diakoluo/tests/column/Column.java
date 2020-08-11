@@ -419,12 +419,30 @@ public abstract class Column {
 
     /**
      * Write the column into a xml file.
+     * This method should be call by {@link #writeXml(OutputStream)} only.
+     * If override you should call the super.
+     * @see #writeXml(OutputStream)
+     * @param fileOutputStream the FileOutputStream of the xml file
+     * @throws IOException if while writing the file an error occur
+     */
+    protected void writeXmlInternal(OutputStream fileOutputStream) throws IOException {
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SETTINGS, settings);
+    }
+
+    /**
+     * Write the column into a xml file.
+     * Do not override this method. Override {@link #writeXmlInternal(OutputStream)} instead
+     * @see #writeXmlInternal(OutputStream)
      * @param fileOutputStream the FileOutputStream of the xml file
      * @throws IOException if while writing the file an error occur
      */
     public void writeXml(OutputStream fileOutputStream) throws IOException {
-        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_SETTINGS,
-                String.valueOf(settings)).getBytes());
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_COLUMN,
+                FileManager.ATTRIBUTE_INPUT_TYPE, inputType.name());
+        writeXmlInternal(fileOutputStream);
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_COLUMN);
     }
 
     /**
