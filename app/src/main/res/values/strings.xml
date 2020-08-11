@@ -31,7 +31,7 @@
     <string name="play_test_button_content_description">Play</string>
     <string name="number_question_to_ask">Select the number of questions:</string>
     <string name="number_column_to_show">Select the number of column shown:</string>
-    <string name="number_column_to_show_seekbar_textview" translatable="false">%d/%d</string>
+    <string name="number_column_to_show_seekbar_textview">%d/%d (%d columns)</string>
     <string name="valid">validate</string>
     <string name="continue_text">Continue</string>
     <string name="skip">(Skip)</string>

@@ -63,8 +63,8 @@ public abstract class Column {
      * Settings 1 << 0 to 1 << 1 (included) are reserved
      * SET_DEFAULT should be | with the SET_DEFAULT of the child class
      */
-    private static final int SET_CAN_BE_HIDE = 1;
-    private static final int SET_CAN_BE_SHOW = 1 << 1;
+    public static final int SET_CAN_BE_HIDE = 1;
+    public static final int SET_CAN_BE_SHOW = 1 << 1;
     protected static final int SET_DEFAULT = SET_CAN_BE_HIDE | SET_CAN_BE_SHOW;
 
     /**
@@ -400,7 +400,7 @@ public abstract class Column {
      * @param parameter the settings wanted
      * @return if the settings is true
      */
-    protected boolean isInSettings(int parameter) {
+    public boolean isInSettings(int parameter) {
         return (settings & parameter) == parameter;
     }
 
