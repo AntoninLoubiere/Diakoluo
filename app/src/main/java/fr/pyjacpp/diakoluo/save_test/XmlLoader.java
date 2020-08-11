@@ -39,6 +39,8 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public class XmlLoader {
 
+    public static final String TAG = "XmlLoader";
+
     public static Test load(InputStream fileInputStream) throws IOException, XmlPullParserException {
             // configure parser
         XmlPullParser parser = Xml.newPullParser();
@@ -98,7 +100,7 @@ public class XmlLoader {
         if (test.isValid()) {
             return test;
         } else {
-            Log.w("XmlLoader", "Can't load this test");
+            Log.w(TAG, "Can't load this test");
             return null;
         }
     }
@@ -164,7 +166,7 @@ public class XmlLoader {
             }
         }
 
-        return  columnsList;
+        return columnsList;
     }
 
     private static ArrayList<DataRow> readRows(XmlPullParser parser, Test test) throws IOException, XmlPullParserException {
@@ -208,7 +210,7 @@ public class XmlLoader {
 
             if (FileManager.TAG_CELL.equals(parser.getName())) {
                 if (indexColumn >= test.getNumberColumn()) {
-                    Log.w("XmlLoader", "Too many columns");
+                    Log.w(TAG, "Too many columns");
                     continue;
                 }
                 Column currentColumn = test.getListColumn().get(indexColumn);
@@ -223,7 +225,7 @@ public class XmlLoader {
         }
 
         if (indexColumn < test.getNumberColumn()) {
-            Log.w("XmlLoader", "Too few cells");
+            Log.w(TAG, "Too few cells");
             for (int i = indexColumn; i < test.getNumberColumn(); i++) {
                 Column currentColumn = test.getListColumn().get(indexColumn);
                 DataCell cell = DataCell.newCellWithDefaultValue(currentColumn);
@@ -250,6 +252,7 @@ public class XmlLoader {
             try {
                 result = Integer.parseInt(parser.getText());
             } catch (NumberFormatException ignored) {
+                Log.w(TAG, "Read int not a number !");
             }
             parser.nextTag();
         }
@@ -257,7 +260,7 @@ public class XmlLoader {
     }
 
     public static void skip(XmlPullParser parser) throws IOException, XmlPullParserException {
-        Log.w("XmlLoader", parser.getName() + " is not handle");
+        Log.w(TAG, parser.getName() + " is not handle");
         int depth = 1;
         while (depth > 0) {
             parser.next();

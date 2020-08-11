@@ -30,8 +30,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textview.MaterialTextView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -43,8 +45,10 @@ import java.util.HashMap;
 import java.util.Objects;
 
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.ViewUtils;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
@@ -55,6 +59,14 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
  * @see DataCell
  */
 public abstract class Column {
+    /**
+     * Settings 1 << 0 to 1 << 1 (included) are reserved
+     * SET_DEFAULT should be | with the SET_DEFAULT of the child class
+     */
+    public static final int SET_CAN_BE_HIDE = 1;
+    public static final int SET_CAN_BE_SHOW = 1 << 1;
+    protected static final int SET_DEFAULT = SET_CAN_BE_HIDE | SET_CAN_BE_SHOW;
+
     /**
      * When a edit text with a layout is clicked send focus change to the parent so it can be
      * receive from other class
@@ -76,6 +88,7 @@ public abstract class Column {
     @NonNull protected ColumnInputType inputType;
     @Nullable private String name;
     @Nullable private String description;
+    protected int settings = -1;
 
     /**
      * Default constructor that initialize a non-valid column.
@@ -166,38 +179,6 @@ public abstract class Column {
     public abstract void setDefaultValue(Object defaultValue);
 
     /**
-     * Set the settings view of the column.
-     * Override method must add to root the view.
-     * @param layoutInflater a layout inflater to inflate the layout
-     * @param parent the parent which receive the inflated layout
-     * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
-     * @see #setEditColumnSettings(View)
-     */
-    public abstract void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent);
-
-    /**
-     * Set and return the edit settings view of the column
-     * Override method must add to root the view.
-     * Params are updated by {@link #setEditColumnSettings}.
-     * @param layoutInflater a layout inflater to inflate the layout
-     * @param parent the parent which receive the inflated layout
-     * @return the view that was generated
-     * @see #getViewColumnSettings(LayoutInflater, ViewGroup)
-     * @see #setEditColumnSettings(View)
-     */
-    @NonNull
-    public abstract View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent);
-
-    /**
-     * Set column params from view. Params inputted by the user are update there.
-     * @param columnSettingsView the view which contain edit view (generated from
-     * {@link #getEditColumnSettings(LayoutInflater, ViewGroup)}).
-     * @see #getViewColumnSettings(LayoutInflater, ViewGroup)
-     * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
-     */
-    public abstract void setEditColumnSettings(View columnSettingsView);
-
-    /**
      * Verify if a answer inputted by the user is the same that the value stored.
      * @param dataCell the DataCell that hold the value
      * @param answer the value inputted by the user
@@ -219,14 +200,8 @@ public abstract class Column {
         newColumn.name = name;
         newColumn.description = description;
         newColumn.inputType = inputType;
+        newColumn.settings = settings;
     }
-
-    /**
-     * Write the column into a xml file.
-     * @param fileOutputStream the FileOutputStream of the xml file
-     * @throws IOException if while writing the file an error occur
-     */
-    public abstract void writeXml(OutputStream fileOutputStream) throws IOException;
 
     /**
      * Initialize a non-valid column. Inverse of {@link #initialize(String, String)}
@@ -235,6 +210,7 @@ public abstract class Column {
     public void initialize() {
         this.name = null;
         this.description = null;
+        settings = -1;
     }
 
     /**
@@ -244,6 +220,7 @@ public abstract class Column {
     protected void initialize(String name, String description) {
         this.name = name;
         this.description = description;
+        settings = SET_DEFAULT;
     }
 
     /**
@@ -294,7 +271,7 @@ public abstract class Column {
      * @return if the column is valid
      */
     public boolean isValid() {
-        return !(name == null || description == null);
+        return !(name == null || description == null) && settings >= 0;
     }
 
     /**
@@ -358,6 +335,99 @@ public abstract class Column {
     }
 
     /**
+     * Set the settings view of the column.
+     * Override method must add to root the view and must call the super method
+     * @param layoutInflater a layout inflater to inflate the layout
+     * @param parent the parent which receive the inflated layout
+     * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
+     * @see #setEditColumnSettings(ViewGroup)
+     */
+    public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_default,
+                parent, true);
+        MaterialTextView canBeHideTextView =
+                inflatedView.findViewById(R.id.canBeHideTextView);
+        MaterialTextView canBeShowTextView =
+                inflatedView.findViewById(R.id.canBeShowTextView);
+
+        ViewUtils.setBooleanView(parent.getContext(),
+                canBeHideTextView, isInSettings(SET_CAN_BE_HIDE));
+        ViewUtils.setBooleanView(parent.getContext(),
+                canBeShowTextView, isInSettings(SET_CAN_BE_SHOW));
+    }
+
+    /**
+     * Set and return the edit settings view of the column
+     * Override method must add to root the view.
+     * Params are updated by {@link #setEditColumnSettings}.
+     * @param layoutInflater a layout inflater to inflate the layout
+     * @param parent the parent which receive the inflated layout
+     * @see #getViewColumnSettings(LayoutInflater, ViewGroup)
+     * @see #setEditColumnSettings(ViewGroup)
+     */
+    public void getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+        View inflatedView =
+                layoutInflater.inflate(R.layout.fragment_column_settings_edit_default, parent, true);
+
+        MaterialCheckBox canBeHideTextView =
+                inflatedView.findViewById(R.id.canBeHideCheckBox);
+        MaterialCheckBox canBeShowTextView =
+                inflatedView.findViewById(R.id.canBeShowCheckBox);
+
+        canBeHideTextView.setChecked(isInSettings(SET_CAN_BE_HIDE));
+        canBeShowTextView.setChecked(isInSettings(SET_CAN_BE_SHOW));
+    }
+
+    /**
+     * Set column params from view. Params inputted by the user are update there.
+     * @param parent the parent which contain inflated layouts (generated from
+     * {@link #getEditColumnSettings(LayoutInflater, ViewGroup)}).
+     * @see #getViewColumnSettings(LayoutInflater, ViewGroup)
+     * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
+     */
+    public void setEditColumnSettings(ViewGroup parent) {
+        MaterialCheckBox canBeHideTextView =
+                parent.findViewById(R.id.canBeHideCheckBox);
+        MaterialCheckBox canBeShowTextView =
+                parent.findViewById(R.id.canBeShowCheckBox);
+
+        setSettings(SET_CAN_BE_HIDE, canBeHideTextView.isChecked());
+        setSettings(SET_CAN_BE_SHOW, canBeShowTextView.isChecked());
+    }
+
+    /**
+     * If a settings is true
+     * @param parameter the settings wanted
+     * @return if the settings is true
+     */
+    public boolean isInSettings(int parameter) {
+        return (settings & parameter) == parameter;
+    }
+
+    /**
+     * Set the settings to a value
+     * @param parameter the settings to set
+     * @param value the value of the settings
+     */
+    protected void setSettings(int parameter, boolean value) {
+        if (value) {
+            settings = settings | parameter;
+        } else {
+            settings = settings & ~parameter;
+        }
+    }
+
+    /**
+     * Write the column into a xml file.
+     * @param fileOutputStream the FileOutputStream of the xml file
+     * @throws IOException if while writing the file an error occur
+     */
+    public void writeXml(OutputStream fileOutputStream) throws IOException {
+        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_SETTINGS,
+                String.valueOf(settings)).getBytes());
+    }
+
+    /**
      * Get columns params from a xml file.
      * @param parser the parser of the xml file
      * @throws IOException if an error occur while the file reading the file
@@ -372,6 +442,10 @@ public abstract class Column {
 
             case FileManager.TAG_DESCRIPTION:
                 description = XmlLoader.readDescription(parser);
+                break;
+
+            case FileManager.TAG_SETTINGS:
+                settings = XmlLoader.readInt(parser);
                 break;
 
             default:
@@ -430,7 +504,8 @@ public abstract class Column {
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof Column) {
             Column c = (Column) obj;
-            return Objects.equals(c.name, name) && Objects.equals(c.description, description);
+            return Objects.equals(c.name, name) && Objects.equals(c.description, description) &&
+                    c.settings == settings;
         }
         return false;
     }

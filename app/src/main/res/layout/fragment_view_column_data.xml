@@ -45,29 +45,38 @@
             android:layout_below="@id/titleTextView"
             android:layout_marginTop="@dimen/default_margin"/>
 
-        <TextView
-            android:id="@+id/columnTypeLabelTextView"
-            style="@style/Body0"
+        <LinearLayout
+            android:id="@+id/columnTypeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/descriptionTextView"
             android:layout_marginTop="@dimen/default_margin"
-            android:text="@string/column_type" />
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/columnTypeTextView"
-            style="@style/Body0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/columnTypeLabelTextView" />
+            <TextView
+                android:id="@+id/columnTypeLabelTextView"
+                style="@style/Body0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:text="@string/column_type" />
+
+            <TextView
+                android:id="@+id/columnTypeTextView"
+                style="@style/Body0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="@dimen/default_margin"
             android:id="@+id/columnSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_below="@id/columnTypeTextView"/>
+            android:layout_below="@id/columnTypeLayout"
+            android:layout_marginTop="@dimen/default_margin"
+            android:orientation="vertical" />
+
     </RelativeLayout>
 
 </ScrollView>

@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Date;
 
+import fr.pyjacpp.diakoluo.test_tests.ColumnToShow;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
@@ -251,6 +252,20 @@ public class Test {
     }
 
     /**
+     * Get the list of columns that can be asked or show randomly.
+     * @return the list of column that can be asked or show randomly
+     */
+    public ArrayList<Column> getTestListColumn() {
+        ArrayList<Column> columns = new ArrayList<>();
+        for (Column c : listColumn) {
+            if (c.isInSettings(Column.SET_CAN_BE_HIDE) || c.isInSettings(Column.SET_CAN_BE_SHOW)) {
+                columns.add(c);
+            }
+        }
+        return columns;
+    }
+
+    /**
      * Get the number of column.
      * @return the number of column
      */
@@ -303,7 +318,9 @@ public class Test {
      * @return if the test can be play
      */
     public boolean canBePlay() {
-        return getNumberColumn() > 1 && getNumberRow() > 0;
+        ColumnToShow r = getNumberColumnToAsk();
+        return r.numberColumnToShowMin <= r.numberColumnToShowMax &&
+                r.numberColumnTotal > 1 && r.numberColumnToShowMax > 0 && listRow.size() > 0;
     }
 
     /**
@@ -383,6 +400,43 @@ public class Test {
      */
     public void reset() {
         this.numberTestDid = 0;
+    }
+
+    /**
+     * Get the number of column to ask (min and max) and the number of column total (without column
+     * that can't be show or ask)
+     * @return an object that contain the number of column to ask (min and max) and the number of
+     * column total
+     */
+    public ColumnToShow getNumberColumnToAsk() {
+        int numberColumnToShowMin = 0;
+        int numberColumnToShowMax = 0;
+        int numberColumnTotal = 0;
+        boolean randomColumns = false;
+
+        for (Column c : listColumn) {
+            boolean canHide = c.isInSettings(Column.SET_CAN_BE_HIDE);
+            boolean canShow = c.isInSettings(Column.SET_CAN_BE_SHOW);
+
+            if (canHide && canShow) {
+                numberColumnToShowMax++;
+                numberColumnTotal++;
+                randomColumns = true;
+            } else if (canHide) {
+                numberColumnTotal++;
+            } else if (canShow) {
+                numberColumnToShowMin++;
+                numberColumnToShowMax++;
+                numberColumnTotal++;
+            }
+        }
+
+        if (numberColumnToShowMax >= numberColumnTotal) numberColumnToShowMax = numberColumnTotal - 1;
+        if (randomColumns && numberColumnToShowMin <= 0) {
+            numberColumnToShowMin = 1;
+            if (numberColumnToShowMax <= 0) numberColumnToShowMax = 1;
+        }
+        return new ColumnToShow(numberColumnToShowMin, numberColumnToShowMax, numberColumnTotal);
     }
 
     @Override

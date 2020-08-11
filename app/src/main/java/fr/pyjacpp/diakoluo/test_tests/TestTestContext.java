@@ -36,30 +36,32 @@ public class TestTestContext {
 
     static final int PROGRESS_BAR_PRECISION = 100;
 
-    private int score = 0;
+    private int score;
     private int maxScore;
 
     private final int numberQuestionToAsk;
     private final int numberColumnToShow;
+    private int numberColumnToShowRandom;
 
-    private ArrayList<DataRow> listRowToAsk = new ArrayList<>();
+    private ArrayList<DataRow> listRowToAsk;
 
     private final Test test;
 
-    private int currentIndex = 0;
-    private boolean answerGive = false;
+    private int currentIndex;
+    private boolean answerGive;
 
-    private HashMap<Column, Object> userAnswer = new HashMap<>();
-    private HashMap<Column, Boolean> showColumn = new HashMap<>();
+    private final HashMap<Column, Object> userAnswer = new HashMap<>();
+    private final HashMap<Column, Boolean> showColumn = new HashMap<>();
+
+    private final ArrayList<Column> columnsAskRandom = new ArrayList<>();
+    private final ArrayList<Column> columnsAsk = new ArrayList<>();
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     protected TestTestContext(Test test, int numberQuestionToAsk, int numberColumnToShow) {
         this.test = test;
         this.numberQuestionToAsk = numberQuestionToAsk;
         this.numberColumnToShow = numberColumnToShow;
-
-        // initialize
-        reset();
+        initialize(numberColumnToShow);
     }
 
     TestTestContext(Context context, int numberQuestionToAsk, int numberColumnToShow) {
@@ -67,22 +69,27 @@ public class TestTestContext {
         this.numberColumnToShow = numberColumnToShow;
 
         test = DiakoluoApplication.getCurrentTest(context);
-        Random random = new Random();
+        initialize(numberColumnToShow);
+    }
 
-        maxScore = numberQuestionToAsk * (test.getNumberColumn() - numberColumnToShow);
+    private void initialize(int numberColumnToShow) {
+        for (Column c : test.getListColumn()) {
+            boolean canHide = c.isInSettings(Column.SET_CAN_BE_HIDE);
+            boolean canShow = c.isInSettings(Column.SET_CAN_BE_SHOW);
 
-        ArrayList<DataRow> dataRowsToChoose = new ArrayList<>(test.getListRow());
-
-        for (int i = 0; i < numberQuestionToAsk; i++) {
-            int index = random.nextInt(dataRowsToChoose.size());
-            listRowToAsk.add(dataRowsToChoose.get(index));
-            dataRowsToChoose.remove(index);
+            if (canHide && canShow) {
+                columnsAskRandom.add(c);
+                columnsAsk.add(c);
+            } else if (canHide) {
+                columnsAsk.add(c);
+                showColumn.put(c, false);
+            } else if (canShow) {
+                showColumn.put(c, true);
+                numberColumnToShow--;
+            }
         }
-
-        for (Column column : test.getListColumn()) {
-            userAnswer.put(column, null);
-            showColumn.put(column, false);
-        }
+        numberColumnToShowRandom = numberColumnToShow;
+        reset();
     }
 
     public int getMaxScore() {
@@ -147,10 +154,10 @@ public class TestTestContext {
     }
 
     void selectShowColumn() {
-        ArrayList<Column> columnsToChoose = new ArrayList<>(test.getListColumn());
+        ArrayList<Column> columnsToChoose = new ArrayList<>(columnsAskRandom);
         Random random = new Random();
 
-        for (int i = 0; i < numberColumnToShow; i++) {
+        for (int i = 0; i < numberColumnToShowRandom; i++) {
             int index = random.nextInt(columnsToChoose.size());
             showColumn.put(columnsToChoose.get(index), true);
             columnsToChoose.remove(index);
@@ -171,13 +178,10 @@ public class TestTestContext {
 
     void reset() {
         score = 0;
-        maxScore = numberQuestionToAsk * (test.getNumberColumn() - numberColumnToShow);
+        maxScore = numberQuestionToAsk * numberColumnToShow; // TODO improve when score system is change
         listRowToAsk = new ArrayList<>();
         currentIndex = 0;
         answerGive = false;
-
-        userAnswer = new HashMap<>();
-        showColumn = new HashMap<>();
 
         ArrayList<DataRow> dataRowsToChoose = new ArrayList<>(test.getListRow());
 
@@ -188,7 +192,7 @@ public class TestTestContext {
             dataRowsToChoose.remove(index);
         }
 
-        for (Column column : test.getListColumn()) {
+        for (Column column : columnsAsk) {
             userAnswer.put(column, null);
             showColumn.put(column, false);
         }
