@@ -263,7 +263,7 @@ public class ColumnList extends Column {
 
     private class ColumnAdapter extends RecyclerView.Adapter<ColumnAdapter.ColumnViewHolder> {
 
-        private boolean editable;
+        private final boolean editable;
 
         private ColumnAdapter(boolean editable) {
             super();

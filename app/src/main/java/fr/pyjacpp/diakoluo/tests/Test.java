@@ -346,7 +346,7 @@ public class Test {
     }
 
     /**
-     * Setthe filename of the test.
+     * Set the filename of the test.
      * @param filename the filename of the test
      */
     public void setFilename(String filename) {
