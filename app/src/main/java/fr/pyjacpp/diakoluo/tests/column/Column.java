@@ -455,11 +455,11 @@ public abstract class Column {
             throws IOException, XmlPullParserException {
         switch (parser.getName()) {
             case FileManager.TAG_NAME:
-                name = XmlLoader.readName(parser);
+                name = XmlLoader.readText(parser);
                 break;
 
             case FileManager.TAG_DESCRIPTION:
-                description = XmlLoader.readDescription(parser);
+                description = XmlLoader.readText(parser);
                 break;
 
             case FileManager.TAG_SETTINGS:
@@ -485,6 +485,7 @@ public abstract class Column {
      * @throws XmlPullParserException if an error occur while the file is reading
      */
     private void loopXmlTags(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMN);
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 // continue until it is a start tag
@@ -516,6 +517,27 @@ public abstract class Column {
                         dataCell));
             }
         }
+    }
+
+    /**
+     * Read columns from xml file.
+     * @return the list of columns loaded
+     */
+    public static ArrayList<Column> readXmlColumns(XmlPullParser parser) throws IOException, XmlPullParserException {
+        ArrayList<Column> columns = new ArrayList<>();
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            if (parser.getName().equals(FileManager.TAG_COLUMN)) {
+                columns.add(Column.readColumnXml(parser));
+            } else {
+                XmlLoader.skip(parser);
+            }
+        }
+        return columns;
     }
 
     @Override
