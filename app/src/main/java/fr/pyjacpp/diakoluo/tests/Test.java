@@ -454,7 +454,8 @@ public class Test {
      * @throws IOException if an exception occur while writing of the file
      */
     public void writeXml(OutputStream fileOutputStream, boolean saveNumberTestDone) throws IOException {
-        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_TEST);
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_TEST,
+                FileManager.ATTRIBUTE_VERSION, FileManager.VER_ACTUAL);
 
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
@@ -480,7 +481,17 @@ public class Test {
         XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_TEST);
     }
 
-    public static Test readXmlTest(XmlPullParser parser) throws IOException, XmlPullParserException {
+    public static Test readXmlTest(XmlPullParser parser)
+            throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_TEST);
+
+        int fileVersion = -1;
+        try {
+            String attributeValue = parser.getAttributeValue(null, FileManager.ATTRIBUTE_VERSION);
+            if (attributeValue != null) fileVersion = Integer.parseInt(attributeValue);
+        } catch (NumberFormatException ignored) {
+        }
+
         Test test = new Test();
         while (parser.next() != XmlPullParser.END_DOCUMENT) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -510,11 +521,11 @@ public class Test {
                     break;
 
                 case FileManager.TAG_COLUMNS:
-                    test.listColumn = Column.readXmlColumns(parser);
+                    test.listColumn = Column.readXmlColumns(parser, fileVersion);
                     break;
 
                 case FileManager.TAG_ROWS:
-                    test.listRow = DataRow.readXmlRows(parser, test);
+                    test.listRow = DataRow.readXmlRows(parser, test.listColumn);
                     break;
 
                 default:

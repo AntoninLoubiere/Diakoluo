@@ -20,6 +20,7 @@
 package fr.pyjacpp.diakoluo.tests.column;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +67,7 @@ public abstract class Column {
     public static final int SET_CAN_BE_HIDE = 1;
     public static final int SET_CAN_BE_SHOW = 1 << 1;
     protected static final int SET_DEFAULT = SET_CAN_BE_HIDE | SET_CAN_BE_SHOW;
+    public static final int SCORE_DEFAULT = 1;
 
     /**
      * When a edit text with a layout is clicked send focus change to the parent so it can be
@@ -88,6 +90,7 @@ public abstract class Column {
     @NonNull protected ColumnInputType inputType;
     @Nullable private String name;
     @Nullable private String description;
+    private int score = -1;
     protected int settings = -1;
 
     /**
@@ -136,11 +139,12 @@ public abstract class Column {
     /**
      * Create a new column from a xml file.
      * @param parser the XmlPullParser of the file
+     * @param fileVersion
      * @return the new column
      * @throws XmlPullParserException if while reading the file an exception occur
      * @throws IOException if while reading the file an exception occur
      */
-    public static Column readColumnXml(XmlPullParser parser)
+    public static Column readColumnXml(XmlPullParser parser, int fileVersion)
             throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMN);
         String attributeValue = parser.getAttributeValue(null,
@@ -156,7 +160,7 @@ public abstract class Column {
                 Column column = Column.newColumn(columnInputType, null, null);
 
                 column.loopXmlTags(parser);
-                column.setDefaultValueBackWardCompatibility();
+                column.setDefaultValueBackWardCompatibility(fileVersion);
                 if (column.isValid()) {
                     return column;
                 } else {
@@ -201,6 +205,7 @@ public abstract class Column {
         newColumn.description = description;
         newColumn.inputType = inputType;
         newColumn.settings = settings;
+        newColumn.score = score;
     }
 
     /**
@@ -211,6 +216,7 @@ public abstract class Column {
         this.name = null;
         this.description = null;
         settings = -1;
+        score = -1;
     }
 
     /**
@@ -221,6 +227,7 @@ public abstract class Column {
         this.name = name;
         this.description = description;
         settings = SET_DEFAULT;
+        score = SCORE_DEFAULT;
     }
 
     /**
@@ -258,6 +265,22 @@ public abstract class Column {
     }
 
     /**
+     * Get the score of the column
+     * @return the score of the column
+     */
+    public int getScore() {
+        return score;
+    }
+
+    /**
+     * Set the score of the column
+     * @param score the score of the column
+     */
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    /**
      * Get the input type of the file
      * @return the input type of the file
      */
@@ -271,7 +294,7 @@ public abstract class Column {
      * @return if the column is valid
      */
     public boolean isValid() {
-        return !(name == null || description == null) && settings >= 0;
+        return !(name == null || description == null) && settings >= 0 && score >= 0;
     }
 
     /**
@@ -429,6 +452,7 @@ public abstract class Column {
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_SETTINGS, settings);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE, score);
     }
 
     /**
@@ -466,6 +490,11 @@ public abstract class Column {
                 settings = XmlLoader.readInt(parser);
                 break;
 
+            case FileManager.TAG_SCORE:
+                score = XmlLoader.readInt(parser);
+                Log.e(XmlLoader.TAG, "Score: " + score + " - " + name);
+                break;
+
             default:
                 XmlLoader.skip(parser);
                 break;
@@ -474,8 +503,12 @@ public abstract class Column {
 
     /**
      * Set default values for backward compatibility.
+     * @param fileVersion the version of the file
      */
-    protected void setDefaultValueBackWardCompatibility() {
+    protected void setDefaultValueBackWardCompatibility(int fileVersion) {
+        if (fileVersion < FileManager.VER_V_0_3_0) {
+            if (score < 0) score = SCORE_DEFAULT;
+        }
     }
 
     /**
@@ -523,7 +556,8 @@ public abstract class Column {
      * Read columns from xml file.
      * @return the list of columns loaded
      */
-    public static ArrayList<Column> readXmlColumns(XmlPullParser parser) throws IOException, XmlPullParserException {
+    public static ArrayList<Column> readXmlColumns(XmlPullParser parser, int fileVersion)
+            throws IOException, XmlPullParserException {
         ArrayList<Column> columns = new ArrayList<>();
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -532,7 +566,12 @@ public abstract class Column {
             }
 
             if (parser.getName().equals(FileManager.TAG_COLUMN)) {
-                columns.add(Column.readColumnXml(parser));
+                Column column = Column.readColumnXml(parser, fileVersion);
+                if (column == null) {
+                    Log.w(XmlLoader.TAG, "Column isn't valid !");
+                } else {
+                    columns.add(column);
+                }
             } else {
                 XmlLoader.skip(parser);
             }
@@ -545,7 +584,7 @@ public abstract class Column {
         if (obj instanceof Column) {
             Column c = (Column) obj;
             return Objects.equals(c.name, name) && Objects.equals(c.description, description) &&
-                    c.settings == settings;
+                    c.settings == settings && c.score == score;
         }
         return false;
     }
