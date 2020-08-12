@@ -196,16 +196,15 @@ public class ColumnList extends Column {
     }
 
     @Override
-    public void writeXml(OutputStream fileOutputStream) throws IOException {
-        super.writeXml(fileOutputStream);
-        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_DEFAULT_VALUE,
-                String.valueOf(defaultValue)).getBytes());
-        fileOutputStream.write(XmlSaver.getStartBeacon(TAG_VALUES).getBytes());
+    public void writeXmlInternal(OutputStream fileOutputStream) throws IOException {
+        super.writeXmlInternal(fileOutputStream);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_DEFAULT_VALUE, defaultValue);
+
+        XmlSaver.writeStartBeacon(fileOutputStream, TAG_VALUES);
         for (int i = 0, valuesSize = values.size(); i < valuesSize; i++) {
-            fileOutputStream.write(XmlSaver.getCoupleBeacon(TAG_VALUE,
-                    String.valueOf(values.get(i))).getBytes());
+            XmlSaver.writeData(fileOutputStream, TAG_VALUE, values.get(i));
         }
-        fileOutputStream.write(XmlSaver.getEndBeacon(TAG_VALUES).getBytes());
+        XmlSaver.writeEndBeacon(fileOutputStream, TAG_VALUES);
     }
 
     @Override
@@ -264,7 +263,7 @@ public class ColumnList extends Column {
 
     private class ColumnAdapter extends RecyclerView.Adapter<ColumnAdapter.ColumnViewHolder> {
 
-        private boolean editable;
+        private final boolean editable;
 
         private ColumnAdapter(boolean editable) {
             super();

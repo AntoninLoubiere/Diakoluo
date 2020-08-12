@@ -419,12 +419,30 @@ public abstract class Column {
 
     /**
      * Write the column into a xml file.
+     * This method should be call by {@link #writeXml(OutputStream)} only.
+     * If override you should call the super.
+     * @see #writeXml(OutputStream)
+     * @param fileOutputStream the FileOutputStream of the xml file
+     * @throws IOException if while writing the file an error occur
+     */
+    protected void writeXmlInternal(OutputStream fileOutputStream) throws IOException {
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SETTINGS, settings);
+    }
+
+    /**
+     * Write the column into a xml file.
+     * Do not override this method. Override {@link #writeXmlInternal(OutputStream)} instead
+     * @see #writeXmlInternal(OutputStream)
      * @param fileOutputStream the FileOutputStream of the xml file
      * @throws IOException if while writing the file an error occur
      */
     public void writeXml(OutputStream fileOutputStream) throws IOException {
-        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_SETTINGS,
-                String.valueOf(settings)).getBytes());
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_COLUMN,
+                FileManager.ATTRIBUTE_INPUT_TYPE, inputType.name());
+        writeXmlInternal(fileOutputStream);
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_COLUMN);
     }
 
     /**
@@ -437,11 +455,11 @@ public abstract class Column {
             throws IOException, XmlPullParserException {
         switch (parser.getName()) {
             case FileManager.TAG_NAME:
-                name = XmlLoader.readName(parser);
+                name = XmlLoader.readText(parser);
                 break;
 
             case FileManager.TAG_DESCRIPTION:
-                description = XmlLoader.readDescription(parser);
+                description = XmlLoader.readText(parser);
                 break;
 
             case FileManager.TAG_SETTINGS:
@@ -467,6 +485,7 @@ public abstract class Column {
      * @throws XmlPullParserException if an error occur while the file is reading
      */
     private void loopXmlTags(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMN);
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 // continue until it is a start tag
@@ -498,6 +517,27 @@ public abstract class Column {
                         dataCell));
             }
         }
+    }
+
+    /**
+     * Read columns from xml file.
+     * @return the list of columns loaded
+     */
+    public static ArrayList<Column> readXmlColumns(XmlPullParser parser) throws IOException, XmlPullParserException {
+        ArrayList<Column> columns = new ArrayList<>();
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            if (parser.getName().equals(FileManager.TAG_COLUMN)) {
+                columns.add(Column.readColumnXml(parser));
+            } else {
+                XmlLoader.skip(parser);
+            }
+        }
+        return columns;
     }
 
     @Override

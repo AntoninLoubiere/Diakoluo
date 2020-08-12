@@ -56,7 +56,7 @@ public class SaveLoadTest {
 
     private static final String TAG = "SaveLoadTest";
     @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void saveLoadTest() {

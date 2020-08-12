@@ -30,7 +30,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.column.Column;
@@ -102,8 +101,8 @@ public class DataCellString extends DataCell {
     }
 
     @Override
-    public void writeXml(OutputStream fileOutputStream) throws IOException {
-        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_CELL, value).getBytes());
+    public void writeXmlInternal(OutputStream fileOutputStream) throws IOException {
+        XmlSaver.writeNotSafeData(fileOutputStream, value);
     }
 
     @Override

@@ -37,6 +37,7 @@ import java.io.OutputStream;
 
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
@@ -258,11 +259,26 @@ public abstract class DataCell {
     public abstract void setValueFromCsv(String lineCell, Column column);
 
     /**
-     * Write the cell in the xml file.
+     * Write the cell in the xml file. This method should be call by {@link #writeXml(OutputStream)}
+     * only.
      * @param fileOutputStream the xml file output stream
      * @throws IOException if an error occur while reading the file
+     * @see #writeXml(OutputStream)
      */
-    public abstract void writeXml(OutputStream fileOutputStream) throws IOException;
+    protected abstract void writeXmlInternal(OutputStream fileOutputStream) throws IOException;
+
+    /**
+     * Write the cell in the xml file.
+     * This method should not be override. Override {@link #writeXmlInternal(OutputStream)} instead.
+     * @param fileOutputStream the xml file output stream
+     * @throws IOException if an error occur while reading the file
+     * @see #writeXmlInternal(OutputStream)
+     */
+    public void writeXml(OutputStream fileOutputStream) throws IOException {
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_CELL);
+        writeXmlInternal(fileOutputStream);
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_CELL);
+    }
 
     /**
      * Show the value to the user (view only).

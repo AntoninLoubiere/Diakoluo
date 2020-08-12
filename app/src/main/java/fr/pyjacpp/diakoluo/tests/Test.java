@@ -23,9 +23,17 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
+import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.save_test.XmlLoader;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.test_tests.ColumnToShow;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
@@ -338,7 +346,7 @@ public class Test {
     }
 
     /**
-     * Setthe filename of the test.
+     * Set the filename of the test.
      * @param filename the filename of the test
      */
     public void setFilename(String filename) {
@@ -437,6 +445,84 @@ public class Test {
             if (numberColumnToShowMax <= 0) numberColumnToShowMax = 1;
         }
         return new ColumnToShow(numberColumnToShowMin, numberColumnToShowMax, numberColumnTotal);
+    }
+
+    /**
+     * Write the text in a xml file.
+     * @param fileOutputStream the stream which represent the file
+     * @param saveNumberTestDone if number test has to be save
+     * @throws IOException if an exception occur while writing of the file
+     */
+    public void writeXml(OutputStream fileOutputStream, boolean saveNumberTestDone) throws IOException {
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_TEST);
+
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_CREATED_DATE, createdDate);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_LAST_MODIFICATION, lastModification);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
+
+        if (saveNumberTestDone)
+            XmlSaver.writeData(fileOutputStream, FileManager.TAG_NUMBER_TEST_DID, numberTestDid);
+
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_COLUMNS);
+        for (Column column : listColumn) {
+            column.writeXml(fileOutputStream);
+        }
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_COLUMNS);
+
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_ROWS);
+        for (DataRow row : listRow) {
+            row.writeXml(fileOutputStream, this);
+        }
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_ROWS);
+
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_TEST);
+    }
+
+    public static Test readXmlTest(XmlPullParser parser) throws IOException, XmlPullParserException {
+        Test test = new Test();
+        while (parser.next() != XmlPullParser.END_DOCUMENT) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            switch (parser.getName()) {
+                case FileManager.TAG_NAME:
+                    test.name = XmlLoader.readText(parser);
+                    break;
+
+                case FileManager.TAG_DESCRIPTION:
+                    test.description = XmlLoader.readText(parser);
+                    break;
+
+                case FileManager.TAG_CREATED_DATE:
+                    test.createdDate = XmlLoader.readDate(parser);
+                    break;
+
+                case FileManager.TAG_LAST_MODIFICATION:
+                    test.lastModification = XmlLoader.readDate(parser);
+                    break;
+
+                case FileManager.TAG_NUMBER_TEST_DID:
+                    test.numberTestDid = XmlLoader.readInt(parser);
+                    break;
+
+                case FileManager.TAG_COLUMNS:
+                    test.listColumn = Column.readXmlColumns(parser);
+                    break;
+
+                case FileManager.TAG_ROWS:
+                    test.listRow = DataRow.readXmlRows(parser, test);
+                    break;
+
+                default:
+                    XmlLoader.skip(parser);
+                    break;
+            }
+        }
+        return test;
     }
 
     @Override

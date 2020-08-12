@@ -32,6 +32,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.util.Objects;
+
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
@@ -109,7 +111,7 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
     private void updateNavigation() {
         if (actionBar != null) {
             String name = currentTest.getListColumn().get(columnIndex).getName();
-            if (name.equals(""))
+            if (Objects.equals(name, ""))
                 actionBar.setTitle(R.string.app_name);
             else
                 actionBar.setTitle(name);

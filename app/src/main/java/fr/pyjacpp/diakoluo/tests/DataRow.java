@@ -19,7 +19,12 @@
 
 package fr.pyjacpp.diakoluo.tests;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,8 +32,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import fr.pyjacpp.diakoluo.save_test.CsvSaver;
+import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.save_test.XmlLoader;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
+
+import static fr.pyjacpp.diakoluo.save_test.XmlLoader.TAG;
 
 public class DataRow {
     private HashMap<Column, DataCell> listCells;
@@ -63,6 +73,70 @@ public class DataRow {
         }
     }
 
+    public static DataRow readXmlRow(XmlPullParser parser, Test test)
+            throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_ROW);
+
+        DataRow dataRow = new DataRow();
+        int indexColumn = 0;
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            if (FileManager.TAG_CELL.equals(parser.getName())) {
+                if (indexColumn >= test.getNumberColumn()) {
+                    Log.w(TAG, "Too many columns");
+                    continue;
+                }
+                Column currentColumn = test.getListColumn().get(indexColumn);
+                DataCell cell = DataCell.readCell(parser, currentColumn.getInputType());
+                dataRow.getListCells().put(currentColumn, cell);
+
+                indexColumn++;
+
+            } else {
+                XmlLoader.skip(parser);
+            }
+        }
+
+        if (indexColumn < test.getNumberColumn()) {
+            Log.w(TAG, "Too few cells");
+            for (int i = indexColumn; i < test.getNumberColumn(); i++) {
+                Column currentColumn = test.getListColumn().get(indexColumn);
+                DataCell cell = DataCell.newCellWithDefaultValue(currentColumn);
+                dataRow.getListCells().put(currentColumn, cell);
+            }
+        }
+
+        return dataRow;
+    }
+
+    /**
+     * Read rows from xml file.
+     * @return the list of rows loaded
+     */
+    public static ArrayList<DataRow> readXmlRows(XmlPullParser parser, Test test)
+            throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_ROWS);
+        ArrayList<DataRow> columns = new ArrayList<>();
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            if (parser.getName().equals(FileManager.TAG_ROW)) {
+                columns.add(DataRow.readXmlRow(parser, test));
+            } else {
+                XmlLoader.skip(parser);
+            }
+        }
+        return columns;
+    }
+
     /**
      * Get list of cells.
      * @return the list of cells
@@ -86,13 +160,18 @@ public class DataRow {
      * @throws IOException if an exception occur while writing the file
      */
     public void writeXml(OutputStream fileOutputStream, Test test) throws IOException {
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_ROW);
+
         ArrayList<Column> listColumn = test.getListColumn();
         for (int i = 0, listColumnSize = listColumn.size(); i < listColumnSize; i++) {
             Column column = listColumn.get(i);
             DataCell dataCell = listCells.get(column);
-            if (dataCell != null)
+            if (dataCell != null) {
                 dataCell.writeXml(fileOutputStream);
+            }
         }
+
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_ROW);
     }
 
     /**
