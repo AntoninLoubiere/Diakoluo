@@ -68,7 +68,7 @@ public class ScoreUtilsTest {
     /* Test of TestTestContext */
     private class TestTestTestContext extends TestTestContext {
         TestTestTestContext(int numberQuestionToAsk, int numberColumnToShow) {
-            super(defaultTest, numberQuestionToAsk, numberColumnToShow);
+            super(defaultTest, numberQuestionToAsk, numberColumnToShow, false);
         }
     }
 }

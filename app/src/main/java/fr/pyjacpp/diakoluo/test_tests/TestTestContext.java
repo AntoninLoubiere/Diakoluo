@@ -38,6 +38,7 @@ public class TestTestContext {
 
     private float score;
     private float maxScore;
+    private final boolean proportionalityScoreMethod;
 
     private final int numberQuestionToAsk;
     private int numberColumnToShowRandom;
@@ -58,16 +59,20 @@ public class TestTestContext {
     private final ArrayList<Column> columnsAsk = new ArrayList<>();
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    protected TestTestContext(Test test, int numberQuestionToAsk, int numberColumnToShow) {
+    protected TestTestContext(Test test, int numberQuestionToAsk, int numberColumnToShow,
+                              boolean proportionalityScoreMethod) {
         this.test = test;
         this.numberQuestionToAsk = numberQuestionToAsk;
+        this.proportionalityScoreMethod = proportionalityScoreMethod;
         initialize(numberColumnToShow);
     }
 
-    TestTestContext(Context context, int numberQuestionToAsk, int numberColumnToShow) {
+    TestTestContext(Context context, int numberQuestionToAsk, int numberColumnToShow,
+                    boolean proportionalityScoreMethod) {
         this.numberQuestionToAsk = numberQuestionToAsk;
 
         test = DiakoluoApplication.getCurrentTest(context);
+        this.proportionalityScoreMethod = proportionalityScoreMethod;
         initialize(numberColumnToShow);
     }
 
@@ -113,8 +118,13 @@ public class TestTestContext {
     }
 
     public void addScore(int score, int maxScore) {
-        this.score += score * columnScoreSum / columnSelectedScoreSum;
-        this.maxScore += maxScore * columnScoreSum / columnSelectedScoreSum;
+        if (proportionalityScoreMethod) {
+            this.score += score * columnScoreSum / columnSelectedScoreSum;
+            this.maxScore += maxScore * columnScoreSum / columnSelectedScoreSum;
+        } else {
+            this.score += score;
+            this.maxScore += maxScore;
+        }
     }
 
     /*public int getNumberColumnToShow() {

@@ -18,59 +18,88 @@
   ~     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".test_tests.TestSettingsActivity"
+    android:orientation="vertical"
     android:layout_margin="@dimen/default_margin">
 
-    <TextView
-        android:id="@+id/numberQuestionToAskTextView"
-        style="@style/Body0"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_margin"
-        android:text="@string/number_question_to_ask" />
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <Spinner
-        android:id="@+id/numberQuestionToAskSpinner"
-        style="@style/Body0"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/numberQuestionToAskTextView"
-        android:spinnerMode="dropdown" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/numberColumnToShowTextView"
-        style="@style/Body0"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/numberQuestionToAskSpinner"
-        android:layout_marginTop="@dimen/default_margin"
-        android:text="@string/number_column_to_show" />
+            <TextView
+                android:id="@+id/numberQuestionToAskTextView"
+                style="@style/Body0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margin"
+                android:text="@string/number_question_to_ask" />
 
-    <SeekBar
-        android:id="@+id/numberColumnToShowSeekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/numberColumnToShowTextView"
-        android:layout_toStartOf="@id/numberColumnToShowSeekBarTextView" />
+            <Spinner
+                android:id="@+id/numberQuestionToAskSpinner"
+                style="@style/Body0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown" />
 
-    <TextView
-        android:id="@+id/numberColumnToShowSeekBarTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/numberColumnToShowSeekBar"
-        android:layout_alignBottom="@id/numberColumnToShowSeekBar"
-        android:layout_alignParentEnd="true"
-        android:text="@string/number_column_to_show_seekbar_textview" />
+            <TextView
+                android:id="@+id/numberColumnToShowTextView"
+                style="@style/Body0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margin"
+                android:text="@string/number_column_to_show" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <SeekBar
+                    android:id="@+id/numberColumnToShowSeekBar"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:id="@+id/numberColumnToShowSeekBarTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/number_column_to_show_seekbar_textview" />
+
+            </LinearLayout>
+
+            <TextView
+                style="@style/Body0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margin"
+                android:text="@string/score_method" />
+
+            <Spinner
+                android:id="@+id/scoreMethod"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/score_method" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
     <Button
         android:id="@+id/validButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/valid"
-        android:layout_alignParentBottom="true"/>
+        android:text="@string/valid" />
 
-</RelativeLayout>
+</LinearLayout>

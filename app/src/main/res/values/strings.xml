@@ -113,12 +113,5 @@
     <string name="points">point(s)</string>
     <string name="positive_number_required">A positive number is required</string>
     <string name="number_required">A valid number is required</string>
-    <string-array name="export_entries">
-        <item>Diakôluô file (.dkl)</item>
-        <item>Csv file (.csv)</item>
-    </string-array>
-    <string-array name="separatorsCsv">
-        <item>Comma (\",\")</item>
-        <item>Semi-colon (\";\")</item>
-    </string-array>
+    <string name="score_method">Score method:</string>
 </resources>

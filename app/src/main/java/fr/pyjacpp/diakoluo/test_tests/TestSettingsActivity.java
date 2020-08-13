@@ -45,9 +45,9 @@ public class TestSettingsActivity extends AppCompatActivity implements TestSetti
     }
 
     @Override
-    public void onDoTest(int numberQuestionToAsk, int numberColumnToShow) {
+    public void onDoTest(int numberQuestionToAsk, int numberColumnToShow, boolean proportionalityScoreMethod) {
         TestTestContext testTestContext = new TestTestContext(this, numberQuestionToAsk,
-                numberColumnToShow);
+                numberColumnToShow, proportionalityScoreMethod);
         testTestContext.selectShowColumn();
         DiakoluoApplication.setTestTestContext(this, testTestContext);
 
