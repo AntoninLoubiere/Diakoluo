@@ -31,12 +31,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import java.text.DateFormat;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.Utils;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 public class MainInformationEditTestFragment extends Fragment {
@@ -71,13 +73,13 @@ public class MainInformationEditTestFragment extends Fragment {
 
         title.addTextChangedListener(new EditTextTextWatcher(title) {
             @Override
-            EditTestActivity.EditTestValidator validatorFunction(String text) {
+            Utils.EditValidator validatorFunction(String text) {
                 return mListener.titleEditTestValidator(text);
             }
         });
         description.addTextChangedListener(new EditTextTextWatcher(description) {
             @Override
-            EditTestActivity.EditTestValidator validatorFunction(String text) {
+            Utils.EditValidator validatorFunction(String text) {
                 return mListener.descriptionEditTestValidator(text);
             }
         });
@@ -147,8 +149,8 @@ public class MainInformationEditTestFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        EditTestActivity.EditTestValidator titleEditTestValidator(String text);
-        EditTestActivity.EditTestValidator descriptionEditTestValidator(String text);
+        Utils.EditValidator titleEditTestValidator(String text);
+        Utils.EditValidator descriptionEditTestValidator(String text);
     }
 
     abstract class EditTextTextWatcher implements TextWatcher {
@@ -170,13 +172,16 @@ public class MainInformationEditTestFragment extends Fragment {
 
         @Override
         public void afterTextChanged(Editable editable) {
-            EditTestActivity.EditTestValidator validatorResponse = validatorFunction(editable.toString());
+            Utils.EditValidator validatorResponse = validatorFunction(editable.toString());
 
             if (validatorResponse.isError()) {
                 String msg = getString(validatorResponse.getErrorMessageResourceId());
                 if (validatorResponse.isWarning()) {
-                    Drawable warningIcon= getResources().getDrawable(R.drawable.ic_warning_yellow_24dp);
-                    warningIcon.setBounds(0, 0, warningIcon.getIntrinsicWidth(), warningIcon.getIntrinsicHeight());
+                    Drawable warningIcon= ResourcesCompat.getDrawable(getResources(),
+                            R.drawable.ic_warning_yellow_24dp, null);
+                    if (warningIcon != null) {
+                        warningIcon.setBounds(0, 0, warningIcon.getIntrinsicWidth(), warningIcon.getIntrinsicHeight());
+                    }
 
                     editText.setError(msg, warningIcon);
                 } else {
@@ -187,6 +192,6 @@ public class MainInformationEditTestFragment extends Fragment {
             }
         }
 
-        abstract EditTestActivity.EditTestValidator validatorFunction(String text);
+        abstract Utils.EditValidator validatorFunction(String text);
     }
 }

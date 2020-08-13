@@ -108,6 +108,11 @@
     <string name="down">Down</string>
     <string name="can_be_hide">Can be asked during a test</string>
     <string name="can_be_show">Can be reveal during a test</string>
+    <string name="column_settings_score_view">This column give %d point(s)</string>
+    <string name="column_settings_score_edit">Score</string>
+    <string name="points">point(s)</string>
+    <string name="positive_number_required">A positive number is required</string>
+    <string name="number_required">A valid number is required</string>
     <string-array name="export_entries">
         <item>Diakôluô file (.dkl)</item>
         <item>Csv file (.csv)</item>
