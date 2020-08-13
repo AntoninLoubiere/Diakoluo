@@ -36,12 +36,13 @@ public class TestTestContext {
 
     static final int PROGRESS_BAR_PRECISION = 100;
 
-    private int score;
-    private int maxScore;
+    private float score;
+    private float maxScore;
 
     private final int numberQuestionToAsk;
-    private final int numberColumnToShow;
     private int numberColumnToShowRandom;
+    private float columnScoreSum = 0;
+    private float columnSelectedScoreSum = 0;
 
     private ArrayList<DataRow> listRowToAsk;
 
@@ -60,13 +61,11 @@ public class TestTestContext {
     protected TestTestContext(Test test, int numberQuestionToAsk, int numberColumnToShow) {
         this.test = test;
         this.numberQuestionToAsk = numberQuestionToAsk;
-        this.numberColumnToShow = numberColumnToShow;
         initialize(numberColumnToShow);
     }
 
     TestTestContext(Context context, int numberQuestionToAsk, int numberColumnToShow) {
         this.numberQuestionToAsk = numberQuestionToAsk;
-        this.numberColumnToShow = numberColumnToShow;
 
         test = DiakoluoApplication.getCurrentTest(context);
         initialize(numberColumnToShow);
@@ -77,12 +76,17 @@ public class TestTestContext {
             boolean canHide = c.isInSettings(Column.SET_CAN_BE_HIDE);
             boolean canShow = c.isInSettings(Column.SET_CAN_BE_SHOW);
 
+            int score = c.getScore();
             if (canHide && canShow) {
                 columnsAskRandom.add(c);
                 columnsAsk.add(c);
+                columnSelectedScoreSum += score; // null showColumn is considered false
+                columnScoreSum += score;
             } else if (canHide) {
                 columnsAsk.add(c);
                 showColumn.put(c, false);
+                columnSelectedScoreSum += score;
+                columnScoreSum += score;
             } else if (canShow) {
                 showColumn.put(c, true);
                 numberColumnToShow--;
@@ -92,24 +96,25 @@ public class TestTestContext {
         reset();
     }
 
-    public int getMaxScore() {
+    public float getMaxScore() {
         return maxScore;
     }
 
-    public int getScore() {
+    public float getScore() {
         return score;
     }
 
     int getProgressScore() {
-        return score * PROGRESS_BAR_PRECISION;
+        return (int) (score * PROGRESS_BAR_PRECISION);
     }
 
     int getMaxProgressScore() {
-        return maxScore * PROGRESS_BAR_PRECISION;
+        return (int) (maxScore * PROGRESS_BAR_PRECISION);
     }
 
-    public void addScore(int score) {
-        this.score += score;
+    public void addScore(int score, int maxScore) {
+        this.score += score * columnScoreSum / columnSelectedScoreSum;
+        this.maxScore += maxScore * columnScoreSum / columnSelectedScoreSum;
     }
 
     /*public int getNumberColumnToShow() {
@@ -159,11 +164,16 @@ public class TestTestContext {
 
         for (int i = 0; i < numberColumnToShowRandom; i++) {
             int index = random.nextInt(columnsToChoose.size());
-            showColumn.put(columnsToChoose.get(index), true);
+            Column column = columnsToChoose.get(index);
+            Boolean previous = showColumn.get(column);
+            if (previous == null || !previous) columnSelectedScoreSum -= column.getScore();
+            showColumn.put(column, true);
             columnsToChoose.remove(index);
         }
 
         for (Column column : columnsToChoose) {
+            Boolean previous = showColumn.get(column);
+            if (previous != null && previous) columnSelectedScoreSum += column.getScore();
             showColumn.put(column, false);
         }
     }
@@ -178,7 +188,7 @@ public class TestTestContext {
 
     void reset() {
         score = 0;
-        maxScore = numberQuestionToAsk * numberColumnToShow; // TODO improve when score system is change
+        maxScore = 0;
         listRowToAsk = new ArrayList<>();
         currentIndex = 0;
         answerGive = false;
@@ -194,8 +204,11 @@ public class TestTestContext {
 
         for (Column column : columnsAsk) {
             userAnswer.put(column, null);
+            Boolean previous = showColumn.get(column);
+            if (previous != null && previous) columnSelectedScoreSum += column.getScore();
             showColumn.put(column, false);
         }
+        selectShowColumn();
     }
 
     int getProgress() {

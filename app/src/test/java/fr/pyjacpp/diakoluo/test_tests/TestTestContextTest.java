@@ -47,17 +47,17 @@ public class TestTestContextTest {
     @Test
     public void getProgressScore() {
         TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW);
-        testTestContext.addScore(10);
+        testTestContext.addScore(10, 10);
         assertEquals(10 * TestTestContext.PROGRESS_BAR_PRECISION, testTestContext.getProgressScore());
-        assertEquals(testTestContext.getMaxScore() * TestTestContext.PROGRESS_BAR_PRECISION, testTestContext.getMaxProgressScore());
+        assertEquals((int) testTestContext.getMaxScore() * TestTestContext.PROGRESS_BAR_PRECISION, testTestContext.getMaxProgressScore());
     }
 
     @Test
     public void addScore() {
         TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW);
-        assertEquals(0, testTestContext.getScore());
-        testTestContext.addScore(10);
-        assertEquals(10, testTestContext.getScore());
+        assertEquals(0, testTestContext.getScore(), 0);
+        testTestContext.addScore(10, 10);
+        assertEquals(10, testTestContext.getScore(), 0);
     }
 
     @Test
@@ -95,6 +95,9 @@ public class TestTestContextTest {
             testTestContext.selectShowColumn();
             assertEquals(numberColumnToShow, countShowColumn(testTestContext));
         }
+        testTestContext.reset();
+        testTestContext.selectShowColumn();
+        assertEquals(numberColumnToShow, countShowColumn(testTestContext));
     }
 
     @Test
@@ -119,15 +122,15 @@ public class TestTestContextTest {
     @Test
     public void reset() {
         TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW);
-        testTestContext.addScore(10);
-        assertEquals(10, testTestContext.getScore());
+        testTestContext.addScore(10, 10);
+        assertEquals(10, testTestContext.getScore(), 0);
         testTestContext.setAnswerGive(true);
         assertTrue(testTestContext.isAnswerGive());
-        int maxScore = testTestContext.getMaxScore();
+        float maxScore = testTestContext.getMaxScore();
         testTestContext.reset();
-        assertEquals(0, testTestContext.getScore());
+        assertEquals(0, testTestContext.getScore(), 0);
         assertFalse(testTestContext.isAnswerGive());
-        assertEquals(maxScore, testTestContext.getMaxScore());
+        assertEquals(maxScore, testTestContext.getMaxScore(), 0);
     }
 
     @Test

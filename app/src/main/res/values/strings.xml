@@ -36,7 +36,7 @@
     <string name="continue_text">Continue</string>
     <string name="skip">(Skip)</string>
     <string name="score_20" translatable="false">%.2f/20</string>
-    <string name="score_precise" translatable="false">%d/%d</string>
+    <string name="score_precise" translatable="false">%.2f/%.2f</string>
     <string name="restart">Restart</string>
     <string name="main_menu">Main menu</string>
     <string name="description">Description</string>

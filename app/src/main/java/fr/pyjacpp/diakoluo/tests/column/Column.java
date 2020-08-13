@@ -52,6 +52,7 @@ import fr.pyjacpp.diakoluo.ViewUtils;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
+import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
@@ -148,7 +149,7 @@ public abstract class Column {
      * Create a new column from a xml file.
      *
      * @param parser      the XmlPullParser of the file
-     * @param fileVersion
+     * @param fileVersion the version of the file
      * @return the new column
      * @throws XmlPullParserException if while reading the file an exception occur
      * @throws IOException            if while reading the file an exception occur
@@ -347,6 +348,21 @@ public abstract class Column {
      */
     public boolean isValid() {
         return !(name == null || description == null) && settings >= 0 && score >= 0;
+    }
+
+    /**
+     * Verify if the answer is correct and give score depending
+     * @param testTestContext the test context
+     * @param dataCell the dataCell to verify
+     * @param answer the answer given by the user
+     */
+    public void verifyAndScoreAnswer(TestTestContext testTestContext, DataCell dataCell,
+                                     Object answer) {
+        if (verifyAnswer(dataCell, answer)) {
+            testTestContext.addScore(score, score);
+        } else {
+            testTestContext.addScore(0, score);
+        }
     }
 
     /**
@@ -603,7 +619,6 @@ public abstract class Column {
 
             case FileManager.TAG_SCORE:
                 score = XmlLoader.readInt(parser);
-                Log.e(XmlLoader.TAG, "Score: " + score + " - " + name);
                 break;
 
             default:

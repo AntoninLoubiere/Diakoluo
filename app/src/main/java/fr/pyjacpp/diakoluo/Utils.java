@@ -50,6 +50,10 @@ public final class Utils {
         return s.substring(realStart, realEnd + 1);
     }
 
+    public static int map(int var, int inMin, int inMax, int outMin, int outMax) {
+        return (var - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+    }
+
     public static class ExtremeDeceleratorInterpolator implements Interpolator {
 
         @Override

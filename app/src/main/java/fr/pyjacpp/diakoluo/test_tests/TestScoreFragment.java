@@ -69,7 +69,7 @@ public class TestScoreFragment extends Fragment {
 
         scoreProgressBar.setMax(testTestContext.getMaxProgressScore());
 
-        final int maxScore = testTestContext.getMaxScore();
+        final float maxScore = testTestContext.getMaxScore();
         if (savedInstanceState == null) {
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
@@ -82,7 +82,7 @@ public class TestScoreFragment extends Fragment {
                     animation.start();
                     scoreProgressBar.setProgress(testTestContext.getProgressScore());
 
-                    primaryValueAnimator = ValueAnimator.ofFloat(0, testTestContext.getScore());
+                    primaryValueAnimator = ValueAnimator.ofFloat(0f, testTestContext.getScore());
                     primaryValueAnimator.setDuration(3000);
                     primaryValueAnimator.setInterpolator(decelerateInterpolator);
 
@@ -94,21 +94,21 @@ public class TestScoreFragment extends Fragment {
                     });
                     primaryValueAnimator.start();
 
-                    secondaryValueAnimator = ValueAnimator.ofInt(0, testTestContext.getScore());
+                    secondaryValueAnimator = ValueAnimator.ofFloat(0, testTestContext.getScore());
                     secondaryValueAnimator.setDuration(3000);
                     secondaryValueAnimator.setInterpolator(decelerateInterpolator);
 
                     secondaryValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
                         public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                            secondaryScoreTextView.setText(getString(R.string.score_precise, (Integer) valueAnimator.getAnimatedValue(), maxScore));
+                            secondaryScoreTextView.setText(getString(R.string.score_precise, (Float) valueAnimator.getAnimatedValue(), maxScore));
                         }
                     });
                     secondaryValueAnimator.start();
                 }
             }, 1000);
-            primaryScoreTextView.setText(getString(R.string.score_20, 0.0f));
-            secondaryScoreTextView.setText(getString(R.string.score_precise, 0, maxScore));
+            primaryScoreTextView.setText(getString(R.string.score_20, 0f));
+            secondaryScoreTextView.setText(getString(R.string.score_precise, 0f, maxScore));
         } else {
             primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20(testTestContext)));
             secondaryScoreTextView.setText(getString(R.string.score_precise, testTestContext.getScore(), maxScore));

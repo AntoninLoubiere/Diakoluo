@@ -215,7 +215,7 @@ public class TestFragment extends Fragment {
             DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
 
             if (columnShow != null && answer != null && dataCell != null && !columnShow) {
-                dataCell.verifyAndScoreAnswer(testTestContext, column, answer);
+                column.verifyAndScoreAnswer(testTestContext, dataCell, answer);
             }
         }
     }
