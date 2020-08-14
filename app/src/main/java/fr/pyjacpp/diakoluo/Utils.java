@@ -54,6 +54,23 @@ public final class Utils {
         return (var - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
     }
 
+    /**
+     * Remove useless space at the en of a line
+     * @param stringBuilder the string builder of the string to process
+     * @return the string processed
+     */
+    public static String removeUselessSpacesEnd(StringBuilder stringBuilder) {
+        while (stringBuilder.length() > 0) {
+            char c = stringBuilder.charAt(stringBuilder.length() - 1);
+            if (c == ' ' || c == '\n' || c == '\t') {
+                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            } else {
+                break;
+            }
+        }
+        return stringBuilder.toString();
+    }
+
     public static class ExtremeDeceleratorInterpolator implements Interpolator {
 
         @Override

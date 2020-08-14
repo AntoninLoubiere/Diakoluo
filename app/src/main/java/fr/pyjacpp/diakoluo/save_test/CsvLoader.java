@@ -21,6 +21,8 @@ package fr.pyjacpp.diakoluo.save_test;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.Utils;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
@@ -38,6 +41,19 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public class CsvLoader {
 
+    /**
+     * Load a test from a inputStream of a csv file. Return the test loaded or null if the test
+     * can't be loaded.
+     * @param context the context of the application (or the activity)
+     * @param inputStream the input stream of the csv file to load
+     * @param separator the separator used in the csv file
+     * @param loadColumnName if the first line is the name of columns
+     * @param loadColumnType if the second or the first line is the type of column
+     * @param testName the name of the test
+     * @return the test loaded or null if can't load
+     * @throws IOException if while reading the file an exception occur
+     */
+    @Nullable
     public static Test load(Context context,  FileInputStream inputStream, char separator, boolean loadColumnName, boolean loadColumnType, String testName) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         CsvContext csvContext = new CsvContext(context, bufferedReader, separator, CsvSaver.DEFAULT_LINE_SEPARATOR.charAt(0));
@@ -119,6 +135,16 @@ public class CsvLoader {
         }
     }
 
+    /**
+     * Create columns to load the test.
+     * @param csvContext the context of the loader
+     * @param loadColumnName if the first line is the name of columns
+     * @param loadColumnType if the second or the first line is the type of column
+     * @param numberColumns the number of columns to create
+     * @param columns the list where to add columns
+     * @param columnNames the list of names of columns
+     * @param columnType the list of columns types
+     */
     private static void createColumns(CsvContext csvContext, boolean loadColumnName, boolean loadColumnType, int numberColumns, ArrayList<Column> columns, ArrayList<String> columnNames, ArrayList<String> columnType) {
         for (int i = 0; i < numberColumns; i++) {
             Column column;
@@ -137,6 +163,12 @@ public class CsvLoader {
         }
     }
 
+    /**
+     * Read a line of csv
+     * @param context the csv context
+     * @return the list of cell in the csv document
+     * @throws IOException if an exception occur while reading the file
+     */
     private static ArrayList<String> readLine(CsvContext context) throws IOException {
         ArrayList<String> list = new ArrayList<>();
         StringBuilder currentValue = new StringBuilder();
@@ -184,7 +216,7 @@ public class CsvLoader {
                             list.add(currentValue.toString());
                             hasBeenQuoted = false;
                         } else {
-                            list.add(removeUselessSpacesEnd(currentValue));
+                            list.add(Utils.removeUselessSpacesEnd(currentValue));
                         }
                         currentValue = new StringBuilder();
                         valueStarted = false;
@@ -213,31 +245,30 @@ public class CsvLoader {
             if (hasBeenQuoted) {
                 list.add(currentValue.toString());
             } else {
-                list.add(removeUselessSpacesEnd(currentValue));
+                list.add(Utils.removeUselessSpacesEnd(currentValue));
             }
         }
 
         return list;
     }
 
-    private static String removeUselessSpacesEnd(StringBuilder stringBuilder) {
-        while (stringBuilder.length() > 0) {
-            char c = stringBuilder.charAt(stringBuilder.length() - 1);
-            if (c == ' ' || c == '\n' || c == '\t') {
-                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-            } else {
-                break;
-            }
-        }
-        return stringBuilder.toString();
-    }
-
+    /**
+     * A csv context that hold the context of the application the buffered reader, the separator
+     * and the line separator.
+     */
     public static class CsvContext {
         private final Context context;
         private final BufferedReader bufferedReader;
         private final char separator;
         private final char lineSeparator;
 
+        /**
+         * The default constructor
+         * @param context the context of the application
+         * @param bufferedReader the buffered reader of the csv file
+         * @param separator the separator of the csv file
+         * @param lineSeparator the line separator of the csv file
+         */
         CsvContext(Context context, BufferedReader bufferedReader, char separator, char lineSeparator) {
             this.context = context;
             this.bufferedReader = bufferedReader;
@@ -246,6 +277,9 @@ public class CsvLoader {
         }
     }
 
+    /**
+     * A csv exception.
+     */
     public static class CsvException extends IOException {
         CsvException(String csv_format_error) {
             super(csv_format_error);
