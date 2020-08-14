@@ -49,9 +49,6 @@ public class XmlLoader {
     }
 
     private static Test readFeed(XmlPullParser parser) throws IOException, XmlPullParserException {
-        // start of the document
-        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_TEST);
-
         Test test = Test.readXmlTest(parser);
 
         if (test.isValid()) {
@@ -63,15 +60,18 @@ public class XmlLoader {
     }
 
     public static String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, null);
         String result = "";
         if (parser.next() == XmlPullParser.TEXT) {
             result = parser.getText();
             parser.nextTag();
         }
+        parser.require(XmlPullParser.END_TAG, XmlPullParser.NO_NAMESPACE, null);
         return result;
     }
 
     public static int readInt(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, null);
         int result = -1;
 
         if (parser.next() == XmlPullParser.TEXT) {
@@ -82,6 +82,26 @@ public class XmlLoader {
             }
             parser.nextTag();
         }
+        parser.require(XmlPullParser.END_TAG, XmlPullParser.NO_NAMESPACE, null);
+        return result;
+    }
+
+    public static boolean readBoolean(XmlPullParser parser, boolean defaultValue) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, null);
+        boolean result = defaultValue;
+
+        if (parser.next() == XmlPullParser.TEXT) {
+            String parserText = parser.getText();
+            if (parserText.equalsIgnoreCase("true") || parserText.equalsIgnoreCase("1")) {
+                result = true;
+            } else if (parserText.equalsIgnoreCase("false") || parserText.equalsIgnoreCase("0")) {
+                result = false;
+            } else {
+                Log.w(TAG, "Read boolean not valid !");
+            }
+            parser.nextTag();
+        }
+        parser.require(XmlPullParser.END_TAG, XmlPullParser.NO_NAMESPACE, null);
         return result;
     }
 
@@ -96,6 +116,7 @@ public class XmlLoader {
             }
             parser.nextTag();
         }
+        parser.require(XmlPullParser.END_TAG, XmlPullParser.NO_NAMESPACE, null);
         return result;
     }
 
@@ -179,7 +200,7 @@ public class XmlLoader {
         parser2.setInput(new StringReader(tag));
         parser2.nextTag();
 
-        return Column.readColumnXml(parser2);
+        return Column.readColumnXml(parser2, 0);
     }
 
     @Deprecated

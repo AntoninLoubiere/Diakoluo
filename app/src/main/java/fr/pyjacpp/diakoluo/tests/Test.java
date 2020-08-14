@@ -53,6 +53,7 @@ public class Test {
     private Date lastModification;
 
     private int numberTestDid;
+    private boolean scoreMethod = true;
 
     private ArrayList<Column> listColumn;
     private ArrayList<DataRow> listRow;
@@ -93,6 +94,7 @@ public class Test {
             listRow.add(new DataRow(dataRow, listColumn, test.listColumn));
         }
         filename = test.filename;
+        scoreMethod = test.scoreMethod;
     }
 
     /**
@@ -322,6 +324,22 @@ public class Test {
     }
 
     /**
+     * Get the score method
+     * @return the score method
+     */
+    public boolean getScoreMethod() {
+        return scoreMethod;
+    }
+
+    /**
+     * Set the score method
+     * @param scoreMethod the new score method
+     */
+    public void setScoreMethod(boolean scoreMethod) {
+        this.scoreMethod = scoreMethod;
+    }
+
+    /**
      * Get if the test can be play.
      * @return if the test can be play
      */
@@ -454,7 +472,8 @@ public class Test {
      * @throws IOException if an exception occur while writing of the file
      */
     public void writeXml(OutputStream fileOutputStream, boolean saveNumberTestDone) throws IOException {
-        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_TEST);
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_TEST,
+                FileManager.ATTRIBUTE_VERSION, FileManager.VER_ACTUAL);
 
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
@@ -464,6 +483,7 @@ public class Test {
 
         if (saveNumberTestDone)
             XmlSaver.writeData(fileOutputStream, FileManager.TAG_NUMBER_TEST_DID, numberTestDid);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_METHOD, scoreMethod);
 
         XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_COLUMNS);
         for (Column column : listColumn) {
@@ -480,7 +500,17 @@ public class Test {
         XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_TEST);
     }
 
-    public static Test readXmlTest(XmlPullParser parser) throws IOException, XmlPullParserException {
+    public static Test readXmlTest(XmlPullParser parser)
+            throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_TEST);
+
+        int fileVersion = -1;
+        try {
+            String attributeValue = parser.getAttributeValue(null, FileManager.ATTRIBUTE_VERSION);
+            if (attributeValue != null) fileVersion = Integer.parseInt(attributeValue);
+        } catch (NumberFormatException ignored) {
+        }
+
         Test test = new Test();
         while (parser.next() != XmlPullParser.END_DOCUMENT) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -509,12 +539,16 @@ public class Test {
                     test.numberTestDid = XmlLoader.readInt(parser);
                     break;
 
+                case FileManager.TAG_SCORE_METHOD:
+                    test.scoreMethod = XmlLoader.readBoolean(parser, test.scoreMethod);
+                    break;
+
                 case FileManager.TAG_COLUMNS:
-                    test.listColumn = Column.readXmlColumns(parser);
+                    test.listColumn = Column.readXmlColumns(parser, fileVersion);
                     break;
 
                 case FileManager.TAG_ROWS:
-                    test.listRow = DataRow.readXmlRows(parser, test);
+                    test.listRow = DataRow.readXmlRows(parser, test.listColumn);
                     break;
 
                 default:

@@ -48,6 +48,10 @@ public class XmlSaver {
         writeData(outputStream, beacons, String.valueOf(nb));
     }
 
+    public static void writeData(OutputStream outputStream, String beacons, boolean val) throws IOException {
+        writeData(outputStream, beacons, val ? "true" : "false");
+    }
+
     public static void writeNotSafeData(OutputStream outputStream, String data) throws IOException {
         outputStream.write(unSafeToSafe(data).getBytes());
     }
@@ -64,8 +68,16 @@ public class XmlSaver {
         writeSafeData(outputStream, "<" + beacon + ">");
     }
 
-    public static void writeStartBeacon(OutputStream outputStream, String beacon, String attributeName, String attributeValue) throws IOException {
+    public static void writeStartBeacon(OutputStream outputStream, String beacon,
+                                        String attributeName, String attributeValue)
+            throws IOException {
         writeSafeData(outputStream, "<" + beacon + " " + unSafeToSafe(attributeName) + "=\"" + unSafeToSafe(attributeValue) + "\">");
+    }
+
+    public static void writeStartBeacon(OutputStream outputStream, String beacon,
+                                        String attributeName, int attributeValue)
+            throws IOException {
+        writeStartBeacon(outputStream, beacon, attributeName, String.valueOf(attributeValue));
     }
 
     public static void writeEndBeacon(OutputStream outputStream, String beacon) throws IOException {
@@ -75,7 +87,8 @@ public class XmlSaver {
     private static String unSafeToSafe(String data) {
         return data.replace("&", "&amp;")
                 .replace("<", "lt")
-                .replace(">", "&gt;");
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;");
     }
 
     private static String getStartBeacon(String beaconName) {

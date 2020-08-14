@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
+import fr.pyjacpp.diakoluo.Utils;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 public class EditTestActivity extends AppCompatActivity
@@ -64,46 +66,7 @@ public class EditTestActivity extends AppCompatActivity
     public static final String ACTION_BROADCAST_NEW_ANSWER_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.NEW_ANSWER_RECYCLER";
     public static final String EXTRA_INT_POSITION = "position";
 
-    private ArrayDeque<EditTestValidator> errorValidatorDeque;
-    private boolean errorInDeque;
-
     private EditTestPagerAdapterFragment adapter;
-
-    static class EditTestValidator {
-        private final boolean error;
-        private final boolean warning;
-        private final Integer errorMessageResourceId;
-
-        EditTestValidator() {
-            errorMessageResourceId = null;
-            warning = false;
-            error = false;
-        }
-
-        EditTestValidator(Integer errorMessageResourceId) {
-            this.errorMessageResourceId = errorMessageResourceId;
-            warning = false;
-            error = true;
-        }
-
-        EditTestValidator(Integer errorMessageResourceId, boolean warning) {
-            this.errorMessageResourceId = errorMessageResourceId;
-            this.warning = warning;
-            error = true;
-        }
-
-        Integer getErrorMessageResourceId() {
-            return errorMessageResourceId;
-        }
-
-        boolean isError() {
-            return error;
-        }
-
-        boolean isWarning() {
-            return warning;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,18 +114,23 @@ public class EditTestActivity extends AppCompatActivity
             public void onClick(View view) {
                 Test editTest = DiakoluoApplication.getCurrentEditTest(EditTestActivity.this);
 
-                errorValidatorDeque = new ArrayDeque<>();
-                errorInDeque = false;
+                ArrayDeque<Utils.EditValidator> errorValidatorDeque = new ArrayDeque<>();
 
                 saveInTestVar();
 
-                EditTestValidator response = titleEditTestValidator(editTest.getName());
-                addValidator(response);
+                Utils.EditValidator response = titleEditTestValidator(editTest.getName());
+                errorValidatorDeque.add(response);
 
                 response = descriptionEditTestValidator(editTest.getDescription());
-                addValidator(response);
+                errorValidatorDeque.add(response);
 
-                verifyAndAsk();
+                Utils.VerifyAndAsk verifyAndAsk = new Utils.VerifyAndAsk(EditTestActivity.this, new Runnable() {
+                    @Override
+                    public void run() {
+                        createModifyEditTest();
+                    }
+                });
+                verifyAndAsk.run(errorValidatorDeque);
             }
         });
 
@@ -231,15 +199,6 @@ public class EditTestActivity extends AppCompatActivity
         return true;
     }
 
-    private void addValidator(EditTestValidator testValidator) {
-        if (testValidator.isError() && !testValidator.isWarning()) {
-            errorInDeque = true;
-            errorValidatorDeque.add(testValidator);
-        } else if (testValidator.isWarning()) {
-            errorValidatorDeque.add(testValidator);
-        }
-    }
-
     private void createModifyEditTest() {
         finish();
         new Thread(new Runnable() {
@@ -277,55 +236,11 @@ public class EditTestActivity extends AppCompatActivity
 
         EditText title = findViewById(R.id.titleEditText);
         EditText description = findViewById(R.id.descriptionEditText);
+        Spinner scoreMethod = findViewById(R.id.scoreMethodSpinner);
 
         editTest.setName(title.getText().toString());
         editTest.setDescription(description.getText().toString());
-    }
-
-    private void verifyAndAsk() {
-        if (errorValidatorDeque.isEmpty()) {
-            if (!errorInDeque) createModifyEditTest();
-        } else {
-            EditTestValidator validator = errorValidatorDeque.pop();
-
-            if (validator.isError() && !validator.isWarning()) {
-                new MaterialAlertDialogBuilder(this)
-                        .setTitle(R.string.error)
-                        .setMessage(validator.getErrorMessageResourceId())
-                        .setIcon(R.drawable.ic_error_red_24dp)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                                verifyAndAsk();
-                            }
-                        })
-                        .show();
-
-            } else if (validator.isWarning() && !errorInDeque) {
-                new MaterialAlertDialogBuilder(this)
-                        .setTitle(R.string.warning)
-                        .setMessage(validator.getErrorMessageResourceId())
-                        .setIcon(R.drawable.ic_warning_yellow_24dp)
-                        .setPositiveButton(R.string.continue_text, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                                verifyAndAsk();
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        })
-                        .show();
-
-            } else {
-                verifyAndAsk();
-            }
-        }
+        editTest.setScoreMethod(scoreMethod.getSelectedItemPosition() == 0);
     }
 
     @Override
@@ -336,9 +251,9 @@ public class EditTestActivity extends AppCompatActivity
     }
 
     @Override
-    public EditTestValidator titleEditTestValidator(String text) {
+    public Utils.EditValidator titleEditTestValidator(String text) {
         if (text.length() <= 0) {
-            return new EditTestValidator(R.string.error_label_title_blank);
+            return new Utils.EditValidator(R.string.error_label_title_blank);
         } else {
             ArrayList<Test> listTest = DiakoluoApplication.getListTest(this);
             Integer currentIndexEditTest = DiakoluoApplication.getCurrentIndexEditTest(this);
@@ -348,16 +263,16 @@ public class EditTestActivity extends AppCompatActivity
 
                 if (test.getName().equalsIgnoreCase(text) && (currentIndexEditTest == null || currentIndexEditTest != i)) {
 
-                    return new EditTestValidator(R.string.error_label_title_already_exist, true);
+                    return new Utils.EditValidator(R.string.error_label_title_already_exist, true);
                 }
             }
-            return new EditTestValidator();
+            return new Utils.EditValidator();
         }
     }
 
     @Override
-    public EditTestValidator descriptionEditTestValidator(String text) {
-        return new EditTestValidator();
+    public Utils.EditValidator descriptionEditTestValidator(String text) {
+        return new Utils.EditValidator();
     }
 
     @Override

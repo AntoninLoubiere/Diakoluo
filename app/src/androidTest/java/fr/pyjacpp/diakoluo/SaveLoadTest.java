@@ -76,8 +76,9 @@ public class SaveLoadTest {
 
             loadedTest = XmlLoader.load(context.getResources().getAssets()
                     .open(DiakoluoApplication.DEFAULT_TEST));
-            assertEquals(test, loadedTest);
-            assertNotSame(test, loadedTest);
+            assertEquals("Test loading the default test", test, loadedTest);
+            // if this failed, please implement methods to have a backward compatibility
+            assertNotSame("Test loading the default test", test, loadedTest);
 
             test = new fr.pyjacpp.diakoluo.tests.Test("Test", "");
             assertTrue(test.isValid());

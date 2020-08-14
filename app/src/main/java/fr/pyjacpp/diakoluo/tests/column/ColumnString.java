@@ -164,12 +164,9 @@ public class ColumnString extends Column {
     }
 
     @Override
-    protected void setDefaultValueBackWardCompatibility() {
-        super.setDefaultValueBackWardCompatibility();
-        // for version < v0.3.0
-        if (settings < 0) {
-            settings = SET_DEFAULT;
-        }
+    protected void setDefaultValueBackWardCompatibility(int fileVersion) {
+        super.setDefaultValueBackWardCompatibility(fileVersion);
+        if (fileVersion < FileManager.VER_V_0_3_0 && settings < 0) settings = SET_DEFAULT;
     }
 
     @Override

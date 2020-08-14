@@ -73,6 +73,7 @@ public class TestSettingsFragment extends Fragment {
         final TextView numberColumnToShowSeekBarTextView = inflatedView.findViewById(R.id.numberColumnToShowSeekBarTextView);
         final SeekBar numberColumnToShowSeekBar = inflatedView.findViewById(R.id.numberColumnToShowSeekBar);
         final Spinner numberQuestionToAskSpinner = inflatedView.findViewById(R.id.numberQuestionToAskSpinner);
+        final Spinner scoreMethodSpinner = inflatedView.findViewById(R.id.scoreMethod);
 
         Button validButton = inflatedView.findViewById(R.id.validButton);
 
@@ -139,7 +140,13 @@ public class TestSettingsFragment extends Fragment {
                 int nQTA = ((TestQuestionPossibility) numberQuestionToAskSpinner.getSelectedItem()).possibility;
                 int nbColToShow = numberColumnToShowSeekBar.getProgress() +
                         numberColumnToShow.numberColumnToShowMin;
-                mListener.onDoTest(nQTA, nbColToShow);
+                boolean proportionalityScoreMethod;
+                if (scoreMethodSpinner.getSelectedItemPosition() == 0) {
+                    proportionalityScoreMethod = currentTest.getScoreMethod();
+                } else {
+                    proportionalityScoreMethod = scoreMethodSpinner.getSelectedItemPosition() == 1;
+                }
+                mListener.onDoTest(nQTA, nbColToShow, proportionalityScoreMethod);
             }
         });
 
@@ -164,6 +171,6 @@ public class TestSettingsFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        void onDoTest(int numberQuestionToAsk, int numberColumnToShow);
+        void onDoTest(int numberQuestionToAsk, int numberColumnToShow, boolean proportionalityScoreMethod);
     }
 }

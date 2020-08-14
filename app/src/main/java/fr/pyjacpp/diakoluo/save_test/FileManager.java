@@ -48,8 +48,10 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 public class FileManager {
-    private static final String TEST_PREFIX = "test_";
-    
+    // version constants
+    public static final int VER_V_0_3_0 = 1;
+    public static final int VER_ACTUAL = VER_V_0_3_0;
+
     // tag constants
     public static final String TAG_TEST              = "test";
     public static final String TAG_NAME              = "name";
@@ -64,9 +66,14 @@ public class FileManager {
     public static final String TAG_CELL              = "cell";
     public static final String TAG_DEFAULT_VALUE     = "defaultValue";
     public static final String TAG_SETTINGS          = "settings";
+    public static final String TAG_SCORE             = "score";
+    public static final String TAG_SCORE_METHOD      = "scoreMethod";
+    public static final String ATTRIBUTE_VERSION     = "version";
     public static final String ATTRIBUTE_INPUT_TYPE  = "inputType";
 
     private static final String MIME_TYPE = "*/*";
+
+    private static final String TEST_PREFIX = "test_";
 
     private static final int CREATE_DOCUMENT_REQUEST_CODE = 1;
     private static final int OPEN_DOCUMENT_REQUEST_CODE = 2;

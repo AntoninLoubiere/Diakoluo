@@ -36,7 +36,7 @@
     <string name="continue_text">Continue</string>
     <string name="skip">(Skip)</string>
     <string name="score_20" translatable="false">%.2f/20</string>
-    <string name="score_precise" translatable="false">%d/%d</string>
+    <string name="score_precise" translatable="false">%.2f/%.2f</string>
     <string name="restart">Restart</string>
     <string name="main_menu">Main menu</string>
     <string name="description">Description</string>
@@ -108,12 +108,11 @@
     <string name="down">Down</string>
     <string name="can_be_hide">Can be asked during a test</string>
     <string name="can_be_show">Can be reveal during a test</string>
-    <string-array name="export_entries">
-        <item>Diakôluô file (.dkl)</item>
-        <item>Csv file (.csv)</item>
-    </string-array>
-    <string-array name="separatorsCsv">
-        <item>Comma (\",\")</item>
-        <item>Semi-colon (\";\")</item>
-    </string-array>
+    <string name="column_settings_score_view">This column give %d point(s)</string>
+    <string name="column_settings_score_edit">Score</string>
+    <string name="points">point(s)</string>
+    <string name="positive_number_required">A positive number is required</string>
+    <string name="number_required">A valid number is required</string>
+    <string name="score_method">Score method:</string>
+    <string name="score_method_view">Score method: %s</string>
 </resources>

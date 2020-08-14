@@ -42,6 +42,7 @@ public class MainInformationViewTestFragment extends Fragment {
     private TextView createdDate;
     private TextView lastModification;
     private TextView numberTestDid;
+    private TextView scoreMethod;
     private View separator1;
     private View separator2;
     private Test currentTest;
@@ -61,6 +62,7 @@ public class MainInformationViewTestFragment extends Fragment {
         createdDate = inflatedView.findViewById(R.id.createdDateTextView);
         lastModification = inflatedView.findViewById(R.id.lastModificationTextView);
         numberTestDid = inflatedView.findViewById(R.id.numberTestDid);
+        scoreMethod = inflatedView.findViewById(R.id.scoreMethod);
 
         separator1 = inflatedView.findViewById(R.id.separator1);
         separator2 = inflatedView.findViewById(R.id.separator2);
@@ -103,6 +105,9 @@ public class MainInformationViewTestFragment extends Fragment {
             );
 
             numberTestDid.setVisibility(View.VISIBLE);
+            scoreMethod.setText(getString(R.string.score_method_view,
+                    getResources()
+                            .getStringArray(R.array.score_method)[currentTest.getScoreMethod() ? 0 : 1]));
             updateTestDid();
 
             separator1.setVisibility(View.VISIBLE);
@@ -113,6 +118,7 @@ public class MainInformationViewTestFragment extends Fragment {
             createdDate.setVisibility(View.GONE);
             lastModification.setVisibility(View.GONE);
             numberTestDid.setVisibility(View.GONE);
+            scoreMethod.setVisibility(View.GONE);
             separator1.setVisibility(View.GONE);
             separator2.setVisibility(View.GONE);
         }

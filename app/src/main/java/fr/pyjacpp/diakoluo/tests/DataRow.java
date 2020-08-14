@@ -73,7 +73,7 @@ public class DataRow {
         }
     }
 
-    public static DataRow readXmlRow(XmlPullParser parser, Test test)
+    public static DataRow readXmlRow(XmlPullParser parser, ArrayList<Column> columns)
             throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_ROW);
 
@@ -87,11 +87,11 @@ public class DataRow {
             }
 
             if (FileManager.TAG_CELL.equals(parser.getName())) {
-                if (indexColumn >= test.getNumberColumn()) {
-                    Log.w(TAG, "Too many columns");
+                if (indexColumn >= columns.size()) {
+                    Log.w(TAG, "Too many cells !");
                     continue;
                 }
-                Column currentColumn = test.getListColumn().get(indexColumn);
+                Column currentColumn = columns.get(indexColumn);
                 DataCell cell = DataCell.readCell(parser, currentColumn.getInputType());
                 dataRow.getListCells().put(currentColumn, cell);
 
@@ -102,10 +102,10 @@ public class DataRow {
             }
         }
 
-        if (indexColumn < test.getNumberColumn()) {
-            Log.w(TAG, "Too few cells");
-            for (int i = indexColumn; i < test.getNumberColumn(); i++) {
-                Column currentColumn = test.getListColumn().get(indexColumn);
+        if (indexColumn < columns.size()) {
+            Log.w(TAG, "Too few cells !");
+            for (int i = indexColumn; i < columns.size(); i++) {
+                Column currentColumn = columns.get(indexColumn);
                 DataCell cell = DataCell.newCellWithDefaultValue(currentColumn);
                 dataRow.getListCells().put(currentColumn, cell);
             }
@@ -118,10 +118,11 @@ public class DataRow {
      * Read rows from xml file.
      * @return the list of rows loaded
      */
-    public static ArrayList<DataRow> readXmlRows(XmlPullParser parser, Test test)
+    public static ArrayList<DataRow> readXmlRows(XmlPullParser parser, ArrayList<Column> columns)
             throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_ROWS);
-        ArrayList<DataRow> columns = new ArrayList<>();
+        if (columns == null) throw new XmlPullParserException("Columns must be defined before rows");
+        ArrayList<DataRow> rows = new ArrayList<>();
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 // continue until it is a start tag
@@ -129,12 +130,12 @@ public class DataRow {
             }
 
             if (parser.getName().equals(FileManager.TAG_ROW)) {
-                columns.add(DataRow.readXmlRow(parser, test));
+                rows.add(DataRow.readXmlRow(parser, columns));
             } else {
                 XmlLoader.skip(parser);
             }
         }
-        return columns;
+        return rows;
     }
 
     /**

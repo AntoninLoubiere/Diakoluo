@@ -38,7 +38,6 @@ import java.io.OutputStream;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
-import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.column.Column;
@@ -326,18 +325,6 @@ public abstract class DataCell {
         }
 
         return new ShowValueResponse(valueTextView, answerIsTrue);
-    }
-
-    /**
-     * Verify if the answer is correct and give score depending
-     * @param testTestContext the test context
-     * @param parent the column attached with the cell
-     * @param answer the answer given by the user
-     */
-    public void verifyAndScoreAnswer(TestTestContext testTestContext, Column parent,
-                                     Object answer) {
-        if (parent.verifyAnswer(this, answer))
-            testTestContext.addScore(1);
     }
 
 

@@ -19,7 +19,25 @@
   -->
 
 <resources>
-    <integer name="snackbar_deleted_duration">5000</integer>
-    <integer name="fade_animation_duration">330</integer>
-    <integer name="max_int_digit">9</integer>
+    <string-array name="export_entries">
+        <item>Diakôluô file (.dkl)</item>
+        <item>Csv file (.csv)</item>
+    </string-array>
+    <string-array name="separators_csv">
+        <item>Comma (\",\")</item>
+        <item>Semi-colon (\";\")</item>
+    </string-array>
+    <string-array name="score_method_default">
+        <item>Default</item>
+        <item>Proportionality</item>
+        <item>Add</item>
+    </string-array>
+    <string-array name="score_method">
+        <item>Proportionality</item>
+        <item>Add</item>
+    </string-array>
+    <string-array name="score_method_helper_text">
+        <item>All columns will have the same weight in the score.</item>
+        <item>Columns could have a different weight depending of columns asked.</item>
+    </string-array>
 </resources>

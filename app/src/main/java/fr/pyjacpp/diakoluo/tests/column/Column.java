@@ -20,10 +20,14 @@
 package fr.pyjacpp.diakoluo.tests.column;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -49,13 +53,15 @@ import fr.pyjacpp.diakoluo.ViewUtils;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
+import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 /**
-* A column class that hold parameters for cells, like type, and column specific settings
+ * A column class that hold parameters for cells, like type, and column specific settings
+ *
  * @see DataCell
  */
 public abstract class Column {
@@ -65,8 +71,8 @@ public abstract class Column {
      */
     public static final int SET_CAN_BE_HIDE = 1;
     public static final int SET_CAN_BE_SHOW = 1 << 1;
+    public static final int SCORE_DEFAULT = 1;
     protected static final int SET_DEFAULT = SET_CAN_BE_HIDE | SET_CAN_BE_SHOW;
-
     /**
      * When a edit text with a layout is clicked send focus change to the parent so it can be
      * receive from other class
@@ -85,13 +91,18 @@ public abstract class Column {
                     }
                 }
             };
-    @NonNull protected ColumnInputType inputType;
-    @Nullable private String name;
-    @Nullable private String description;
+    @NonNull
+    protected ColumnInputType inputType;
     protected int settings = -1;
+    @Nullable
+    private String name;
+    @Nullable
+    private String description;
+    private int score = -1;
 
     /**
      * Default constructor that initialize a non-valid column.
+     *
      * @param inputType the input type of the column
      */
     protected Column(@NonNull ColumnInputType inputType) {
@@ -102,6 +113,7 @@ public abstract class Column {
     /**
      * Default constructor that initialize a valid column with empty (not null !) name and
      * description.
+     *
      * @param columnInputType the input type of the column
      */
     public static Column newColumn(ColumnInputType columnInputType) {
@@ -110,9 +122,10 @@ public abstract class Column {
 
     /**
      * Default constructor that initialize a valid column (or not if name and description are null)
+     *
      * @param columnInputType the input type of the column
-     * @param name the name of the column
-     * @param description the description of the column
+     * @param name            the name of the column
+     * @param description     the description of the column
      */
     public static Column newColumn(ColumnInputType columnInputType, String name,
                                    String description) {
@@ -135,12 +148,14 @@ public abstract class Column {
 
     /**
      * Create a new column from a xml file.
-     * @param parser the XmlPullParser of the file
+     *
+     * @param parser      the XmlPullParser of the file
+     * @param fileVersion the version of the file
      * @return the new column
      * @throws XmlPullParserException if while reading the file an exception occur
-     * @throws IOException if while reading the file an exception occur
+     * @throws IOException            if while reading the file an exception occur
      */
-    public static Column readColumnXml(XmlPullParser parser)
+    public static Column readColumnXml(XmlPullParser parser, int fileVersion)
             throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_COLUMN);
         String attributeValue = parser.getAttributeValue(null,
@@ -156,7 +171,7 @@ public abstract class Column {
                 Column column = Column.newColumn(columnInputType, null, null);
 
                 column.loopXmlTags(parser);
-                column.setDefaultValueBackWardCompatibility();
+                column.setDefaultValueBackWardCompatibility(fileVersion);
                 if (column.isValid()) {
                     return column;
                 } else {
@@ -167,33 +182,66 @@ public abstract class Column {
     }
 
     /**
+     * Read columns from xml file.
+     *
+     * @return the list of columns loaded
+     */
+    public static ArrayList<Column> readXmlColumns(XmlPullParser parser, int fileVersion)
+            throws IOException, XmlPullParserException {
+        ArrayList<Column> columns = new ArrayList<>();
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            if (parser.getName().equals(FileManager.TAG_COLUMN)) {
+                Column column = Column.readColumnXml(parser, fileVersion);
+                if (column == null) {
+                    Log.w(XmlLoader.TAG, "Column isn't valid !");
+                } else {
+                    columns.add(column);
+                }
+            } else {
+                XmlLoader.skip(parser);
+            }
+        }
+        return columns;
+    }
+
+    /**
      * Get the default value of a column, type depend of column.
+     *
      * @return the default value
      */
     public abstract Object getDefaultValue();
 
     /**
      * Set the default value of a column, type depend of column.
+     *
      * @param defaultValue the default value to set
      */
     public abstract void setDefaultValue(Object defaultValue);
 
     /**
      * Verify if a answer inputted by the user is the same that the value stored.
+     *
      * @param dataCell the DataCell that hold the value
-     * @param answer the value inputted by the user
+     * @param answer   the value inputted by the user
      * @return if the a
      */
     public abstract boolean verifyAnswer(DataCell dataCell, Object answer);
 
     /**
      * Copy the column.
+     *
      * @return the column copied
      */
     public abstract Column copyColumn();
 
     /**
      * Copy column fields of all levels.
+     *
      * @param newColumn the column instance
      */
     protected void copyColumn(Column newColumn) {
@@ -201,30 +249,36 @@ public abstract class Column {
         newColumn.description = description;
         newColumn.inputType = inputType;
         newColumn.settings = settings;
+        newColumn.score = score;
     }
 
     /**
      * Initialize a non-valid column. Inverse of {@link #initialize(String, String)}
+     *
      * @see #initialize(String, String)
      */
     public void initialize() {
         this.name = null;
         this.description = null;
         settings = -1;
+        score = -1;
     }
 
     /**
      * Initialize a valid column. Inverse of {@link #initialize()}.
+     *
      * @see #initialize()
      */
     protected void initialize(String name, String description) {
         this.name = name;
         this.description = description;
         settings = SET_DEFAULT;
+        score = SCORE_DEFAULT;
     }
 
     /**
      * Get the name of the column.
+     *
      * @return the name of the column
      */
     @Nullable
@@ -234,6 +288,7 @@ public abstract class Column {
 
     /**
      * Set the name of the column.
+     *
      * @param name the new name of the column
      */
     public void setName(@Nullable String name) {
@@ -242,6 +297,7 @@ public abstract class Column {
 
     /**
      * Get the description of the column.
+     *
      * @return the description of the file
      */
     @Nullable
@@ -251,6 +307,7 @@ public abstract class Column {
 
     /**
      * Set the description of the file.
+     *
      * @param description the description of the file
      */
     public void setDescription(@Nullable String description) {
@@ -258,7 +315,17 @@ public abstract class Column {
     }
 
     /**
+     * Get the score of the column
+     *
+     * @return the score of the column
+     */
+    public int getScore() {
+        return score;
+    }
+
+    /**
      * Get the input type of the file
+     *
      * @return the input type of the file
      */
     @NonNull
@@ -268,14 +335,31 @@ public abstract class Column {
 
     /**
      * Get if the column is a valid column.
+     *
      * @return if the column is valid
      */
     public boolean isValid() {
-        return !(name == null || description == null) && settings >= 0;
+        return !(name == null || description == null) && settings >= 0 && score >= 0;
+    }
+
+    /**
+     * Verify if the answer is correct and give score depending
+     * @param testTestContext the test context
+     * @param dataCell the dataCell to verify
+     * @param answer the answer given by the user
+     */
+    public void verifyAndScoreAnswer(TestTestContext testTestContext, DataCell dataCell,
+                                     Object answer) {
+        if (verifyAnswer(dataCell, answer)) {
+            testTestContext.addScore(score, score);
+        } else {
+            testTestContext.addScore(0, score);
+        }
     }
 
     /**
      * Get the view who show the column name.
+     *
      * @param context the context to create widgets
      * @return the view to add to show the column name
      */
@@ -289,7 +373,8 @@ public abstract class Column {
     /**
      * Get the view to answer the data cell (type depend on the column).
      * If override, {@link #getValueFromView(View)} may need to be override.
-     * @param context the context to create widgets
+     *
+     * @param context      the context to create widgets
      * @param defaultValue the default value of the input, can be null
      * @return the view to add to show the edit input
      */
@@ -310,6 +395,7 @@ public abstract class Column {
     /**
      * Get the value of the data cell from a view (type depend on the column).
      * If override, {@link #showEditValueView(Context, Object)} may need to be override too
+     *
      * @param view the view which contain the value of the cell
      * @return the value in the view (type variable)
      * @see #setValueFromView(DataCell, View)
@@ -326,6 +412,7 @@ public abstract class Column {
 
     /**
      * Set the value from a view.
+     *
      * @param view the view which contain the value
      * @see #getValueFromView(View)
      * @see #showEditValueView(Context, Object)
@@ -337,22 +424,29 @@ public abstract class Column {
     /**
      * Set the settings view of the column.
      * Override method must add to root the view and must call the super method
+     *
      * @param layoutInflater a layout inflater to inflate the layout
-     * @param parent the parent which receive the inflated layout
+     * @param parent         the parent which receive the inflated layout
      * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
      * @see #setEditColumnSettings(ViewGroup)
      */
     public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
         View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_default,
                 parent, true);
+
+        Context context = parent.getContext();
+
+        MaterialTextView scoreTextView =
+                inflatedView.findViewById(R.id.scoreTextView);
         MaterialTextView canBeHideTextView =
                 inflatedView.findViewById(R.id.canBeHideTextView);
         MaterialTextView canBeShowTextView =
                 inflatedView.findViewById(R.id.canBeShowTextView);
 
-        ViewUtils.setBooleanView(parent.getContext(),
+        scoreTextView.setText(context.getString(R.string.column_settings_score_view));
+        ViewUtils.setBooleanView(context,
                 canBeHideTextView, isInSettings(SET_CAN_BE_HIDE));
-        ViewUtils.setBooleanView(parent.getContext(),
+        ViewUtils.setBooleanView(context,
                 canBeShowTextView, isInSettings(SET_CAN_BE_SHOW));
     }
 
@@ -360,8 +454,9 @@ public abstract class Column {
      * Set and return the edit settings view of the column
      * Override method must add to root the view.
      * Params are updated by {@link #setEditColumnSettings}.
+     *
      * @param layoutInflater a layout inflater to inflate the layout
-     * @param parent the parent which receive the inflated layout
+     * @param parent         the parent which receive the inflated layout
      * @see #getViewColumnSettings(LayoutInflater, ViewGroup)
      * @see #setEditColumnSettings(ViewGroup)
      */
@@ -369,27 +464,85 @@ public abstract class Column {
         View inflatedView =
                 layoutInflater.inflate(R.layout.fragment_column_settings_edit_default, parent, true);
 
+        final Context context = parent.getContext();
+
+        final TextInputEditText scoreInputEditText =
+                inflatedView.findViewById(R.id.scoreEditText);
         MaterialCheckBox canBeHideTextView =
                 inflatedView.findViewById(R.id.canBeHideCheckBox);
         MaterialCheckBox canBeShowTextView =
                 inflatedView.findViewById(R.id.canBeShowCheckBox);
 
-        canBeHideTextView.setChecked(isInSettings(SET_CAN_BE_HIDE));
+        boolean canHide = isInSettings(SET_CAN_BE_HIDE);
+        scoreInputEditText.setText(String.valueOf(score));
+        scoreInputEditText.setEnabled(canHide);
+
+        canBeHideTextView.setChecked(canHide);
         canBeShowTextView.setChecked(isInSettings(SET_CAN_BE_SHOW));
+
+        final TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                try {
+                    if (Integer.parseInt(editable.toString()) < 0) {
+                        scoreInputEditText.setError(context.getString(R.string.positive_number_required));
+                    } else {
+                        scoreInputEditText.setError(null);
+                    }
+                } catch (NumberFormatException ignored) {
+                    scoreInputEditText.setError(context.getString(R.string.number_required));
+                }
+            }
+        };
+
+        canBeHideTextView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                scoreInputEditText.setEnabled(b);
+                if (b) {
+                    watcher.afterTextChanged(scoreInputEditText.getEditableText());
+                } else {
+                    scoreInputEditText.setError(null);
+                }
+            }
+        });
+        scoreInputEditText.addTextChangedListener(watcher);
     }
 
     /**
      * Set column params from view. Params inputted by the user are update there.
+     *
      * @param parent the parent which contain inflated layouts (generated from
-     * {@link #getEditColumnSettings(LayoutInflater, ViewGroup)}).
+     *               {@link #getEditColumnSettings(LayoutInflater, ViewGroup)}).
      * @see #getViewColumnSettings(LayoutInflater, ViewGroup)
      * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
      */
     public void setEditColumnSettings(ViewGroup parent) {
+        TextInputEditText scoreInputEditText =
+                parent.findViewById(R.id.scoreEditText);
         MaterialCheckBox canBeHideTextView =
                 parent.findViewById(R.id.canBeHideCheckBox);
         MaterialCheckBox canBeShowTextView =
                 parent.findViewById(R.id.canBeShowCheckBox);
+
+        int score = -1;
+        try {
+            Editable text = scoreInputEditText.getText();
+            if (text != null) {
+                score = Integer.parseInt(text.toString());
+            }
+        } catch (NumberFormatException ignored) {
+        }
+        if (score < 0) this.score = SCORE_DEFAULT;
+        else this.score = score;
 
         setSettings(SET_CAN_BE_HIDE, canBeHideTextView.isChecked());
         setSettings(SET_CAN_BE_SHOW, canBeShowTextView.isChecked());
@@ -397,6 +550,7 @@ public abstract class Column {
 
     /**
      * If a settings is true
+     *
      * @param parameter the settings wanted
      * @return if the settings is true
      */
@@ -406,8 +560,9 @@ public abstract class Column {
 
     /**
      * Set the settings to a value
+     *
      * @param parameter the settings to set
-     * @param value the value of the settings
+     * @param value     the value of the settings
      */
     protected void setSettings(int parameter, boolean value) {
         if (value) {
@@ -421,22 +576,25 @@ public abstract class Column {
      * Write the column into a xml file.
      * This method should be call by {@link #writeXml(OutputStream)} only.
      * If override you should call the super.
-     * @see #writeXml(OutputStream)
+     *
      * @param fileOutputStream the FileOutputStream of the xml file
      * @throws IOException if while writing the file an error occur
+     * @see #writeXml(OutputStream)
      */
     protected void writeXmlInternal(OutputStream fileOutputStream) throws IOException {
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_SETTINGS, settings);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE, score);
     }
 
     /**
      * Write the column into a xml file.
      * Do not override this method. Override {@link #writeXmlInternal(OutputStream)} instead
-     * @see #writeXmlInternal(OutputStream)
+     *
      * @param fileOutputStream the FileOutputStream of the xml file
      * @throws IOException if while writing the file an error occur
+     * @see #writeXmlInternal(OutputStream)
      */
     public void writeXml(OutputStream fileOutputStream) throws IOException {
         XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_COLUMN,
@@ -447,8 +605,9 @@ public abstract class Column {
 
     /**
      * Get columns params from a xml file.
+     *
      * @param parser the parser of the xml file
-     * @throws IOException if an error occur while the file reading the file
+     * @throws IOException            if an error occur while the file reading the file
      * @throws XmlPullParserException if an error occur while reading the file
      */
     protected void readColumnXmlTag(XmlPullParser parser)
@@ -466,6 +625,10 @@ public abstract class Column {
                 settings = XmlLoader.readInt(parser);
                 break;
 
+            case FileManager.TAG_SCORE:
+                score = XmlLoader.readInt(parser);
+                break;
+
             default:
                 XmlLoader.skip(parser);
                 break;
@@ -474,14 +637,20 @@ public abstract class Column {
 
     /**
      * Set default values for backward compatibility.
+     *
+     * @param fileVersion the version of the file
      */
-    protected void setDefaultValueBackWardCompatibility() {
+    protected void setDefaultValueBackWardCompatibility(int fileVersion) {
+        if (fileVersion < FileManager.VER_V_0_3_0) {
+            if (score < 0) score = SCORE_DEFAULT;
+        }
     }
 
     /**
      * Loop over all xml tag while reading an xml file that represent the column.
+     *
      * @param parser the parser that represents the xml file
-     * @throws IOException if an error occur while the file is reading
+     * @throws IOException            if an error occur while the file is reading
      * @throws XmlPullParserException if an error occur while the file is reading
      */
     private void loopXmlTags(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -497,9 +666,9 @@ public abstract class Column {
     }
 
     /**
-     *
      * Update all cells if the column need to change
-     * @param currentTest the current test which is updated
+     *
+     * @param currentTest    the current test which is updated
      * @param previousColumn the previous column which will change into this column
      */
     public void updateCells(Test currentTest, Column previousColumn) {
@@ -519,33 +688,12 @@ public abstract class Column {
         }
     }
 
-    /**
-     * Read columns from xml file.
-     * @return the list of columns loaded
-     */
-    public static ArrayList<Column> readXmlColumns(XmlPullParser parser) throws IOException, XmlPullParserException {
-        ArrayList<Column> columns = new ArrayList<>();
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                // continue until it is a start tag
-                continue;
-            }
-
-            if (parser.getName().equals(FileManager.TAG_COLUMN)) {
-                columns.add(Column.readColumnXml(parser));
-            } else {
-                XmlLoader.skip(parser);
-            }
-        }
-        return columns;
-    }
-
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof Column) {
             Column c = (Column) obj;
             return Objects.equals(c.name, name) && Objects.equals(c.description, description) &&
-                    c.settings == settings;
+                    c.settings == settings && c.score == score;
         }
         return false;
     }
