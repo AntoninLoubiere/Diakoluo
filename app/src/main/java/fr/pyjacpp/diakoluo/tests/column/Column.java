@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -481,11 +482,14 @@ public abstract class Column {
         MaterialCheckBox canBeShowTextView =
                 inflatedView.findViewById(R.id.canBeShowCheckBox);
 
+        boolean canHide = isInSettings(SET_CAN_BE_HIDE);
         scoreInputEditText.setText(String.valueOf(score));
-        canBeHideTextView.setChecked(isInSettings(SET_CAN_BE_HIDE));
+        scoreInputEditText.setEnabled(canHide);
+
+        canBeHideTextView.setChecked(canHide);
         canBeShowTextView.setChecked(isInSettings(SET_CAN_BE_SHOW));
 
-        scoreInputEditText.addTextChangedListener(new TextWatcher() {
+        final TextWatcher watcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
@@ -506,7 +510,20 @@ public abstract class Column {
                     scoreInputEditText.setError(context.getString(R.string.number_required));
                 }
             }
+        };
+
+        canBeHideTextView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                scoreInputEditText.setEnabled(b);
+                if (b) {
+                    watcher.afterTextChanged(scoreInputEditText.getEditableText());
+                } else {
+                    scoreInputEditText.setError(null);
+                }
+            }
         });
+        scoreInputEditText.addTextChangedListener(watcher);
     }
 
     /**
