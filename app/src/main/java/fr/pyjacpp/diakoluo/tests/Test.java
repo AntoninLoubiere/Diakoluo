@@ -19,14 +19,31 @@
 
 package fr.pyjacpp.diakoluo.tests;
 
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
+import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.save_test.XmlLoader;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
+import fr.pyjacpp.diakoluo.test_tests.ColumnToShow;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
+/**
+ * A test class that save data in a table.
+ * @see Column
+ * @see DataRow
+ * @see DataCell
+ */
 public class Test {
     private String name;
     private String description;
@@ -36,10 +53,15 @@ public class Test {
     private Date lastModification;
 
     private int numberTestDid;
+    private boolean scoreMethod = true;
 
     private ArrayList<Column> listColumn;
     private ArrayList<DataRow> listRow;
 
+    /**
+     * Default constructor.
+     * Create a non valid test
+     */
     public Test() {
         // new test
         this.name = null;
@@ -53,6 +75,10 @@ public class Test {
         listRow = null;
     }
 
+    /**
+     * Copy a test.
+     * @param test the base test
+     */
     public Test(Test test) {
         name = test.name;
         description = test.description;
@@ -61,20 +87,36 @@ public class Test {
         numberTestDid = test.numberTestDid;
         listColumn = new ArrayList<>();
         for (Column column : test.listColumn) {
-            listColumn.add(Column.copyColumn(column));
+            listColumn.add(column.copyColumn());
         }
         listRow = new ArrayList<>();
         for (DataRow dataRow : test.listRow) {
             listRow.add(new DataRow(dataRow, listColumn, test.listColumn));
         }
         filename = test.filename;
+        scoreMethod = test.scoreMethod;
     }
 
+    /**
+     * Create a valid test with name and description.
+     * @param name the name of the test
+     * @param description the description of the test
+     */
     public Test(String name, String description) {
         init(name, description);
     }
 
 
+    /**
+     * Create a valid test from all fields.
+     * @param name the name of the test
+     * @param description the description of the test
+     * @param createdDate the date of creation of the test
+     * @param lastModification the date of the last modification
+     * @param numberTestDid the number of test did
+     * @param listColumn the list of column
+     * @param listRow the list of row
+     */
     public Test(String name, String description, Date createdDate, Date lastModification, int numberTestDid,
                 ArrayList<Column> listColumn, ArrayList<DataRow> listRow) {
         // previous test
@@ -89,6 +131,11 @@ public class Test {
         this.listRow = listRow;
     }
 
+    /**
+     * Initialize for a valid test.
+     * @param name the name of the test
+     * @param description the description of the test
+     */
     private void init(String name, String description) {
         // new test
         this.name = name;
@@ -102,90 +149,210 @@ public class Test {
         listRow = new ArrayList<>();
     }
 
+    /**
+     * Get the name of the test.
+     * @return the name of the test
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Set the name of the test.
+     * @param name the name of the test
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Get the description of the test.
+     * @return the description of the test
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Set the description of the test.
+     * @param description the description of the test
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Get the date of creation of the test.
+     * @return the date of creation of the test
+     */
     public Date getCreatedDate() {
         return createdDate;
     }
 
+    /**
+     * Set the date of creation of the test.
+     * @param createdDate the date of creation of the test
+     */
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
+    /**
+     * Get the date of last modification.
+     * @return the date of the last modification
+     */
     public Date getLastModificationDate() {
         return lastModification;
     }
 
+    /**
+     * Set the last modification date.
+     * @param lastModification the last modification date
+     * @see #registerModificationDate()
+     */
     public void setLastModificationDate(Date lastModification) {
         this.lastModification = lastModification;
     }
 
+    /**
+     * Set the last modification date to now.
+     * @see #setLastModificationDate(Date)
+     */
     public void registerModificationDate() {
         lastModification = new Date();
     }
 
+    /**
+     * Get the number of test did.
+     * @return The number of test did
+     */
     public int getNumberTestDid() {
         return numberTestDid;
     }
 
+    /**
+     * Set the number of test did.
+     * @param numberTestDid the number of test did
+     */
     public void setNumberTestDid(int numberTestDid) {
         this.numberTestDid = numberTestDid;
     }
 
-    public ArrayList<Column> getListColumn() {
-        return listColumn;
-    }
-
-    public void setListColumn(ArrayList<Column> listColumn) {
-        this.listColumn = listColumn;
-    }
-
-    public int getNumberColumn() {
-        return listColumn.size();
-    }
-
-    public void addColumn(Column column) {
-        listColumn.add(column);
-    }
-
-    public ArrayList<DataRow> getListRow() {
-        return listRow;
-    }
-
-    public void setListRow(ArrayList<DataRow> listRow) {
-        this.listRow = listRow;
-    }
-
-    public int getNumberRow() {
-        return listRow.size();
-    }
-
-    public void addRow(DataRow row) {
-        listRow.add(row);
-    }
-
+    /**
+     * Add 1 test did
+     */
     public void addNumberTestDid() {
         numberTestDid++;
     }
 
-    public boolean canBePlay() {
-        return getNumberColumn() > 1 && getNumberRow() > 0;
+    /**
+     * Get the list of column.
+     * @return the list of column
+     */
+    public ArrayList<Column> getListColumn() {
+        return listColumn;
     }
 
+    /**
+     * Set the list of column.
+     * @param listColumn the list of column
+     */
+    public void setListColumn(ArrayList<Column> listColumn) {
+        this.listColumn = listColumn;
+    }
+
+    /**
+     * Get the list of columns that can be asked or show randomly.
+     * @return the list of column that can be asked or show randomly
+     */
+    public ArrayList<Column> getTestListColumn() {
+        ArrayList<Column> columns = new ArrayList<>();
+        for (Column c : listColumn) {
+            if (c.isInSettings(Column.SET_CAN_BE_HIDE) || c.isInSettings(Column.SET_CAN_BE_SHOW)) {
+                columns.add(c);
+            }
+        }
+        return columns;
+    }
+
+    /**
+     * Get the number of column.
+     * @return the number of column
+     */
+    public int getNumberColumn() {
+        return listColumn.size();
+    }
+
+    /**
+     * Add a column to the list.
+     * @param column the column to add
+     */
+    public void addColumn(Column column) {
+        listColumn.add(column);
+    }
+
+    /**
+     * Get the list of row.
+     * @return the list of row
+     */
+    public ArrayList<DataRow> getListRow() {
+        return listRow;
+    }
+
+    /**
+     * Set the list of row.
+     * @param listRow the list of row
+     */
+    public void setListRow(ArrayList<DataRow> listRow) {
+        this.listRow = listRow;
+    }
+
+    /**
+     * Get the number of row.
+     * @return the number of row
+     */
+    public int getNumberRow() {
+        return listRow.size();
+    }
+
+    /**
+     * Add a row.
+     * @param row the row to add
+     */
+    public void addRow(DataRow row) {
+        listRow.add(row);
+    }
+
+    /**
+     * Get the score method
+     * @return the score method
+     */
+    public boolean getScoreMethod() {
+        return scoreMethod;
+    }
+
+    /**
+     * Set the score method
+     * @param scoreMethod the new score method
+     */
+    public void setScoreMethod(boolean scoreMethod) {
+        this.scoreMethod = scoreMethod;
+    }
+
+    /**
+     * Get if the test can be play.
+     * @return if the test can be play
+     */
+    public boolean canBePlay() {
+        ColumnToShow r = getNumberColumnToAsk();
+        return r.numberColumnToShowMin <= r.numberColumnToShowMax &&
+                r.numberColumnTotal > 1 && r.numberColumnToShowMax > 0 && listRow.size() > 0;
+    }
+
+    /**
+     * Get if the test is valid.
+     * @return if the test is valid
+     */
     public boolean isValid() {
         return !(name == null ||
                 description == null ||
@@ -196,14 +363,28 @@ public class Test {
         );
     }
 
+    /**
+     * Set the filename of the test.
+     * @param filename the filename of the test
+     */
     public void setFilename(String filename) {
         this.filename = filename;
     }
 
+    /**
+     * Get the filename of the test.
+     * @return the filename of the test
+     */
     public String getFilename() {
         return filename;
     }
 
+    /**
+     * Get the first cell of the row depending on the position given.
+     * @param rowPosition the position of the row
+     * @return the first cell of the row or null if the row doesn't have cell
+     * @see #getRowFirstCellString(Context, int)
+     */
     @Nullable
     public DataCell getRowFirstCell(int rowPosition) {
         if (listColumn.size() > 0) {
@@ -213,15 +394,26 @@ public class Test {
         }
     }
 
-    public String getRowFirstCellString(int rowPosition) {
+    /**
+     * Get the first cell string value of the row depending on the position given.
+     * @param rowPosition the position of the row
+     * @param context the context
+     * @return string value of the first cell of the row or null if the row doesn't have cell
+     * @see #getRowFirstCellString(Context, int)
+     */
+    public String getRowFirstCellString(Context context, int rowPosition) {
         DataCell firstCell = getRowFirstCell(rowPosition);
         if (firstCell == null) {
             return String.valueOf(rowPosition);
         } else {
-            return firstCell.getStringValue();
+            return firstCell.getStringValue(context, listColumn.get(0));
         }
     }
 
+    /**
+     * Get the default filename of the file.
+     * @return the default filename of the file
+     */
     public String getDefaultFilename() {
         return name
                 .replace(' ', '_')
@@ -229,8 +421,142 @@ public class Test {
                 .replace('.', '_').toLowerCase();
     }
 
+    /**
+     * Reset all stats of the test like number of test did
+     */
     public void reset() {
         this.numberTestDid = 0;
+    }
+
+    /**
+     * Get the number of column to ask (min and max) and the number of column total (without column
+     * that can't be show or ask)
+     * @return an object that contain the number of column to ask (min and max) and the number of
+     * column total
+     */
+    public ColumnToShow getNumberColumnToAsk() {
+        int numberColumnToShowMin = 0;
+        int numberColumnToShowMax = 0;
+        int numberColumnTotal = 0;
+        boolean randomColumns = false;
+
+        for (Column c : listColumn) {
+            boolean canHide = c.isInSettings(Column.SET_CAN_BE_HIDE);
+            boolean canShow = c.isInSettings(Column.SET_CAN_BE_SHOW);
+
+            if (canHide && canShow) {
+                numberColumnToShowMax++;
+                numberColumnTotal++;
+                randomColumns = true;
+            } else if (canHide) {
+                numberColumnTotal++;
+            } else if (canShow) {
+                numberColumnToShowMin++;
+                numberColumnToShowMax++;
+                numberColumnTotal++;
+            }
+        }
+
+        if (numberColumnToShowMax >= numberColumnTotal) numberColumnToShowMax = numberColumnTotal - 1;
+        if (randomColumns && numberColumnToShowMin <= 0) {
+            numberColumnToShowMin = 1;
+            if (numberColumnToShowMax <= 0) numberColumnToShowMax = 1;
+        }
+        return new ColumnToShow(numberColumnToShowMin, numberColumnToShowMax, numberColumnTotal);
+    }
+
+    /**
+     * Write the text in a xml file.
+     * @param fileOutputStream the stream which represent the file
+     * @param saveNumberTestDone if number test has to be save
+     * @throws IOException if an exception occur while writing of the file
+     */
+    public void writeXml(OutputStream fileOutputStream, boolean saveNumberTestDone) throws IOException {
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_TEST,
+                FileManager.ATTRIBUTE_VERSION, FileManager.VER_ACTUAL);
+
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_CREATED_DATE, createdDate);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_LAST_MODIFICATION, lastModification);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
+
+        if (saveNumberTestDone)
+            XmlSaver.writeData(fileOutputStream, FileManager.TAG_NUMBER_TEST_DID, numberTestDid);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_METHOD, scoreMethod);
+
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_COLUMNS);
+        for (Column column : listColumn) {
+            column.writeXml(fileOutputStream);
+        }
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_COLUMNS);
+
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_ROWS);
+        for (DataRow row : listRow) {
+            row.writeXml(fileOutputStream, this);
+        }
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_ROWS);
+
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_TEST);
+    }
+
+    public static Test readXmlTest(XmlPullParser parser)
+            throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_TEST);
+
+        int fileVersion = -1;
+        try {
+            String attributeValue = parser.getAttributeValue(null, FileManager.ATTRIBUTE_VERSION);
+            if (attributeValue != null) fileVersion = Integer.parseInt(attributeValue);
+        } catch (NumberFormatException ignored) {
+        }
+
+        Test test = new Test();
+        while (parser.next() != XmlPullParser.END_DOCUMENT) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            switch (parser.getName()) {
+                case FileManager.TAG_NAME:
+                    test.name = XmlLoader.readText(parser);
+                    break;
+
+                case FileManager.TAG_DESCRIPTION:
+                    test.description = XmlLoader.readText(parser);
+                    break;
+
+                case FileManager.TAG_CREATED_DATE:
+                    test.createdDate = XmlLoader.readDate(parser);
+                    break;
+
+                case FileManager.TAG_LAST_MODIFICATION:
+                    test.lastModification = XmlLoader.readDate(parser);
+                    break;
+
+                case FileManager.TAG_NUMBER_TEST_DID:
+                    test.numberTestDid = XmlLoader.readInt(parser);
+                    break;
+
+                case FileManager.TAG_SCORE_METHOD:
+                    test.scoreMethod = XmlLoader.readBoolean(parser, test.scoreMethod);
+                    break;
+
+                case FileManager.TAG_COLUMNS:
+                    test.listColumn = Column.readXmlColumns(parser, fileVersion);
+                    break;
+
+                case FileManager.TAG_ROWS:
+                    test.listRow = DataRow.readXmlRows(parser, test.listColumn);
+                    break;
+
+                default:
+                    XmlLoader.skip(parser);
+                    break;
+            }
+        }
+        return test;
     }
 
     @Override

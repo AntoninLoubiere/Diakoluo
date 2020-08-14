@@ -27,16 +27,20 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import java.text.DateFormat;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.Utils;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 public class MainInformationEditTestFragment extends Fragment {
@@ -71,13 +75,13 @@ public class MainInformationEditTestFragment extends Fragment {
 
         title.addTextChangedListener(new EditTextTextWatcher(title) {
             @Override
-            EditTestActivity.EditTestValidator validatorFunction(String text) {
+            Utils.EditValidator validatorFunction(String text) {
                 return mListener.titleEditTestValidator(text);
             }
         });
         description.addTextChangedListener(new EditTextTextWatcher(description) {
             @Override
-            EditTestActivity.EditTestValidator validatorFunction(String text) {
+            Utils.EditValidator validatorFunction(String text) {
                 return mListener.descriptionEditTestValidator(text);
             }
         });
@@ -132,9 +136,24 @@ public class MainInformationEditTestFragment extends Fragment {
 
         EditText title = inflatedView.findViewById(R.id.titleEditText);
         EditText description = inflatedView.findViewById(R.id.descriptionEditText);
+        Spinner scoreMethod = inflatedView.findViewById(R.id.scoreMethodSpinner);
+        scoreMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            TextView helperSpinnerText = inflatedView.findViewById(R.id.spinnerHelperText);
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                helperSpinnerText.setText(
+                        getResources().getStringArray(R.array.score_method_helper_text)[i]
+                );
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
         title.setText(currentEditTest.getName());
         description.setText(currentEditTest.getDescription());
+        scoreMethod.setSelection(currentEditTest.getScoreMethod() ? 0 : 1);
     }
 
     public void updateTestDid() {
@@ -147,8 +166,8 @@ public class MainInformationEditTestFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        EditTestActivity.EditTestValidator titleEditTestValidator(String text);
-        EditTestActivity.EditTestValidator descriptionEditTestValidator(String text);
+        Utils.EditValidator titleEditTestValidator(String text);
+        Utils.EditValidator descriptionEditTestValidator(String text);
     }
 
     abstract class EditTextTextWatcher implements TextWatcher {
@@ -170,13 +189,16 @@ public class MainInformationEditTestFragment extends Fragment {
 
         @Override
         public void afterTextChanged(Editable editable) {
-            EditTestActivity.EditTestValidator validatorResponse = validatorFunction(editable.toString());
+            Utils.EditValidator validatorResponse = validatorFunction(editable.toString());
 
             if (validatorResponse.isError()) {
                 String msg = getString(validatorResponse.getErrorMessageResourceId());
                 if (validatorResponse.isWarning()) {
-                    Drawable warningIcon= getResources().getDrawable(R.drawable.ic_warning_yellow_24dp);
-                    warningIcon.setBounds(0, 0, warningIcon.getIntrinsicWidth(), warningIcon.getIntrinsicHeight());
+                    Drawable warningIcon= ResourcesCompat.getDrawable(getResources(),
+                            R.drawable.ic_warning_yellow_24dp, null);
+                    if (warningIcon != null) {
+                        warningIcon.setBounds(0, 0, warningIcon.getIntrinsicWidth(), warningIcon.getIntrinsicHeight());
+                    }
 
                     editText.setError(msg, warningIcon);
                 } else {
@@ -187,6 +209,6 @@ public class MainInformationEditTestFragment extends Fragment {
             }
         }
 
-        abstract EditTestActivity.EditTestValidator validatorFunction(String text);
+        abstract Utils.EditValidator validatorFunction(String text);
     }
 }

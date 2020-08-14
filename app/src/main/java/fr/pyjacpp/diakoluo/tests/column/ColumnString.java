@@ -23,7 +23,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.checkbox.MaterialCheckBox;
@@ -45,34 +44,31 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
+
 public class ColumnString extends Column {
     private String defaultValue;
 
-    private static final int CASE_SENSITIVE = 1;
-    private static final int REMOVE_USELESS_SPACES = 1 << 1;
+    private static final int SET_CASE_SENSITIVE = 1 << 2;
+    private static final int SET_REMOVE_USELESS_SPACES = 1 << 3;
 
-    private static final int DEFAULT_SETTINGS = REMOVE_USELESS_SPACES;
-
-    private static final String SETTINGS_TAG = "settings";
-
-    public int settings = -1;
+    private static final int SET_DEFAULT = SET_REMOVE_USELESS_SPACES | Column.SET_DEFAULT;
 
     ColumnString() {
-        super();
+        super(ColumnInputType.String);
     }
 
     @Override
-    void initialize() {
+    public void initialize() {
         super.initialize();
         defaultValue = null;
-        settings = -1;
         inputType = ColumnInputType.String;
     }
 
     @Override
-    public void initializeChildValue() {
+    public void initialize(String name, String description) {
+        super.initialize(name, description);
         defaultValue = "";
-        settings = DEFAULT_SETTINGS;
+        settings = SET_DEFAULT;
     }
 
     @Override
@@ -80,12 +76,12 @@ public class ColumnString extends Column {
         DataCellString dataCellString = (DataCellString) dataCell;
         String value = dataCellString.getValue();
         String a = (String) answer;
-        if (isInSettings(REMOVE_USELESS_SPACES)) {
+        if (isInSettings(SET_REMOVE_USELESS_SPACES)) {
             value = Utils.removeUselessSpaces(value);
             a = Utils.removeUselessSpaces(a);
         }
 
-        if (isInSettings(CASE_SENSITIVE)) {
+        if (isInSettings(SET_CASE_SENSITIVE)) {
             return value.equals(a);
         } else {
             return value.equalsIgnoreCase(a);
@@ -94,36 +90,46 @@ public class ColumnString extends Column {
 
     @Override
     public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
-        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_string, parent, true);
+        super.getViewColumnSettings(layoutInflater, parent);
+        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_view_string,
+                parent, true);
 
-        MaterialTextView caseSensitiveTextView = inflatedView.findViewById(R.id.caseSensitiveTextView);
-        MaterialTextView removeUselessSpacesTextView = inflatedView.findViewById(R.id.removeUselessSpaceTextView);
+        MaterialTextView caseSensitiveTextView =
+                inflatedView.findViewById(R.id.caseSensitiveTextView);
+        MaterialTextView removeUselessSpacesTextView =
+                inflatedView.findViewById(R.id.removeUselessSpaceTextView);
 
-        ViewUtils.setBooleanView(parent.getContext(), caseSensitiveTextView, isInSettings(CASE_SENSITIVE));
-        ViewUtils.setBooleanView(parent.getContext(), removeUselessSpacesTextView, isInSettings(REMOVE_USELESS_SPACES));
-    }
-
-    @NonNull
-    @Override
-    public View getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
-        View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_edit_string, parent, true);
-
-        MaterialCheckBox caseSensitiveCheckBox = inflatedView.findViewById(R.id.caseSensitiveCheckBox);
-        MaterialCheckBox removeUselessSpacesCheckBox = inflatedView.findViewById(R.id.removeUselessSpaceCheckBox);
-
-        caseSensitiveCheckBox.setChecked(isInSettings(CASE_SENSITIVE));
-        removeUselessSpacesCheckBox.setChecked(isInSettings(REMOVE_USELESS_SPACES));
-
-        return inflatedView;
+        ViewUtils.setBooleanView(parent.getContext(),
+                caseSensitiveTextView, isInSettings(SET_CASE_SENSITIVE));
+        ViewUtils.setBooleanView(parent.getContext(),
+                removeUselessSpacesTextView, isInSettings(SET_REMOVE_USELESS_SPACES));
     }
 
     @Override
-    public void setEditColumnSettings(View columnSettingsView) {
-        MaterialCheckBox caseSensitiveCheckBox = columnSettingsView.findViewById(R.id.caseSensitiveCheckBox);
-        MaterialCheckBox removeUselessSpacesCheckBox = columnSettingsView.findViewById(R.id.removeUselessSpaceCheckBox);
+    public void getEditColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
+        super.getEditColumnSettings(layoutInflater, parent);
+        View inflatedView =
+                layoutInflater.inflate(R.layout.fragment_column_settings_edit_string, parent, true);
 
-        setSettings(CASE_SENSITIVE, caseSensitiveCheckBox.isChecked());
-        setSettings(REMOVE_USELESS_SPACES, removeUselessSpacesCheckBox.isChecked());
+        MaterialCheckBox caseSensitiveCheckBox =
+                inflatedView.findViewById(R.id.caseSensitiveCheckBox);
+        MaterialCheckBox removeUselessSpacesCheckBox =
+                inflatedView.findViewById(R.id.removeUselessSpaceCheckBox);
+
+        caseSensitiveCheckBox.setChecked(isInSettings(SET_CASE_SENSITIVE));
+        removeUselessSpacesCheckBox.setChecked(isInSettings(SET_REMOVE_USELESS_SPACES));
+    }
+
+    @Override
+    public void setEditColumnSettings(ViewGroup parent) {
+        super.setEditColumnSettings(parent);
+        MaterialCheckBox caseSensitiveCheckBox =
+                parent.findViewById(R.id.caseSensitiveCheckBox);
+        MaterialCheckBox removeUselessSpacesCheckBox =
+                parent.findViewById(R.id.removeUselessSpaceCheckBox);
+
+        setSettings(SET_CASE_SENSITIVE, caseSensitiveCheckBox.isChecked());
+        setSettings(SET_REMOVE_USELESS_SPACES, removeUselessSpacesCheckBox.isChecked());
     }
 
     @Override
@@ -138,68 +144,49 @@ public class ColumnString extends Column {
 
     @Override
     public boolean isValid() {
-        return super.isValid() && defaultValue != null && settings >= 0;
+        return super.isValid() && defaultValue != null;
     }
 
-    private boolean isInSettings(int parameter) {
-        return (settings & parameter) == parameter;
+    @Override
+    public void writeXmlInternal(OutputStream fileOutputStream) throws IOException {
+        super.writeXmlInternal(fileOutputStream);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_DEFAULT_VALUE, defaultValue);
     }
 
-    private void setSettings(int parameter, boolean value) {
-        if (value) {
-            settings = settings | parameter;
+    @Override
+    protected void readColumnXmlTag(XmlPullParser parser)
+            throws IOException, XmlPullParserException {
+        if (FileManager.TAG_DEFAULT_VALUE.equals(parser.getName())) {
+            defaultValue = XmlLoader.readText(parser);
         } else {
-            settings = settings & ~ parameter;
+            super.readColumnXmlTag(parser);
         }
     }
 
     @Override
-    public void writeXmlHeader(OutputStream fileOutputStream) throws IOException {
-        fileOutputStream.write(XmlSaver.getCoupleBeacon(FileManager.TAG_DEFAULT_VALUE,
-                defaultValue).getBytes());
-        fileOutputStream.write(XmlSaver.getCoupleBeacon(SETTINGS_TAG,
-                String.valueOf(settings)).getBytes());
+    protected void setDefaultValueBackWardCompatibility(int fileVersion) {
+        super.setDefaultValueBackWardCompatibility(fileVersion);
+        if (fileVersion < FileManager.VER_V_0_3_0 && settings < 0) settings = SET_DEFAULT;
     }
 
     @Override
-    void readColumnXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
-        switch (parser.getName()) {
-            case FileManager.TAG_DEFAULT_VALUE:
-                defaultValue = XmlLoader.readText(parser);
-                break;
-
-            case SETTINGS_TAG:
-                settings = XmlLoader.readInt(parser);
-                break;
-
-            default:
-                super.readColumnXmlTag(parser);
-                break;
-        }
-    }
-
-    @Override
-    protected void setDefaultValueBackWardCompatibility() {
-        super.setDefaultValueBackWardCompatibility();
-        // for version < v0.3.0
-        if (settings < 0) {
-            settings = DEFAULT_SETTINGS;
-        }
-    }
-
-    static ColumnString privateCopyColumn(ColumnString baseColumn) {
+    public Column copyColumn() {
         ColumnString newColumn = new ColumnString();
-        newColumn.defaultValue = baseColumn.defaultValue;
-        newColumn.settings = baseColumn.settings;
-        Column.privateCopyColumn(baseColumn, newColumn);
+        copyColumn(newColumn);
         return newColumn;
+    }
+
+    @Override
+    protected void copyColumn(Column newColumn) {
+        super.copyColumn(newColumn);
+        ((ColumnString) newColumn).defaultValue = defaultValue;
     }
 
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof ColumnString && super.equals(obj)) {
             ColumnString cS = (ColumnString) obj;
-            return cS.defaultValue.equals(defaultValue) && cS.settings == settings;
+            return cS.defaultValue.equals(defaultValue);
         }
         return false;
     }

@@ -19,7 +19,12 @@
 
 package fr.pyjacpp.diakoluo.tests;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,13 +32,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import fr.pyjacpp.diakoluo.save_test.CsvSaver;
+import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.save_test.XmlLoader;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
+
+import static fr.pyjacpp.diakoluo.save_test.XmlLoader.TAG;
 
 public class DataRow {
     private HashMap<Column, DataCell> listCells;
     private boolean selected;
 
+    /**
+     * Default constructor.
+     */
     public DataRow() {
         selected = true;
         listCells = new HashMap<>();
@@ -43,6 +56,12 @@ public class DataRow {
         this.selected = selected;
     }
 
+    /**
+     * Copy a data row need the new list of column and the previous list of column.
+     * @param dataRow the dataRow to copy
+     * @param newListColumn the new list of columns
+     * @param previousListColumn the previous list of columns
+     */
     public DataRow(DataRow dataRow, ArrayList<Column> newListColumn,
                    ArrayList<Column> previousListColumn) {
         // ASSERT if (newListColumn.size() != previousListColumn.size()) throw new AssertionError();
@@ -54,6 +73,75 @@ public class DataRow {
         }
     }
 
+    public static DataRow readXmlRow(XmlPullParser parser, ArrayList<Column> columns)
+            throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_ROW);
+
+        DataRow dataRow = new DataRow();
+        int indexColumn = 0;
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            if (FileManager.TAG_CELL.equals(parser.getName())) {
+                if (indexColumn >= columns.size()) {
+                    Log.w(TAG, "Too many cells !");
+                    continue;
+                }
+                Column currentColumn = columns.get(indexColumn);
+                DataCell cell = DataCell.readCell(parser, currentColumn.getInputType());
+                dataRow.getListCells().put(currentColumn, cell);
+
+                indexColumn++;
+
+            } else {
+                XmlLoader.skip(parser);
+            }
+        }
+
+        if (indexColumn < columns.size()) {
+            Log.w(TAG, "Too few cells !");
+            for (int i = indexColumn; i < columns.size(); i++) {
+                Column currentColumn = columns.get(indexColumn);
+                DataCell cell = DataCell.newCellWithDefaultValue(currentColumn);
+                dataRow.getListCells().put(currentColumn, cell);
+            }
+        }
+
+        return dataRow;
+    }
+
+    /**
+     * Read rows from xml file.
+     * @return the list of rows loaded
+     */
+    public static ArrayList<DataRow> readXmlRows(XmlPullParser parser, ArrayList<Column> columns)
+            throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_ROWS);
+        if (columns == null) throw new XmlPullParserException("Columns must be defined before rows");
+        ArrayList<DataRow> rows = new ArrayList<>();
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            if (parser.getName().equals(FileManager.TAG_ROW)) {
+                rows.add(DataRow.readXmlRow(parser, columns));
+            } else {
+                XmlLoader.skip(parser);
+            }
+        }
+        return rows;
+    }
+
+    /**
+     * Get list of cells.
+     * @return the list of cells
+     */
     public HashMap<Column, DataCell> getListCells() {
         return listCells;
     }
@@ -66,22 +154,43 @@ public class DataRow {
         this.selected = selected;
     }
 
+    /**
+     * Write the data row in an xml file.
+     * @param fileOutputStream the file output stream of the file
+     * @param test the test to save
+     * @throws IOException if an exception occur while writing the file
+     */
     public void writeXml(OutputStream fileOutputStream, Test test) throws IOException {
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_ROW);
+
         ArrayList<Column> listColumn = test.getListColumn();
         for (int i = 0, listColumnSize = listColumn.size(); i < listColumnSize; i++) {
             Column column = listColumn.get(i);
             DataCell dataCell = listCells.get(column);
-            if (dataCell != null)
+            if (dataCell != null) {
                 dataCell.writeXml(fileOutputStream);
+            }
         }
+
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_ROW);
     }
 
+    /**
+     * Write the row in a csv file.
+     * @param csvContext the CsvContext to write
+     * @param test the test to save
+     * @throws IOException if an exception occur while writing the file
+     */
     public void writeCsv(CsvSaver.CsvContext csvContext, Test test) throws IOException {
         ArrayList<Column> listColumn = test.getListColumn();
         for (int i = 0, listColumnSize = listColumn.size(); i < listColumnSize; i++) {
             Column column = listColumn.get(i);
             DataCell dataCell = listCells.get(column);
-            CsvSaver.writeCell(csvContext, i, dataCell == null ? "" : dataCell.getStringValue());
+            if (dataCell == null) CsvSaver.writeCell(csvContext, i, "");
+            else {
+                String csvValue = dataCell.getCsvValue(column);
+                CsvSaver.writeCell(csvContext, i, csvValue);
+            }
         }
     }
 

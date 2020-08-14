@@ -56,7 +56,7 @@ public class SaveLoadTest {
 
     private static final String TAG = "SaveLoadTest";
     @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void saveLoadTest() {
@@ -74,9 +74,11 @@ public class SaveLoadTest {
             assertEquals(test, loadedTest);
             assertNotSame(test, loadedTest);
 
-            loadedTest = XmlLoader.load(context.getResources().getAssets().open(DiakoluoApplication.DEFAULT_TEST));
-            assertEquals(test, loadedTest);
-            assertNotSame(test, loadedTest);
+            loadedTest = XmlLoader.load(context.getResources().getAssets()
+                    .open(DiakoluoApplication.DEFAULT_TEST));
+            assertEquals("Test loading the default test", test, loadedTest);
+            // if this failed, please implement methods to have a backward compatibility
+            assertNotSame("Test loading the default test", test, loadedTest);
 
             test = new fr.pyjacpp.diakoluo.tests.Test("Test", "");
             assertTrue(test.isValid());
@@ -84,9 +86,12 @@ public class SaveLoadTest {
             test.addRow(dataRow);
 
             for (ColumnInputType inputType : ColumnInputType.values()) {
-                Column column = Column.newColumn(inputType);
+                Column column = DefaultTest.setTestValue(Column.newColumn(inputType));
+                Column column1 = DefaultTest.setTestValueEmpty(Column.newColumn(inputType));
                 test.addColumn(column);
-                dataRow.getListCells().put(column, DefaultTest.setTestValue(DataCell.getDefaultValueCell(column)));
+                test.addColumn(column1);
+                dataRow.getListCells().put(column, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column)));
+                dataRow.getListCells().put(column1, DefaultTest.setTestValue(DataCell.newCellWithDefaultValue(column1)));
             }
 
             outputStream.close();
@@ -105,8 +110,10 @@ public class SaveLoadTest {
                 outputStream.close();
                 outputStream = new FileOutputStream(file);
 
-                CsvSaver.save(outputStream, test, true, true, CsvSaver.DEFAULT_LINE_SEPARATOR, separator);
-                loadedTest = CsvLoader.load(context, new FileInputStream(file), separator.charAt(0), true, true, test.getName());
+                CsvSaver.save(outputStream, test, true, true,
+                        CsvSaver.DEFAULT_LINE_SEPARATOR, separator);
+                loadedTest = CsvLoader.load(context, new FileInputStream(file), separator.charAt(0),
+                        true, true, test.getName());
 
                 assertNotNull(loadedTest);
 

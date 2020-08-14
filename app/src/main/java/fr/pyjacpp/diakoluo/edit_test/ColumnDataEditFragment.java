@@ -38,10 +38,8 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.OnSwipeTouchListener;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
-import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.column.Column;
-import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
 public class ColumnDataEditFragment extends Fragment {
     static final String ARG_COLUMN_INDEX = "column_index";
@@ -56,7 +54,9 @@ public class ColumnDataEditFragment extends Fragment {
     private EditText titleEditText;
     private EditText descriptionEditText;
 
-    private View columnSettingsView;
+    private Column column;
+    private Test currentEditTest;
+    private LinearLayout columnSettingsParent;
 
     public ColumnDataEditFragment() {
     }
@@ -87,12 +87,12 @@ public class ColumnDataEditFragment extends Fragment {
         if (columnIndex >= 0) {
             titleEditText = inflatedView.findViewById(R.id.titleEditText);
             descriptionEditText = inflatedView.findViewById(R.id.descriptionEditText);
+            columnSettingsParent = inflatedView.findViewById(R.id.columnSettings);
             Spinner columnTypeSpinner = inflatedView.findViewById(R.id.columnTypeSpinner);
 
-            final Test currentEditTest = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext());
-            final Column column = currentEditTest
+            currentEditTest = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext());
+            column = currentEditTest
                     .getListColumn().get(columnIndex);
-            LinearLayout columnSettingsParent = inflatedView.findViewById(R.id.columnSettings);
 
             titleEditText.setText(column.getName());
             descriptionEditText.setText(column.getDescription());
@@ -119,23 +119,13 @@ public class ColumnDataEditFragment extends Fragment {
             columnTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                    // TODO warning
                     ColumnInputType inputType = ColumnInputType.values()[position];
                     if (column.getInputType() != inputType) {
-                        column.setInputType(inputType);
-                        // TODO
-                        // update all cells
-
-                        for (DataRow row : currentEditTest.getListRow()) {
-                            switch (inputType) {
-                                case String:
-                                    row.getListCells().put(column, new DataCellString(""));
-                                    break;
-
-                                default:
-                                    throw new IllegalStateException("Unexpected value: " + column.getInputType());
-                            }
-                        }
+                        Column newColumn = Column.newColumn(inputType);
+                        newColumn.updateCells(currentEditTest, column);
+                        currentEditTest.getListColumn().set(columnIndex, newColumn);
+                        column = newColumn;
+                        updateColumnSettings();
                     }
                 }
 
@@ -143,9 +133,7 @@ public class ColumnDataEditFragment extends Fragment {
                 public void onNothingSelected(AdapterView<?> adapterView) {
                 }
             });
-
-
-            columnSettingsView = column.getEditColumnSettings(inflater, columnSettingsParent);
+            updateColumnSettings();
         }
 
         inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
@@ -161,6 +149,11 @@ public class ColumnDataEditFragment extends Fragment {
         });
 
         return inflatedView;
+    }
+
+    public void updateColumnSettings() {
+        columnSettingsParent.removeAllViews();
+        column.getEditColumnSettings(getLayoutInflater(), columnSettingsParent);
     }
 
     @Override
@@ -199,7 +192,7 @@ public class ColumnDataEditFragment extends Fragment {
 
             column.setName(titleEditText.getText().toString());
             column.setDescription(descriptionEditText.getText().toString());
-            column.setEditColumnSettings(columnSettingsView);
+            column.setEditColumnSettings(columnSettingsParent);
 
             if (parentListener != null)
                 parentListener.updateItem(columnIndex);

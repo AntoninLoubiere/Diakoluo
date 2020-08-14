@@ -46,24 +46,27 @@ public class TestTestContextTest {
 
     @Test
     public void getProgressScore() {
-        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW);
-        testTestContext.addScore(10);
+        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW,
+                false);
+        testTestContext.addScore(10, 10);
         assertEquals(10 * TestTestContext.PROGRESS_BAR_PRECISION, testTestContext.getProgressScore());
-        assertEquals(testTestContext.getMaxScore() * TestTestContext.PROGRESS_BAR_PRECISION, testTestContext.getMaxProgressScore());
+        assertEquals((int) testTestContext.getMaxScore() * TestTestContext.PROGRESS_BAR_PRECISION, testTestContext.getMaxProgressScore());
     }
 
     @Test
     public void addScore() {
-        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW);
-        assertEquals(0, testTestContext.getScore());
-        testTestContext.addScore(10);
-        assertEquals(10, testTestContext.getScore());
+        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW,
+                false);
+        assertEquals(0, testTestContext.getScore(), 0);
+        testTestContext.addScore(10, 10);
+        assertEquals(10, testTestContext.getScore(), 0);
     }
 
     @Test
     public void incrementCurrentIndex() {
         int numberQuestionToAsk = NUMBER_QUESTION_TO_ASK;
-        TestTestContext testTestContext = new TestTestContext(defaultTest, numberQuestionToAsk, NUMBER_COLUMN_TO_SHOW);
+        TestTestContext testTestContext = new TestTestContext(defaultTest, numberQuestionToAsk, NUMBER_COLUMN_TO_SHOW,
+                false);
         for (int i = 0; i < numberQuestionToAsk - 1; i++) {
             assertEquals(i, testTestContext.getCurrentIndex());
             assertTrue(testTestContext.incrementCurrentIndex());
@@ -75,7 +78,7 @@ public class TestTestContextTest {
 
     @Test
     public void answerGive() {
-        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW);
+        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW, false);
         assertFalse(testTestContext.isAnswerGive());
         testTestContext.setAnswerGive(true);
         assertTrue(testTestContext.isAnswerGive());
@@ -83,23 +86,26 @@ public class TestTestContextTest {
 
     @Test
     public void getTest() {
-        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW);
+        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW, false);
         assertSame(defaultTest, testTestContext.getTest());
     }
 
     @Test
     public void selectShowColumn() {
         int numberColumnToShow = 2;
-        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, numberColumnToShow);
+        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, numberColumnToShow, false);
         for (int i = 0; i < 10; i++) {
             testTestContext.selectShowColumn();
             assertEquals(numberColumnToShow, countShowColumn(testTestContext));
         }
+        testTestContext.reset();
+        testTestContext.selectShowColumn();
+        assertEquals(numberColumnToShow, countShowColumn(testTestContext));
     }
 
     @Test
     public void getCurrentRow() {
-        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW);
+        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW, false);
         DataRow currentRow = testTestContext.getCurrentRow();
         testTestContext.incrementCurrentIndex();
         assertNotSame(currentRow, testTestContext.getCurrentRow());
@@ -108,7 +114,7 @@ public class TestTestContextTest {
 
     @Test
     public void removeUserInput() {
-        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW);
+        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW, false);
         String test = "Test";
         testTestContext.getUserAnswer().put(testTestContext.getTest().getListColumn().get(0), test);
         assertEquals(test, testTestContext.getUserAnswer().get(testTestContext.getTest().getListColumn().get(0)));
@@ -118,21 +124,20 @@ public class TestTestContextTest {
 
     @Test
     public void reset() {
-        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW);
-        testTestContext.addScore(10);
-        assertEquals(10, testTestContext.getScore());
+        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW, false);
+        testTestContext.addScore(10, 10);
+        assertEquals(10, testTestContext.getScore(), 0);
         testTestContext.setAnswerGive(true);
         assertTrue(testTestContext.isAnswerGive());
-        int maxScore = testTestContext.getMaxScore();
         testTestContext.reset();
-        assertEquals(0, testTestContext.getScore());
+        assertEquals(0, testTestContext.getScore(), 0);
         assertFalse(testTestContext.isAnswerGive());
-        assertEquals(maxScore, testTestContext.getMaxScore());
+        assertEquals(0, testTestContext.getMaxScore(), 0);
     }
 
     @Test
     public void progress() {
-        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW);
+        TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, NUMBER_COLUMN_TO_SHOW, false);
         do {
             assertEquals(testTestContext.getCurrentIndex() * TestTestContext.PROGRESS_BAR_PRECISION, testTestContext.getProgress());
         } while (testTestContext.incrementCurrentIndex());

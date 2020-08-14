@@ -53,7 +53,8 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
         setContentView(R.layout.activity_edit_answer_data);
 
         answerIndex = getIntent().getIntExtra(AnswerDataEditFragment.ARG_ANSWER_INDEX, 0);
-        currentTest = DiakoluoApplication.getCurrentEditTest(this);
+        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(this);
+        currentTest = currentEditTest;
 
         previousButton = findViewById(R.id.previousButton);
         nextButton = findViewById(R.id.nextButton);
@@ -61,10 +62,11 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
 
         actionBar = getSupportActionBar();
         if (actionBar != null) {
-            DataCell dataCell = DiakoluoApplication.getCurrentEditTest(this).getRowFirstCell(answerIndex);
+            DataCell dataCell = currentEditTest.getRowFirstCell(answerIndex);
             String stringValue = "";
             if (dataCell != null)
-                stringValue = dataCell.getStringValue();
+                stringValue = dataCell.getStringValue(this,
+                        currentEditTest.getListColumn().get(0));
 
             if (stringValue.equals(""))
                 actionBar.setTitle(R.string.app_name);
@@ -125,7 +127,8 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
             if (firstCell == null)
                 actionBar.setTitle(R.string.app_name);
             else
-                actionBar.setTitle(firstCell.getStringValue());
+                actionBar.setTitle(firstCell.getStringValue(this,
+                        currentTest.getListColumn().get(0)));
         }
 
         navigationTextView.setText(getString(R.string.navigation_info, answerIndex + 1,
@@ -141,7 +144,8 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
             if (firstCell == null)
                 previousButton.setText(R.string.previous);
             else
-                previousButton.setText(firstCell.getStringValue());
+                previousButton.setText(firstCell.getStringValue(this,
+                        currentTest.getListColumn().get(0)));
         } else {
             previousButton.setEnabled(false);
             previousButton.setVisibility(View.GONE);
@@ -152,7 +156,8 @@ public class AnswerDataEditActivity extends AppCompatActivity implements AnswerD
             if (firstCell == null)
                 nextButton.setText(R.string.next);
             else
-                nextButton.setText(firstCell.getStringValue());
+                nextButton.setText(firstCell.getStringValue(this,
+                        currentTest.getListColumn().get(0)));
         } else {
             nextButton.setText(R.string.create_new_data_edit);
         }

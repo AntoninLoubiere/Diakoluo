@@ -24,14 +24,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,16 +107,14 @@ public class AnswerDataEditFragment extends Fragment {
                 layout.addView(columnTitle);
 
                 if (dataCell == null) {
-                    dataCell = DataCell.getDefaultValueCell(column);
+                    dataCell = DataCell.newCellWithDefaultValue(column);
                     row.getListCells().put(column, dataCell);
                 }
 
-                TextInputLayout columnValue = dataCell.showEditValue(inflatedView.getContext(), column);
+                View columnValue = column.showEditValueView(inflatedView.getContext(),
+                        dataCell.getValue());
                 columnAnswerEditHashMap.put(column, columnValue);
-                EditText editText = columnValue.getEditText();
-                if (editText != null) {
-                    editText.setOnFocusChangeListener(onFocusChangeListener);
-                }
+                columnValue.setOnFocusChangeListener(onFocusChangeListener);
                 layout.addView(columnValue);
             }
         }
@@ -184,7 +179,7 @@ public class AnswerDataEditFragment extends Fragment {
                     if (dataCell == null) {
                         DataCell.setDefaultCellFromView(answerEdit, row, column);
                     } else {
-                        dataCell.setValueFromView(answerEdit);
+                        column.setValueFromView(dataCell, answerEdit);
                     }
                 }
             }

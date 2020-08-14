@@ -17,27 +17,16 @@
  *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-package fr.pyjacpp.diakoluo.tests;
+package fr.pyjacpp.diakoluo.test_tests;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+public class ColumnToShow {
+    public final int numberColumnToShowMin;
+    public final int numberColumnToShowMax;
+    public final int numberColumnTotal; // without hidden columns
 
-public enum ColumnInputType {
-    String, List;
-
-    public static final ColumnInputType DEFAULT_INPUT_TYPE = String;
-
-    @Nullable
-    public static ColumnInputType get(@NonNull String attributeValue) {
-        switch (attributeValue) {
-            case "String":
-                return String;
-
-            case "List":
-                return List;
-
-            default:
-                return null;
-        }
+    public ColumnToShow(int numberColumnToShowMin, int numberColumnToShowMax, int numberColumnTotal) {
+        this.numberColumnToShowMin = numberColumnToShowMin;
+        this.numberColumnToShowMax = numberColumnToShowMax;
+        this.numberColumnTotal = numberColumnTotal;
     }
 }

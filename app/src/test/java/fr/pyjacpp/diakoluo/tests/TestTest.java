@@ -100,12 +100,12 @@ public class TestTest {
         assertEquals(defaultTest.getListRow(), test.getListRow());
         assertEquals(defaultTest.getListRow().size(), test.getNumberRow());
         assertEquals(defaultTest.getRowFirstCell(0), test.getRowFirstCell(0));
-        assertEquals(defaultTest.getRowFirstCellString(0), test.getRowFirstCellString(0));
+        assertEquals(defaultTest.getRowFirstCellString(null, 0), test.getRowFirstCellString(null, 0));
         test.addRow(new DataRow());
         assertEquals(test.getListRow().size(), test.getNumberRow());
         test.setListColumn(new ArrayList<Column>());
         assertNull(test.getRowFirstCell(0));
-        assertEquals("0", test.getRowFirstCellString(0));
+        assertEquals("0", test.getRowFirstCellString(null, 0));
     }
 
     @Test

@@ -48,24 +48,32 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 public class FileManager {
-    private static final String TEST_PREFIX = "test_";
-    
+    // version constants
+    public static final int VER_V_0_3_0 = 1;
+    public static final int VER_ACTUAL = VER_V_0_3_0;
+
     // tag constants
-    static final String TAG_TEST                    = "test";
-    public static final String TAG_NAME             = "name";
-    public static final String TAG_DESCRIPTION      = "description";
-    static final String TAG_NUMBER_TEST_DID         = "numberTestDid";
-    static final String TAG_CREATED_DATE            = "createdDate";
-    static final String TAG_LAST_MODIFICATION       = "lastModification";
-    static final String TAG_COLUMNS                 = "columns";
-    public static final String TAG_COLUMN           = "column";
-    static final String TAG_ROWS                    = "rows";
-    static final String TAG_ROW                     = "row";
-    public static final String TAG_CELL             = "cell";
-    public static final String ATTRIBUTE_INPUT_TYPE = "inputType";
-    public static final String TAG_DEFAULT_VALUE    = "defaultValue";
+    public static final String TAG_TEST              = "test";
+    public static final String TAG_NAME              = "name";
+    public static final String TAG_DESCRIPTION       = "description";
+    public static final String TAG_NUMBER_TEST_DID   = "numberTestDid";
+    public static final String TAG_CREATED_DATE      = "createdDate";
+    public static final String TAG_LAST_MODIFICATION = "lastModification";
+    public static final String TAG_COLUMNS           = "columns";
+    public static final String TAG_COLUMN            = "column";
+    public static final String TAG_ROWS              = "rows";
+    public static final String TAG_ROW               = "row";
+    public static final String TAG_CELL              = "cell";
+    public static final String TAG_DEFAULT_VALUE     = "defaultValue";
+    public static final String TAG_SETTINGS          = "settings";
+    public static final String TAG_SCORE             = "score";
+    public static final String TAG_SCORE_METHOD      = "scoreMethod";
+    public static final String ATTRIBUTE_VERSION     = "version";
+    public static final String ATTRIBUTE_INPUT_TYPE  = "inputType";
 
     private static final String MIME_TYPE = "*/*";
+
+    private static final String TEST_PREFIX = "test_";
 
     private static final int CREATE_DOCUMENT_REQUEST_CODE = 1;
     private static final int OPEN_DOCUMENT_REQUEST_CODE = 2;

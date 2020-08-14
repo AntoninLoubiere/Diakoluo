@@ -17,28 +17,12 @@
   ~     A copy of the license is available in the root folder of Diakôluô, under the
   ~     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
   -->
-
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/textView"
+    style="@style/TextAppearance.MaterialComponents.Body1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".list_tests.ListTestActivity">
-
-    <fragment
-        android:id="@+id/fragmentListTest"
-        class="fr.pyjacpp.diakoluo.list_tests.ListTestsFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/fragment_recycler_list" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        style="@style/FloatingActionButton"
-        android:id="@+id/addFloatingButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:src="@drawable/ic_add_white_24dp"
-        android:layout_margin="10dp"/>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    android:layout_height="wrap_content"
+    android:ellipsize="end"
+    android:gravity="center_vertical"
+    android:maxLines="1"
+    android:singleLine="true" />

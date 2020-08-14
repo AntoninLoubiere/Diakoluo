@@ -36,73 +36,95 @@ public class TestTestContext {
 
     static final int PROGRESS_BAR_PRECISION = 100;
 
-    private int score = 0;
-    private int maxScore;
+    private float score;
+    private float maxScore;
+    private final boolean proportionalityScoreMethod;
 
     private final int numberQuestionToAsk;
-    private final int numberColumnToShow;
+    private int numberColumnToShowRandom;
+    private float columnScoreSum = 0;
+    private float columnSelectedScoreSum = 0;
 
-    private ArrayList<DataRow> listRowToAsk = new ArrayList<>();
+    private ArrayList<DataRow> listRowToAsk;
 
     private final Test test;
 
-    private int currentIndex = 0;
-    private boolean answerGive = false;
+    private int currentIndex;
+    private boolean answerGive;
 
-    private HashMap<Column, Object> userAnswer = new HashMap<>();
-    private HashMap<Column, Boolean> showColumn = new HashMap<>();
+    private final HashMap<Column, Object> userAnswer = new HashMap<>();
+    private final HashMap<Column, Boolean> showColumn = new HashMap<>();
+
+    private final ArrayList<Column> columnsAskRandom = new ArrayList<>();
+    private final ArrayList<Column> columnsAsk = new ArrayList<>();
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    protected TestTestContext(Test test, int numberQuestionToAsk, int numberColumnToShow) {
+    protected TestTestContext(Test test, int numberQuestionToAsk, int numberColumnToShow,
+                              boolean proportionalityScoreMethod) {
         this.test = test;
         this.numberQuestionToAsk = numberQuestionToAsk;
-        this.numberColumnToShow = numberColumnToShow;
+        this.proportionalityScoreMethod = proportionalityScoreMethod;
+        initialize(numberColumnToShow);
+    }
 
-        // initialize
+    TestTestContext(Context context, int numberQuestionToAsk, int numberColumnToShow,
+                    boolean proportionalityScoreMethod) {
+        this.numberQuestionToAsk = numberQuestionToAsk;
+
+        test = DiakoluoApplication.getCurrentTest(context);
+        this.proportionalityScoreMethod = proportionalityScoreMethod;
+        initialize(numberColumnToShow);
+    }
+
+    private void initialize(int numberColumnToShow) {
+        for (Column c : test.getListColumn()) {
+            boolean canHide = c.isInSettings(Column.SET_CAN_BE_HIDE);
+            boolean canShow = c.isInSettings(Column.SET_CAN_BE_SHOW);
+
+            int score = c.getScore();
+            if (canHide && canShow) {
+                columnsAskRandom.add(c);
+                columnsAsk.add(c);
+                columnSelectedScoreSum += score; // null showColumn is considered false
+                columnScoreSum += score;
+            } else if (canHide) {
+                columnsAsk.add(c);
+                showColumn.put(c, false);
+                columnSelectedScoreSum += score;
+                columnScoreSum += score;
+            } else if (canShow) {
+                showColumn.put(c, true);
+                numberColumnToShow--;
+            }
+        }
+        numberColumnToShowRandom = numberColumnToShow;
         reset();
     }
 
-    TestTestContext(Context context, int numberQuestionToAsk, int numberColumnToShow) {
-        this.numberQuestionToAsk = numberQuestionToAsk;
-        this.numberColumnToShow = numberColumnToShow;
-
-        test = DiakoluoApplication.getCurrentTest(context);
-        Random random = new Random();
-
-        maxScore = numberQuestionToAsk * (test.getNumberColumn() - numberColumnToShow);
-
-        ArrayList<DataRow> dataRowsToChoose = new ArrayList<>(test.getListRow());
-
-        for (int i = 0; i < numberQuestionToAsk; i++) {
-            int index = random.nextInt(dataRowsToChoose.size());
-            listRowToAsk.add(dataRowsToChoose.get(index));
-            dataRowsToChoose.remove(index);
-        }
-
-        for (Column column : test.getListColumn()) {
-            userAnswer.put(column, null);
-            showColumn.put(column, false);
-        }
-    }
-
-    public int getMaxScore() {
+    public float getMaxScore() {
         return maxScore;
     }
 
-    public int getScore() {
+    public float getScore() {
         return score;
     }
 
     int getProgressScore() {
-        return score * PROGRESS_BAR_PRECISION;
+        return (int) (score * PROGRESS_BAR_PRECISION);
     }
 
     int getMaxProgressScore() {
-        return maxScore * PROGRESS_BAR_PRECISION;
+        return (int) (maxScore * PROGRESS_BAR_PRECISION);
     }
 
-    public void addScore(int score) {
-        this.score += score;
+    public void addScore(int score, int maxScore) {
+        if (proportionalityScoreMethod) {
+            this.score += score * columnScoreSum / columnSelectedScoreSum;
+            this.maxScore += maxScore * columnScoreSum / columnSelectedScoreSum;
+        } else {
+            this.score += score;
+            this.maxScore += maxScore;
+        }
     }
 
     /*public int getNumberColumnToShow() {
@@ -147,16 +169,21 @@ public class TestTestContext {
     }
 
     void selectShowColumn() {
-        ArrayList<Column> columnsToChoose = new ArrayList<>(test.getListColumn());
+        ArrayList<Column> columnsToChoose = new ArrayList<>(columnsAskRandom);
         Random random = new Random();
 
-        for (int i = 0; i < numberColumnToShow; i++) {
+        for (int i = 0; i < numberColumnToShowRandom; i++) {
             int index = random.nextInt(columnsToChoose.size());
-            showColumn.put(columnsToChoose.get(index), true);
+            Column column = columnsToChoose.get(index);
+            Boolean previous = showColumn.get(column);
+            if (previous == null || !previous) columnSelectedScoreSum -= column.getScore();
+            showColumn.put(column, true);
             columnsToChoose.remove(index);
         }
 
         for (Column column : columnsToChoose) {
+            Boolean previous = showColumn.get(column);
+            if (previous != null && previous) columnSelectedScoreSum += column.getScore();
             showColumn.put(column, false);
         }
     }
@@ -171,13 +198,10 @@ public class TestTestContext {
 
     void reset() {
         score = 0;
-        maxScore = numberQuestionToAsk * (test.getNumberColumn() - numberColumnToShow);
+        maxScore = 0;
         listRowToAsk = new ArrayList<>();
         currentIndex = 0;
         answerGive = false;
-
-        userAnswer = new HashMap<>();
-        showColumn = new HashMap<>();
 
         ArrayList<DataRow> dataRowsToChoose = new ArrayList<>(test.getListRow());
 
@@ -188,10 +212,13 @@ public class TestTestContext {
             dataRowsToChoose.remove(index);
         }
 
-        for (Column column : test.getListColumn()) {
+        for (Column column : columnsAsk) {
             userAnswer.put(column, null);
+            Boolean previous = showColumn.get(column);
+            if (previous != null && previous) columnSelectedScoreSum += column.getScore();
             showColumn.put(column, false);
         }
+        selectShowColumn();
     }
 
     int getProgress() {

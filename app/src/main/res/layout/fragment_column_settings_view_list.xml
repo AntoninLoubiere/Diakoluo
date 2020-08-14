@@ -18,27 +18,24 @@
   ~     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
   -->
 
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".list_tests.ListTestActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/fragmentListTest"
-        class="fr.pyjacpp.diakoluo.list_tests.ListTestsFragment"
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/Body0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/options" />
+
+    <view
+        android:id="@+id/recyclerView"
+        class="androidx.recyclerview.widget.RecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@layout/fragment_recycler_list" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        style="@style/FloatingActionButton"
-        android:id="@+id/addFloatingButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:src="@drawable/ic_add_white_24dp"
-        android:layout_margin="10dp"/>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        android:layout_marginBottom="@dimen/default_margin"
+        android:clipToPadding="false"
+        android:paddingStart="@dimen/default_margin"
+        android:paddingEnd="@dimen/default_margin"
+        android:scrollbars="none" />
+</LinearLayout>

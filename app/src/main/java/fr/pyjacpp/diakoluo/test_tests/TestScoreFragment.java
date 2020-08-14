@@ -20,6 +20,7 @@
 package fr.pyjacpp.diakoluo.test_tests;
 
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,7 +28,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ import androidx.fragment.app.Fragment;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.ScoreUtils;
+import fr.pyjacpp.diakoluo.Utils;
 
 
 public class TestScoreFragment extends Fragment {
@@ -47,6 +49,9 @@ public class TestScoreFragment extends Fragment {
     private TestTestContext testTestContext;
 
     private ProgressBar scoreProgressBar;
+    private ObjectAnimator animation = null;
+    private ValueAnimator primaryValueAnimator = null;
+    private ValueAnimator secondaryValueAnimator = null;
 
     public TestScoreFragment() {
     }
@@ -54,29 +59,62 @@ public class TestScoreFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View inflatedView = inflater.inflate(R.layout.fragment_test_score, container, false);
+        final View inflatedView = inflater.inflate(R.layout.fragment_test_score, container, false);
 
-        TextView primaryScoreTextView = inflatedView.findViewById(R.id.scoreTextView);
-        TextView secondaryScoreTextView = inflatedView.findViewById(R.id.secondaryScoreTextView);
+        final TextView primaryScoreTextView = inflatedView.findViewById(R.id.scoreTextView);
+        final TextView secondaryScoreTextView = inflatedView.findViewById(R.id.secondaryScoreTextView);
         scoreProgressBar = inflatedView.findViewById(R.id.scoreProgressBar);
         Button restartButton = inflatedView.findViewById(R.id.restartButton);
         Button mainMenuButton = inflatedView.findViewById(R.id.mainMenuButton);
 
         scoreProgressBar.setMax(testTestContext.getMaxProgressScore());
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ObjectAnimator animation = ObjectAnimator.ofInt(scoreProgressBar, "progress", testTestContext.getProgressScore());
-                animation.setDuration(3000);
-                animation.setInterpolator(new DecelerateInterpolator());
-                animation.start();
-                scoreProgressBar.setProgress(testTestContext.getProgressScore());
-            }
-        }, 1000);
-        secondaryScoreTextView.setText(getString(R.string.score_precise, testTestContext.getScore(), testTestContext.getMaxScore()));
+        final float maxScore = testTestContext.getMaxScore();
+        if (savedInstanceState == null) {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    animation = ObjectAnimator.ofInt(scoreProgressBar, "progress", testTestContext.getProgressScore());
+                    animation.setDuration(3000);
+                    Interpolator decelerateInterpolator =
+                            new Utils.ExtremeDeceleratorInterpolator();
+                    animation.setInterpolator(decelerateInterpolator);
+                    animation.start();
+                    scoreProgressBar.setProgress(testTestContext.getProgressScore());
 
-        primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20(testTestContext)));
+                    primaryValueAnimator = ValueAnimator.ofFloat(0f, testTestContext.getScore());
+                    primaryValueAnimator.setDuration(3000);
+                    primaryValueAnimator.setInterpolator(decelerateInterpolator);
+
+                    primaryValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                            primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20((Float) valueAnimator.getAnimatedValue(), maxScore)));
+                        }
+                    });
+                    primaryValueAnimator.start();
+
+                    secondaryValueAnimator = ValueAnimator.ofFloat(0, testTestContext.getScore());
+                    secondaryValueAnimator.setDuration(3000);
+                    secondaryValueAnimator.setInterpolator(decelerateInterpolator);
+
+                    secondaryValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                            secondaryScoreTextView.setText(getString(R.string.score_precise, (Float) valueAnimator.getAnimatedValue(), maxScore));
+                        }
+                    });
+                    secondaryValueAnimator.start();
+                }
+            }, 1000);
+            primaryScoreTextView.setText(getString(R.string.score_20, 0f));
+            secondaryScoreTextView.setText(getString(R.string.score_precise, 0f, maxScore));
+        } else {
+            primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20(testTestContext)));
+            secondaryScoreTextView.setText(getString(R.string.score_precise, testTestContext.getScore(), maxScore));
+        }
+
+
 
         restartButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,6 +146,14 @@ public class TestScoreFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        if (animation != null) animation.cancel();
+        if (primaryValueAnimator != null) primaryValueAnimator.cancel();
+        if (secondaryValueAnimator != null) secondaryValueAnimator.cancel();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -117,4 +163,5 @@ public class TestScoreFragment extends Fragment {
         void mainMenuButton();
         void restartButton();
     }
+
 }

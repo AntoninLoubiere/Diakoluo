@@ -22,11 +22,11 @@ public class ScoreUtilsTest {
         defaultTest = new DefaultTest();
 
         testTestContextMin = new TestTestTestContext(10, 1);
-        testTestContextMin.addScore(0);
+        testTestContextMin.addScore(0, 10);
         testTestContextMax = new TestTestTestContext(10, 1);
-        testTestContextMax.addScore(testTestContextMax.getMaxScore());
+        testTestContextMax.addScore(10, 10);
         testTestContextRandom = new TestTestTestContext(10, 1);
-        testTestContextRandom.addScore(new Random().nextInt(testTestContextRandom.getMaxScore() - 2) + 1);
+        testTestContextRandom.addScore(new Random().nextInt(10 - 2) + 1, 10);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ScoreUtilsTest {
     /* Test of TestTestContext */
     private class TestTestTestContext extends TestTestContext {
         TestTestTestContext(int numberQuestionToAsk, int numberColumnToShow) {
-            super(defaultTest, numberQuestionToAsk, numberColumnToShow);
+            super(defaultTest, numberQuestionToAsk, numberColumnToShow, false);
         }
     }
 }
