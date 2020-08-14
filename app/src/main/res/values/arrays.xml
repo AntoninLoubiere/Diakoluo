@@ -36,4 +36,8 @@
         <item>Proportionality</item>
         <item>Add</item>
     </string-array>
+    <string-array name="score_method_helper_text">
+        <item>All columns will have the same weight in the score.</item>
+        <item>Columns could have a different weight depending of columns asked.</item>
+    </string-array>
 </resources>

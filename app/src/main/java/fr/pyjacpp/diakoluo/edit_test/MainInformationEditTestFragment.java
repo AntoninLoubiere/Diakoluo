@@ -27,6 +27,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -136,6 +137,19 @@ public class MainInformationEditTestFragment extends Fragment {
         EditText title = inflatedView.findViewById(R.id.titleEditText);
         EditText description = inflatedView.findViewById(R.id.descriptionEditText);
         Spinner scoreMethod = inflatedView.findViewById(R.id.scoreMethodSpinner);
+        scoreMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            TextView helperSpinnerText = inflatedView.findViewById(R.id.spinnerHelperText);
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                helperSpinnerText.setText(
+                        getResources().getStringArray(R.array.score_method_helper_text)[i]
+                );
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
         title.setText(currentEditTest.getName());
         description.setText(currentEditTest.getDescription());
