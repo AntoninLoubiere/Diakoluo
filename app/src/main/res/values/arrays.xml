@@ -27,9 +27,13 @@
         <item>Comma (\",\")</item>
         <item>Semi-colon (\";\")</item>
     </string-array>
-    <string-array name="score_method">
+    <string-array name="score_method_default">
         <item>Default</item>
-        <item>Proportionality mode</item>
-        <item>Add mode</item>
+        <item>Proportionality</item>
+        <item>Add</item>
+    </string-array>
+    <string-array name="score_method">
+        <item>Proportionality</item>
+        <item>Add</item>
     </string-array>
 </resources>

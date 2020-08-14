@@ -53,6 +53,7 @@ public class Test {
     private Date lastModification;
 
     private int numberTestDid;
+    private boolean scoreMethod = true;
 
     private ArrayList<Column> listColumn;
     private ArrayList<DataRow> listRow;
@@ -93,6 +94,7 @@ public class Test {
             listRow.add(new DataRow(dataRow, listColumn, test.listColumn));
         }
         filename = test.filename;
+        scoreMethod = test.scoreMethod;
     }
 
     /**
@@ -322,6 +324,22 @@ public class Test {
     }
 
     /**
+     * Get the score method
+     * @return the score method
+     */
+    public boolean getScoreMethod() {
+        return scoreMethod;
+    }
+
+    /**
+     * Set the score method
+     * @param scoreMethod the new score method
+     */
+    public void setScoreMethod(boolean scoreMethod) {
+        this.scoreMethod = scoreMethod;
+    }
+
+    /**
      * Get if the test can be play.
      * @return if the test can be play
      */
@@ -465,6 +483,7 @@ public class Test {
 
         if (saveNumberTestDone)
             XmlSaver.writeData(fileOutputStream, FileManager.TAG_NUMBER_TEST_DID, numberTestDid);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_METHOD, scoreMethod);
 
         XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_COLUMNS);
         for (Column column : listColumn) {
@@ -518,6 +537,10 @@ public class Test {
 
                 case FileManager.TAG_NUMBER_TEST_DID:
                     test.numberTestDid = XmlLoader.readInt(parser);
+                    break;
+
+                case FileManager.TAG_SCORE_METHOD:
+                    test.scoreMethod = XmlLoader.readBoolean(parser, test.scoreMethod);
                     break;
 
                 case FileManager.TAG_COLUMNS:

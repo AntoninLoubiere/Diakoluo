@@ -114,4 +114,5 @@
     <string name="positive_number_required">A positive number is required</string>
     <string name="number_required">A valid number is required</string>
     <string name="score_method">Score method:</string>
+    <string name="score_method_view">Score method: %s</string>
 </resources>

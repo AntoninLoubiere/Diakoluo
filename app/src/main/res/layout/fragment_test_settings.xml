@@ -90,7 +90,7 @@
                 android:id="@+id/scoreMethod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:entries="@array/score_method" />
+                android:entries="@array/score_method_default" />
 
         </LinearLayout>
 

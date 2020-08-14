@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -235,9 +236,11 @@ public class EditTestActivity extends AppCompatActivity
 
         EditText title = findViewById(R.id.titleEditText);
         EditText description = findViewById(R.id.descriptionEditText);
+        Spinner scoreMethod = findViewById(R.id.scoreMethodSpinner);
 
         editTest.setName(title.getText().toString());
         editTest.setDescription(description.getText().toString());
+        editTest.setScoreMethod(scoreMethod.getSelectedItemPosition() == 0);
     }
 
     @Override

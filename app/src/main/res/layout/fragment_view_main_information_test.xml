@@ -80,11 +80,19 @@
             android:background="@color/dividerColor" />
 
         <TextView
-            android:id="@+id/numberTestDid"
+            android:id="@+id/scoreMethod"
             style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/descriptionTextView"
+            android:layout_marginTop="@dimen/default_margin" />
+
+        <TextView
+            android:id="@+id/numberTestDid"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/scoreMethod"
             android:layout_marginTop="@dimen/default_margin"
             android:text="@string/number_test_did_format" />
 

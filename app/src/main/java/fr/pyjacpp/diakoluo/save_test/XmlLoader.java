@@ -86,6 +86,25 @@ public class XmlLoader {
         return result;
     }
 
+    public static boolean readBoolean(XmlPullParser parser, boolean defaultValue) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, null);
+        boolean result = defaultValue;
+
+        if (parser.next() == XmlPullParser.TEXT) {
+            String parserText = parser.getText();
+            if (parserText.equalsIgnoreCase("true") || parserText.equalsIgnoreCase("1")) {
+                result = true;
+            } else if (parserText.equalsIgnoreCase("false") || parserText.equalsIgnoreCase("0")) {
+                result = false;
+            } else {
+                Log.w(TAG, "Read boolean not valid !");
+            }
+            parser.nextTag();
+        }
+        parser.require(XmlPullParser.END_TAG, XmlPullParser.NO_NAMESPACE, null);
+        return result;
+    }
+
     public static Date readDate(XmlPullParser parser) throws IOException, XmlPullParserException {
         Date result = null;
 

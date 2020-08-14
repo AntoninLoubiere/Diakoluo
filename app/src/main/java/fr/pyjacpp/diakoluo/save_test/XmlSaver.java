@@ -48,6 +48,10 @@ public class XmlSaver {
         writeData(outputStream, beacons, String.valueOf(nb));
     }
 
+    public static void writeData(OutputStream outputStream, String beacons, boolean val) throws IOException {
+        writeData(outputStream, beacons, val ? "true" : "false");
+    }
+
     public static void writeNotSafeData(OutputStream outputStream, String data) throws IOException {
         outputStream.write(unSafeToSafe(data).getBytes());
     }

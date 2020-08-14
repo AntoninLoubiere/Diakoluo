@@ -142,8 +142,7 @@ public class TestSettingsFragment extends Fragment {
                         numberColumnToShow.numberColumnToShowMin;
                 boolean proportionalityScoreMethod;
                 if (scoreMethodSpinner.getSelectedItemPosition() == 0) {
-                    // TODO
-                    proportionalityScoreMethod = true;
+                    proportionalityScoreMethod = currentTest.getScoreMethod();
                 } else {
                     proportionalityScoreMethod = scoreMethodSpinner.getSelectedItemPosition() == 1;
                 }

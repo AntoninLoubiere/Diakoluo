@@ -84,12 +84,30 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
-            android:id="@+id/numberTestDid"
-            style="@style/TextAppearance.MaterialComponents.Body2"
+            android:id="@+id/scoreMethod"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/descriptionTextInputLayout"
             android:layout_marginStart="@dimen/default_margin"
+            android:layout_marginTop="@dimen/default_margin"
+            android:text="@string/score_method" />
+
+        <Spinner
+            android:id="@+id/scoreMethodSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/scoreMethod"
+            android:entries="@array/score_method" />
+
+        <TextView
+            android:id="@+id/numberTestDid"
+            style="@style/TextAppearance.MaterialComponents.Body2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/scoreMethodSpinner"
+            android:layout_marginStart="@dimen/default_margin"
+            android:layout_marginTop="@dimen/default_margin"
             android:text="@string/number_test_did_format" />
 
     </RelativeLayout>

@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -134,9 +135,11 @@ public class MainInformationEditTestFragment extends Fragment {
 
         EditText title = inflatedView.findViewById(R.id.titleEditText);
         EditText description = inflatedView.findViewById(R.id.descriptionEditText);
+        Spinner scoreMethod = inflatedView.findViewById(R.id.scoreMethodSpinner);
 
         title.setText(currentEditTest.getName());
         description.setText(currentEditTest.getDescription());
+        scoreMethod.setSelection(currentEditTest.getScoreMethod() ? 0 : 1);
     }
 
     public void updateTestDid() {
