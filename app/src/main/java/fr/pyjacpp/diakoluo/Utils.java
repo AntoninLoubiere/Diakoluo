@@ -27,6 +27,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayDeque;
 
+/**
+ * A utils class that hold useful methods.
+ */
 public final class Utils {
     /**
      * Remove useless spaces around a string

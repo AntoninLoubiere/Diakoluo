@@ -40,6 +40,9 @@ import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
+/**
+ * A class to load test from csv files.
+ */
 public class CsvLoader {
 
     /**

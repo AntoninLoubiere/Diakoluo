@@ -27,6 +27,9 @@ import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 
+/**
+ * A class to save test in csv.
+ */
 public class CsvSaver {
 
     public static final String DEFAULT_LINE_SEPARATOR = "\n"; // must be only one char
