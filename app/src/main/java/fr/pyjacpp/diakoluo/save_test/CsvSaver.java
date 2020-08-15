@@ -32,6 +32,17 @@ public class CsvSaver {
     public static final String DEFAULT_LINE_SEPARATOR = "\n"; // must be only one char
     public static final String[] SEPARATORS = {",", ";"}; // must be only one char
 
+    /**
+     * Save a test in a csv file by giving a file output stream.
+     * @param fileOutputStream the output stream of the csv file
+     * @param test the test to save
+     * @param columnHeader if need to save columns names in the first lines.
+     * @param columnTypeHeader if need to save columns type in the second (or first depending of
+     *                         columnHeader)
+     * @param lineSeparator the separator of line
+     * @param separator the separator of each cell (like , or ;)
+     * @throws IOException if an exception occur while writing the file
+     */
     public static void save(FileOutputStream fileOutputStream, Test test, boolean columnHeader, boolean columnTypeHeader, String lineSeparator, String separator) throws IOException {
         ArrayList<Column> listColumn = test.getListColumn();
         ArrayList<DataRow> listRow = test.getListRow();
@@ -61,6 +72,13 @@ public class CsvSaver {
         }
     }
 
+    /**
+     * Write a cell in the file
+     * @param csvContext the context of the save
+     * @param index the index of the cell to save
+     * @param value the value of the cell to sve
+     * @throws IOException if while writing the file an exception occur
+     */
     public static void writeCell(CsvContext csvContext, int index, String value) throws IOException {
         if (index > 0)
             csvContext.fileOutputStream.write(csvContext.separator.getBytes());
@@ -86,11 +104,20 @@ public class CsvSaver {
 
     }
 
+    /**
+     * The context of the CsvSaver
+     */
     public static class CsvContext {
         private final FileOutputStream fileOutputStream;
         private final String separator;
         private final String lineSeparator;
 
+        /**
+         * Default constructor
+         * @param fileOutputStream the output stream of the file
+         * @param separator the cell separator
+         * @param lineSeparator the line separator
+         */
         CsvContext(FileOutputStream fileOutputStream, String separator, String lineSeparator) {
             this.fileOutputStream = fileOutputStream;
             this.separator = separator;
