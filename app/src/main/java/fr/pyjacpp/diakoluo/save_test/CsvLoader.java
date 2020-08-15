@@ -22,6 +22,7 @@ package fr.pyjacpp.diakoluo.save_test;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -169,7 +170,8 @@ public class CsvLoader {
      * @return the list of cell in the csv document
      * @throws IOException if an exception occur while reading the file
      */
-    private static ArrayList<String> readLine(CsvContext context) throws IOException {
+    @VisibleForTesting()
+    public static ArrayList<String> readLine(CsvContext context) throws IOException {
         ArrayList<String> list = new ArrayList<>();
         StringBuilder currentValue = new StringBuilder();
 
