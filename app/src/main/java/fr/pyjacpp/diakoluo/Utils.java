@@ -27,7 +27,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayDeque;
 
+/**
+ * A utils class that hold useful methods.
+ */
 public final class Utils {
+    /**
+     * Remove useless spaces around a string
+     * @param s the string to process
+     * @return the string clean up
+     */
     public static String removeUselessSpaces(String s) {
         final int length = s.length();
         int realStart = 0;
@@ -35,7 +43,7 @@ public final class Utils {
 
         while (realStart < length &&
                 (s.charAt(realStart) == ' ' ||
-                        s.charAt(realStart) == '\n' || s.charAt(realStart) == '\t')) {
+                        s.charAt(realStart) == '\n' || s.charAt(realStart) == '\t' || s.charAt(realStart) == '\r')) {
             realStart++;
         }
 
@@ -43,19 +51,59 @@ public final class Utils {
             return "";
         }
 
-        while (s.charAt(realEnd) == ' ' || s.charAt(realEnd) == '\n' || s.charAt(realEnd) == '\t') {
+        while (s.charAt(realEnd) == ' ' || s.charAt(realEnd) == '\n' || s.charAt(realEnd) == '\t' ||
+                s.charAt(realEnd) == '\r') {
             realEnd--;
         }
 
         return s.substring(realStart, realEnd + 1);
     }
 
+    /**
+     * Map a var in interval [inMin; inMax] to [outMin; outMax]. (If the var doesn't respect the
+     * interval, the out will not respect the interval too but proportions will be respect.
+     *
+     * From Arduino map code (appendix:
+     * https://www.arduino.cc/reference/en/language/functions/math/map/#_example_code).
+     * @param var the var to process
+     * @param inMin the min of the var
+     * @param inMax the max of the var
+     * @param outMin the min of the return
+     * @param outMax the max of the return
+     * @return the mapped var
+     */
     public static int map(int var, int inMin, int inMax, int outMin, int outMax) {
         return (var - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
     }
 
+    /**
+     * Remove useless space at the en of a line
+     *
+     * @param stringBuilder the string builder of the string to process
+     * @return the string processed
+     */
+    public static String removeUselessSpacesEnd(StringBuilder stringBuilder) {
+        while (stringBuilder.length() > 0) {
+            char c = stringBuilder.charAt(stringBuilder.length() - 1);
+            if (c == ' ' || c == '\n' || c == '\t' || c == '\r') {
+                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            } else {
+                break;
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * A extreme decelerator that start rapid and slow at the end (quadratic function upside-down).
+     */
     public static class ExtremeDeceleratorInterpolator implements Interpolator {
 
+        /**
+         * The interpolation
+         * @param v thr value to map
+         * @return the mapped value
+         */
         @Override
         public float getInterpolation(float v) {
             float v1 = v - 1;
@@ -63,42 +111,72 @@ public final class Utils {
         }
     }
 
+    /**
+     * A validator of edit that hold if there is an error or a warning, and the error message.
+     */
     public static class EditValidator {
         private final boolean error;
         private final boolean warning;
         private final Integer errorMessageResourceId;
 
+        /**
+         * Default constructor that create a no-error, no-warning validator.
+         */
         public EditValidator() {
             errorMessageResourceId = null;
             warning = false;
             error = false;
         }
 
+        /**
+         * Constructor that create an error validator.
+         * @param errorMessageResourceId the resource id of the error message
+         */
         public EditValidator(Integer errorMessageResourceId) {
             this.errorMessageResourceId = errorMessageResourceId;
             warning = false;
             error = true;
         }
 
+        /**
+         * Constructor that create an error or warning validator.
+         * @param errorMessageResourceId the resource id of the message
+         * @param warning if it is a warning and not an error
+         */
         public EditValidator(Integer errorMessageResourceId, boolean warning) {
             this.errorMessageResourceId = errorMessageResourceId;
             this.warning = warning;
             error = true;
         }
 
+        /**
+         * Get the error message resource id.
+         * @return the error message resource id
+         */
         public Integer getErrorMessageResourceId() {
             return errorMessageResourceId;
         }
 
+        /**
+         * Get if the validator contain an error (or a warning !).
+         * @return if the validator contain an error or a warning
+         */
         public boolean isError() {
             return error;
         }
 
+        /**
+         * If the validator contain a warning
+         * @return if the validator contain a warning
+         */
         public boolean isWarning() {
             return warning;
         }
     }
 
+    /**
+     * Verify and ask validators.
+     */
     public static class VerifyAndAsk {
 
         private final Context context;
@@ -106,12 +184,21 @@ public final class Utils {
         private boolean errorInDeque;
         private ArrayDeque<EditValidator> errorValidatorDeque;
 
+        /**
+         * Default constructor
+         * @param context the context of the application or the activity
+         * @param success the code to execute in case of success
+         */
         public VerifyAndAsk(Context context, Runnable success) {
             this.context = context;
             this.success = success;
             this.errorInDeque = false;
         }
 
+        /**
+         * Run validation on the list of validator.
+         * @param errorValidatorDeque the list of validator to test
+         */
         public void run(ArrayDeque<EditValidator> errorValidatorDeque) {
             this.errorValidatorDeque = errorValidatorDeque;
             for (EditValidator validator : errorValidatorDeque) {
@@ -122,8 +209,13 @@ public final class Utils {
             }
 
             verifyAndAsk();
+            this.errorValidatorDeque = null;
         }
 
+        /**
+         * Recursive method that show error dialogs and warning dialog and might call the success
+         * method.
+         */
         private void verifyAndAsk() {
             if (errorValidatorDeque.isEmpty()) {
                 if (!errorInDeque) success.run();

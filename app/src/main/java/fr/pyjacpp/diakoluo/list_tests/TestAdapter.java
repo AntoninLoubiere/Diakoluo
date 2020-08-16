@@ -28,9 +28,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
@@ -149,15 +148,15 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
                 });
 
 
-                MenuPopupHelper menuHelper = new MenuPopupHelper(context, (MenuBuilder) popup.getMenu(), holder.itemView);
-                menuHelper.setForceShowIcon(true);
-                menuHelper.show();
+                popup.show();
                 return true;
             }
         });
 
         if (!currentTest.canBePlay()) {
-            holder.playButton.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_play_arrow_gray_24dp));
+            holder.playButton.setImageDrawable(
+                    ResourcesCompat.getDrawable(context.getResources(),
+                            R.drawable.ic_play_arrow_gray_24dp, null));
         }
     }
 

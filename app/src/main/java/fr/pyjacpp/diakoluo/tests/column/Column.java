@@ -266,7 +266,8 @@ public abstract class Column {
 
     /**
      * Initialize a valid column. Inverse of {@link #initialize()}.
-     *
+     * @param name the name of the column
+     * @param description the description of the column
      * @see #initialize()
      */
     protected void initialize(String name, String description) {
@@ -412,8 +413,8 @@ public abstract class Column {
 
     /**
      * Set the value from a view.
-     *
-     * @param view the view which contain the value
+     * @param dataCell the data cell which will contain the value
+     * @param view     the view which contain the value
      * @see #getValueFromView(View)
      * @see #showEditValueView(Context, Object)
      */

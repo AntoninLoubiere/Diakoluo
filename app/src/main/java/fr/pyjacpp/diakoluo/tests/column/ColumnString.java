@@ -44,7 +44,10 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
-
+/**
+ * A column of string values.
+ * @see DataCellString
+ */
 public class ColumnString extends Column {
     private String defaultValue;
 
@@ -53,6 +56,9 @@ public class ColumnString extends Column {
 
     private static final int SET_DEFAULT = SET_REMOVE_USELESS_SPACES | Column.SET_DEFAULT;
 
+    /**
+     * The default constructor
+     */
     ColumnString() {
         super(ColumnInputType.String);
     }

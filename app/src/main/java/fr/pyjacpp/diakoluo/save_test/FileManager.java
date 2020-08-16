@@ -47,6 +47,10 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
+/**
+ * A class that hold all useful constant to write and load test (without specific column tag that
+ * are defined by the respective class).
+ */
 public class FileManager {
     // version constants
     public static final int VER_V_0_3_0 = 1;
@@ -86,6 +90,12 @@ public class FileManager {
     private static FileCreateContext fileCreateContext = null;
 
 
+    /**
+     * Save a test in a private file.
+     * @param context the context of the application
+     * @param test the test to save
+     * @throws IOException ig an IOException occur while writing the file
+     */
     public static void saveFromPrivateFile(Context context, Test test) throws IOException {
         try (FileOutputStream fileOutputStream = context.openFileOutput(TEST_PREFIX + test.getFilename(),
                 Context.MODE_PRIVATE)) {
@@ -93,6 +103,14 @@ public class FileManager {
         }
     }
 
+    /**
+     * Load a test from a private file.
+     * @param context the context of the application
+     * @param filename the name of the file to load
+     * @return the test loaded
+     * @throws IOException if an exception occur while reading the file
+     * @throws XmlPullParserException if an exception occur while reading the file
+     */
     public static Test loadFromPrivateFile(Context context, String filename) throws IOException, XmlPullParserException {
 
         try (FileInputStream fileInputStream = context.openFileInput(TEST_PREFIX + filename)) {
@@ -104,6 +122,14 @@ public class FileManager {
         }
     }
 
+    /**
+     * Load a test from an asset.
+     * @param context the context of the application
+     * @param filename the name of the file to load
+     * @return the test loaded
+     * @throws IOException if an exception occur while reading the file
+     * @throws XmlPullParserException if an exception occur while reading the file
+     */
     public static Test loadFromAsset(Context context, String filename) throws IOException, XmlPullParserException {
 
         try (InputStream fileInputStream = context.getAssets().open(filename)) {
@@ -115,6 +141,11 @@ public class FileManager {
         }
     }
 
+    /**
+     * Get an available filename in private files.
+     * @param context the context of the application
+     * @param test the test to find a filename available
+     */
     public static void getAvailableFilename(Context context, Test test) {
         String fileExtension = DKL_EXTENSION;
         String name = test.getDefaultFilename();
@@ -134,6 +165,12 @@ public class FileManager {
         test.setFilename(currentFileName);
     }
 
+    /**
+     * Verify if a filename exist in privates files.
+     * @param context the context of the application
+     * @param filename the name to verify
+     * @return if the filename already exist or not
+     */
     private static boolean filenameExist(Context context, String filename) {
         filename = TEST_PREFIX + filename;
         for (String currentFilename : context.fileList()) {
@@ -145,10 +182,21 @@ public class FileManager {
         return false;
     }
 
+    /**
+     * Delete a private file.
+     * @param context the context of the application
+     * @param testRemoved the test removed
+     */
     public static void delete(Context context, Test testRemoved) {
         context.deleteFile(TEST_PREFIX + testRemoved.getFilename());
     }
 
+    /**
+     * Export a test as xml file.
+     * @param activity the activity that export the test
+     * @param position the position of the test in the list
+     * @param saveNumberTestDone if save the number of test done
+     */
     public static void exportXmlTest(Activity activity, int position, boolean saveNumberTestDone) {
         if (fileCreateContext == null) {
             Test testToSave = DiakoluoApplication.getListTest(activity).get(position);
@@ -165,6 +213,15 @@ public class FileManager {
         }
     }
 
+    /**
+     * Export a test as csv file.
+     * @param activity the activity that export the test
+     * @param position the position of the test in the list
+     * @param columnHeader if columns name need to be saved
+     * @param columnTypeHeader if column type need to be save
+     * @param separator the separator of cell to use
+     * @param lineSeparator the line separator to use
+     */
     public static void exportCsvTest(Activity activity, int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
         if (fileCreateContext == null) {
             Test testToSave = DiakoluoApplication.getListTest(activity).get(position);
@@ -181,6 +238,10 @@ public class FileManager {
         }
     }
 
+    /**
+     * Import a test.
+     * @param activity the activity which import the test
+     */
     public static void importTest(Activity activity) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType(MIME_TYPE);
@@ -189,8 +250,18 @@ public class FileManager {
         activity.startActivityForResult(intent, OPEN_DOCUMENT_REQUEST_CODE);
     }
 
+    /**
+     * Activities that export and import test must call this method
+     * @param activity the activity which import and/or export test
+     * @param requestCode the request code of the activity result
+     * @param resultCode the result code of the activity result function
+     * @param data the data given by the activity result
+     * @param snackbarAnchorView if the snackbar need to be anchored
+     * @param resultListener the result listener to receive results
+     */
     public static void exportTestResult(Activity activity, int requestCode, int resultCode,
-                                        @Nullable Intent data, @Nullable View snackbarAnchorView, ResultListener resultListener) { // activity must call this in activity on result
+                                        @Nullable Intent data, @Nullable View snackbarAnchorView,
+                                        ResultListener resultListener) { // activity must call this in activity on result
         if (requestCode == CREATE_DOCUMENT_REQUEST_CODE) {
             // process create document
             if (resultCode == Activity.RESULT_OK) {
@@ -325,6 +396,12 @@ public class FileManager {
         }
     }
 
+    /**
+     * Detect the file type by starting reading the file
+     * @param reader the reader that represent the file to detect type
+     * @return the file detected
+     * @throws IOException if an exception occur while detecting the file type
+     */
     private static Boolean detectFileType(InputStream reader) throws IOException {
         int i_char;
         char c;
@@ -343,23 +420,41 @@ public class FileManager {
         return result; // file empty
     }
 
+    /**
+     * The file create context that hold the position of the test to save.
+     */
     private static class FileCreateContext {
         private final int position;
 
+        /**
+         * Default constructor.
+         * @param position the position of the test to save
+         */
         FileCreateContext(int position) {
             this.position = position;
         }
     }
 
+    /**
+     * The file create context of a xml file.
+     */
     private static class XmlCreateContext extends FileCreateContext{
         private final boolean saveNumberTestDone;
 
+        /**
+         * Default constructor.
+         * @param position the position of the test to save
+         * @param saveNumberTestDone if number of test done need to be save
+         */
         XmlCreateContext(int position, boolean saveNumberTestDone) {
             super(position);
             this.saveNumberTestDone = saveNumberTestDone;
         }
     }
 
+    /**
+     * The file create context of a csv file.
+     */
     private static class CsvCreateContext extends FileCreateContext{
         private final boolean columnHeader;
         private final boolean columnTypeHeader;
@@ -367,6 +462,14 @@ public class FileManager {
         private final String lineSeparator;
 
 
+        /**
+         * Default constructor.
+         * @param position the position of the test to save
+         * @param columnHeader if the name of columns need to be save
+         * @param columnTypeHeader if the type of column need to be save
+         * @param separator the separator of cell in a csv line
+         * @param lineSeparator the separator of lines
+         */
         CsvCreateContext(int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
             super(position);
             this.columnHeader = columnHeader;
@@ -376,29 +479,60 @@ public class FileManager {
         }
     }
 
+    /**
+     * A context to import a file.
+     */
     public static class ImportContext {
     }
 
+    /**
+     * A import xml context.
+     */
     public static class ImportXmlContext extends ImportContext {
         public final Test importTest;
 
+        /**
+         * Default constructor.
+         * @param importTest the test loaded
+         */
         ImportXmlContext(Test importTest) {
             this.importTest = importTest;
         }
     }
 
+    /**
+     * The csv import context
+     */
     public static class ImportCsvContext extends ImportContext {
         public final String[] firstLines;
         public final Uri fileUri;
 
+        /**
+         * Default constructor
+         * @param firstLines first lines of the files. The size is {@link #NUMBER_LINE_SHOW_CSV}
+         * @param fileUri the file uri to load
+         * @see #NUMBER_LINE_SHOW_CSV
+         */
         ImportCsvContext(String[] firstLines, Uri fileUri) {
             this.firstLines = firstLines;
             this.fileUri = fileUri;
         }
     }
 
+    /**
+     * The result listener.
+     */
     public interface  ResultListener {
+        /**
+         * Show the xml import dialog
+         * @param importXmlContext the context of the import
+         */
         void showXmlImportDialog(ImportXmlContext importXmlContext);
+
+        /**
+         * Show the xml import dialog
+         * @param importCsvContext the context of the import
+         */
         void showCsvImportDialog(ImportCsvContext importCsvContext);
     }
 }

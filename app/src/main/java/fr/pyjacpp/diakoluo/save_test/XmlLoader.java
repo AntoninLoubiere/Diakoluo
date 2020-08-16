@@ -34,10 +34,20 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 
+/**
+ * The class that hold load of xml files.
+ */
 public class XmlLoader {
 
     public static final String TAG = "XmlLoader";
 
+    /**
+     * Load a test from a xml file.
+     * @param fileInputStream the file input stream of the file to load
+     * @return the file loaded
+     * @throws IOException if while loading the file an error occur
+     * @throws XmlPullParserException if while loading the file an exception occur
+     */
     public static Test load(InputStream fileInputStream) throws IOException, XmlPullParserException {
             // configure parser
         XmlPullParser parser = Xml.newPullParser();
@@ -45,10 +55,6 @@ public class XmlLoader {
         parser.setInput(fileInputStream, null);
         parser.nextTag();
 
-        return readFeed(parser);
-    }
-
-    private static Test readFeed(XmlPullParser parser) throws IOException, XmlPullParserException {
         Test test = Test.readXmlTest(parser);
 
         if (test.isValid()) {
@@ -59,6 +65,13 @@ public class XmlLoader {
         }
     }
 
+    /**
+     * Read a text in xml file.
+     * @param parser the parser of the file
+     * @return the value read
+     * @throws IOException if while loading the file an error occur
+     * @throws XmlPullParserException if while loading the file an exception occur
+     */
     public static String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, null);
         String result = "";
@@ -70,6 +83,13 @@ public class XmlLoader {
         return result;
     }
 
+    /**
+     * Read a int in xml file
+     * @param parser the parser of the file
+     * @return the value read
+     * @throws IOException if while loading the file an error occur
+     * @throws XmlPullParserException if while loading the file an exception occur
+     */
     public static int readInt(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, null);
         int result = -1;
@@ -86,6 +106,14 @@ public class XmlLoader {
         return result;
     }
 
+    /**
+     * Read a boolean
+     * @param parser the parser of the file
+     * @param defaultValue the default value to return
+     * @return the value read
+     * @throws IOException if while loading the file an error occur
+     * @throws XmlPullParserException if while loading the file an exception occur
+     */
     public static boolean readBoolean(XmlPullParser parser, boolean defaultValue) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, null);
         boolean result = defaultValue;
@@ -105,6 +133,13 @@ public class XmlLoader {
         return result;
     }
 
+    /**
+     * Read a date
+     * @param parser the parser of the file
+     * @return the value read
+     * @throws IOException if while loading the file an error occur
+     * @throws XmlPullParserException if while loading the file an exception occur
+     */
     public static Date readDate(XmlPullParser parser) throws IOException, XmlPullParserException {
         Date result = null;
 
@@ -120,6 +155,12 @@ public class XmlLoader {
         return result;
     }
 
+    /**
+     * Skip a sub tree of the xml file
+     * @param parser the parser of the file
+     * @throws IOException if while loading the file an error occur
+     * @throws XmlPullParserException if while loading the file an exception occur
+     */
     public static void skip(XmlPullParser parser) throws IOException, XmlPullParserException {
         Log.w(TAG, parser.getName() + " is not handle");
         int depth = 1;
