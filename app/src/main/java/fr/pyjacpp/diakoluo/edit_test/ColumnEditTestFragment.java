@@ -36,11 +36,11 @@ import java.util.ArrayList;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
-import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
-import fr.pyjacpp.diakoluo.tests.data.DataCellString;
+import fr.pyjacpp.diakoluo.tests.column.Column;
+import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 
 public class ColumnEditTestFragment extends Fragment implements
@@ -93,8 +93,7 @@ public class ColumnEditTestFragment extends Fragment implements
         listColumn.add(column);
 
         for (DataRow row : currentEditTest.getListRow()) {
-            // TODO: improve
-            row.getListCells().put(column, new DataCellString((String) column.getDefaultValue()));
+            row.getListCells().put(column, DataCell.newCellWithDefaultValue(column));
         }
         RecyclerViewChange columnListChanged = new RecyclerViewChange(
                 RecyclerViewChange.ItemInserted

@@ -143,8 +143,8 @@ public class ColumnTest {
             exceptedRow.getListCells().put(column1, DefaultTest.setTestValue(
                     DataCell.newCellWithDefaultValue(column1)));
 
-            column.updateCells(test, column);
-            column1.updateCells(test, column1);
+            column.migrateColumn(test, column);
+            column1.migrateColumn(test, column1);
 
             assertEquals(inputType.name(), excepted, test); // assert that no data is lost when
             // migrate is use
