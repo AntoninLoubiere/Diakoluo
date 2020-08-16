@@ -50,6 +50,9 @@ import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
+/**
+ * A column that hold a list of values.
+ */
 public class ColumnList extends Column {
     @NonNull private ArrayList<String> values = new ArrayList<>();
     private int defaultValue = -1;
@@ -58,6 +61,9 @@ public class ColumnList extends Column {
     private static final String TAG_VALUE = "value";
     // private static final int SET_DEFAULT = Column.SET_DEFAULT;
 
+    /**
+     * Default constructor
+     */
     protected ColumnList() {
         super(ColumnInputType.List);
     }
