@@ -23,14 +23,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view_test.ColumnViewTestFragment">
+
     <Button
-        style="?attr/buttonBarButtonStyle"
         android:id="@+id/addColumnButton"
+        style="@style/Widget.MaterialComponents.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableEnd="@drawable/ic_add_white_24dp"
         android:layout_marginStart="@dimen/default_margin"
         android:layout_marginEnd="@dimen/default_margin"
+        android:drawableEnd="@drawable/ic_add_white_24dp"
         android:text="@string/add_column" />
 
     <View
