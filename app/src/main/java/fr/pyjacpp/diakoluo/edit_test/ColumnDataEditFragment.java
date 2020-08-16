@@ -121,8 +121,9 @@ public class ColumnDataEditFragment extends Fragment {
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                     ColumnInputType inputType = ColumnInputType.values()[position];
                     if (column.getInputType() != inputType) {
+                        saveChanges(); // save change before migrate
                         Column newColumn = Column.newColumn(inputType);
-                        newColumn.updateCells(currentEditTest, column);
+                        newColumn.migrateColumn(currentEditTest, column);
                         currentEditTest.getListColumn().set(columnIndex, newColumn);
                         column = newColumn;
                         updateColumnSettings();

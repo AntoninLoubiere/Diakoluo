@@ -91,6 +91,8 @@ public abstract class Column {
                     }
                 }
             };
+
+    // if a field is added, all columns with a comment "// fields" should be verified
     @NonNull
     protected ColumnInputType inputType;
     protected int settings = -1;
@@ -245,6 +247,7 @@ public abstract class Column {
      * @param newColumn the column instance
      */
     protected void copyColumn(Column newColumn) {
+        // fields
         newColumn.name = name;
         newColumn.description = description;
         newColumn.inputType = inputType;
@@ -258,6 +261,7 @@ public abstract class Column {
      * @see #initialize(String, String)
      */
     public void initialize() {
+        // fields
         this.name = null;
         this.description = null;
         settings = -1;
@@ -271,6 +275,7 @@ public abstract class Column {
      * @see #initialize()
      */
     protected void initialize(String name, String description) {
+        // fields
         this.name = name;
         this.description = description;
         settings = SET_DEFAULT;
@@ -583,6 +588,7 @@ public abstract class Column {
      * @see #writeXml(OutputStream)
      */
     protected void writeXmlInternal(OutputStream fileOutputStream) throws IOException {
+        // fields
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_SETTINGS, settings);
@@ -613,6 +619,7 @@ public abstract class Column {
      */
     protected void readColumnXmlTag(XmlPullParser parser)
             throws IOException, XmlPullParserException {
+        // fields
         switch (parser.getName()) {
             case FileManager.TAG_NAME:
                 name = XmlLoader.readText(parser);
@@ -667,12 +674,18 @@ public abstract class Column {
     }
 
     /**
-     * Update all cells if the column need to change
-     *
+     * Migrate cells from a column to this column (new)
      * @param currentTest    the current test which is updated
      * @param previousColumn the previous column which will change into this column
      */
-    public void updateCells(Test currentTest, Column previousColumn) {
+    public void migrateColumn(Test currentTest, Column previousColumn) {
+        // fields
+        name = previousColumn.name;
+        description = previousColumn.description;
+        score = previousColumn.score;
+        setSettings(SET_CAN_BE_HIDE, previousColumn.isInSettings(SET_CAN_BE_HIDE));
+        setSettings(SET_CAN_BE_SHOW, previousColumn.isInSettings(SET_CAN_BE_SHOW));
+
         ArrayList<DataRow> listRow = currentTest.getListRow();
         for (int i = 0, listRowSize = listRow.size(); i < listRowSize; i++) {
             DataRow row = listRow.get(i);
@@ -693,6 +706,7 @@ public abstract class Column {
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof Column) {
             Column c = (Column) obj;
+            // fields
             return Objects.equals(c.name, name) && Objects.equals(c.description, description) &&
                     c.settings == settings && c.score == score;
         }
