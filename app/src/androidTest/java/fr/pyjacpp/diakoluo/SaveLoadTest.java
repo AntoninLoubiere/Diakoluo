@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.save_test.CsvLoader;
 import fr.pyjacpp.diakoluo.save_test.CsvSaver;
@@ -119,6 +120,14 @@ public class SaveLoadTest {
 
                 loadedTest.setCreatedDate(test.getCreatedDate()); // not supported by csv
                 loadedTest.setLastModificationDate(test.getLastModificationDate());
+                ArrayList<Column> loadedTestListColumn = loadedTest.getListColumn();
+                ArrayList<Column> testListColumn = test.getListColumn();
+
+                assertEquals(testListColumn.size(), loadedTestListColumn.size());
+                for (int i = 0, listColumnSize = loadedTestListColumn.size(); i < listColumnSize; i++) {
+                    Column c = loadedTestListColumn.get(i);
+                    c.setScore(testListColumn.get(i));
+                }
 
                 assertEquals(test, loadedTest);
                 assertNotSame(test, loadedTest);

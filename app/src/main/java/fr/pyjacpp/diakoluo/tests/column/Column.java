@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
@@ -281,7 +282,8 @@ public abstract class Column {
 
     /**
      * Initialize a valid column. Inverse of {@link #initialize()}.
-     * @param name the name of the column
+     *
+     * @param name        the name of the column
      * @param description the description of the column
      * @see #initialize()
      */
@@ -363,9 +365,10 @@ public abstract class Column {
 
     /**
      * Verify if the answer is correct and give score depending
+     *
      * @param testTestContext the test context
-     * @param dataCell the dataCell to verify
-     * @param answer the answer given by the user
+     * @param dataCell        the dataCell to verify
+     * @param answer          the answer given by the user
      */
     public void verifyAndScoreAnswer(TestTestContext testTestContext, DataCell dataCell,
                                      Object answer) {
@@ -399,6 +402,7 @@ public abstract class Column {
      * @param context      the context to create widgets
      * @param defaultValue the default value of the input, can be null
      * @return the view to add to show the edit input
+     * @see #getValueFromView(View)
      */
     public View showEditValueView(Context context, @Nullable Object defaultValue) {
         TextInputLayout inputLayout = new TextInputLayout(context, null,
@@ -433,7 +437,35 @@ public abstract class Column {
     }
 
     /**
+     * Get the view to answer the data cell (type depend on the column) in a test.
+     * The view should have the possibility to skip.
+     * If override, {@link #getValueFromTestView(View)} may need to be override.
+     *
+     * @param context      the context to create widgets
+     * @param defaultValue the default value of the input, can be null
+     * @return the view to add to show the edit input
+     * @see #getValueFromTestView(View)
+     */
+    public View showEditValueTestView(Context context, @Nullable Object defaultValue) {
+        return showEditValueView(context, defaultValue);
+    }
+
+    /**
+     * Get the value of the data cell from a view (type depend on the column).
+     * If override, {@link #showEditValueTestView(Context, Object)} may need to be override too
+     *
+     * @param view the view which contain the value of the cell
+     * @return the value in the view (type variable)
+     * @see #setValueFromView(DataCell, View)
+     * @see #showEditValueTestView(Context, Object)
+     */
+    public Object getValueFromTestView(View view) {
+        return getValueFromView(view);
+    }
+
+    /**
      * Set the value from a view.
+     *
      * @param dataCell the data cell which will contain the value
      * @param view     the view which contain the value
      * @see #getValueFromView(View)
@@ -562,12 +594,11 @@ public abstract class Column {
                 if (!scoresErrors[2] && scoreSkipped < scoreWrong) {
                     scoreSkippedInputEditText.setError(
                             context.getString(R.string.score_skipped_lesser_wrong));
-                } else if (!scoresErrors[2]){
+                } else if (!scoresErrors[2]) {
                     scoreSkippedInputEditText.setError(null);
                 }
             }
         };
-
 
 
         canBeHideTextView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -589,7 +620,7 @@ public abstract class Column {
         scoreWrongInputEditText.addTextChangedListener(watcher);
         scoreSkippedInputEditText.addTextChangedListener(watcher);
 
-        if (canHide)  watcher.afterTextChanged(scoreRightInputEditText.getEditableText());
+        if (canHide) watcher.afterTextChanged(scoreRightInputEditText.getEditableText());
     }
 
     /**
@@ -753,6 +784,7 @@ public abstract class Column {
 
     /**
      * Migrate cells from a column to this column (new)
+     *
      * @param currentTest    the current test which is updated
      * @param previousColumn the previous column which will change into this column
      */
@@ -790,5 +822,19 @@ public abstract class Column {
                     c.scoreWrong == scoreWrong && c.scoreSkipped == scoreSkipped;
         }
         return false;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public void setScore(int scoreRight, int scoreWrong, int scoreSkipped) {
+        this.scoreRight = scoreRight;
+        this.scoreWrong = scoreWrong;
+        this.scoreSkipped = scoreSkipped;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public void setScore(Column c) {
+        this.scoreRight = c.scoreRight;
+        this.scoreWrong = c.scoreWrong;
+        this.scoreSkipped = c.scoreSkipped;
     }
 }

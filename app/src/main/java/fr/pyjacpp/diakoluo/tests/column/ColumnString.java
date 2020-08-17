@@ -89,13 +89,16 @@ public class ColumnString extends Column {
         }
 
 
+        boolean valueRight;
         if (isInSettings(SET_CASE_SENSITIVE)) {
-            return value.equals(a) ? AnswerValidEnum.RIGHT : AnswerValidEnum.WRONG;
-        } else if (a.length() <= 0) {
-            return AnswerValidEnum.SKIPPED;
+            valueRight = value.equals(a);
         } else {
-            return value.equalsIgnoreCase(a) ? AnswerValidEnum.RIGHT : AnswerValidEnum.WRONG;
+            valueRight = value.equalsIgnoreCase(a);
         }
+        
+        if (valueRight) return AnswerValidEnum.RIGHT;
+        else if (a.length() <= 0)  return AnswerValidEnum.SKIPPED;
+        else return AnswerValidEnum.WRONG;
     }
 
     @Override

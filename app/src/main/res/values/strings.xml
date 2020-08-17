@@ -121,4 +121,5 @@
     <string name="score_wrong_greatter_right">A wrong answer will give more points than a right answer.</string>
     <string name="score_right_lesser_skipped">A skipped answer will give more point than a right answer.</string>
     <string name="score_skipped_lesser_wrong">A wrong answer will give more points than a skipped answer.</string>
+    <string name="column_list_skipped_item" />
 </resources>

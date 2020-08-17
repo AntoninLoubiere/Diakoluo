@@ -125,9 +125,9 @@ public class ColumnList extends Column {
 
     @Override
     public AnswerValidEnum verifyAnswer(DataCell dataCell, Object answer) {
-        int value = ((int) dataCell.getValue());
+        int value = ((int) answer);
         if (value < 0) return AnswerValidEnum.SKIPPED;
-        else if (value == ((int) answer)) return AnswerValidEnum.RIGHT;
+        else if (value == ((int) dataCell.getValue())) return AnswerValidEnum.RIGHT;
         else return AnswerValidEnum.WRONG;
     }
 
@@ -198,6 +198,24 @@ public class ColumnList extends Column {
     public Object getValueFromView(View view) {
         Spinner spinner = (Spinner) view;
         return spinner.getSelectedItemPosition();
+    }
+
+    @Override
+    public View showEditValueTestView(Context context, @Nullable Object defaultValue) {
+        Spinner spinner = new Spinner(context);
+        ArrayList<String> values = new ArrayList<>(this.values);
+        values.add(0, context.getString(R.string.column_list_skipped_item));
+        spinner.setAdapter(new ArrayAdapter<>(context,
+                android.R.layout.simple_spinner_dropdown_item, values));
+        if (defaultValue != null)
+            spinner.setSelection((int) defaultValue);
+        return spinner;
+    }
+
+    @Override
+    public Object getValueFromTestView(View view) {
+        Spinner spinner = (Spinner) view;
+        return spinner.getSelectedItemPosition() - 1;
     }
 
     @Override
