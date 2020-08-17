@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
+import fr.pyjacpp.diakoluo.tests.data.AnswerValidEnum;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 
@@ -85,8 +86,8 @@ public class DummyColumn extends Column {
      * @return if the a
      */
     @Override
-    public boolean verifyAnswer(DataCell dataCell, Object answer) {
-        return false; // TODO verify answer depending of the data cell and the answer
+    public AnswerValidEnum verifyAnswer(DataCell dataCell, Object answer) {
+        return AnswerValidEnum.WRONG; // TODO verify answer depending of the data cell and the answer
     }
 
     /**

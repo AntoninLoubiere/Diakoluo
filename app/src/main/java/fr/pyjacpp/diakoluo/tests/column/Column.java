@@ -57,6 +57,7 @@ import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
+import fr.pyjacpp.diakoluo.tests.data.AnswerValidEnum;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 /**
@@ -71,7 +72,11 @@ public abstract class Column {
      */
     public static final int SET_CAN_BE_HIDE = 1;
     public static final int SET_CAN_BE_SHOW = 1 << 1;
-    public static final int SCORE_DEFAULT = 1;
+
+    public static final int SCORE_RIGHT_DEFAULT = 1;
+    public static final int SCORE_WRONG_DEFAULT = 0;
+    public static final int SCORE_SKIPPED_DEFAULT = 0;
+
     protected static final int SET_DEFAULT = SET_CAN_BE_HIDE | SET_CAN_BE_SHOW;
     /**
      * When a edit text with a layout is clicked send focus change to the parent so it can be
@@ -100,7 +105,9 @@ public abstract class Column {
     private String name;
     @Nullable
     private String description;
-    private int score = -1;
+    private int scoreRight;
+    private int scoreWrong;
+    private int scoreSkipped;
 
     /**
      * Default constructor that initialize a non-valid column.
@@ -232,7 +239,7 @@ public abstract class Column {
      * @param answer   the value inputted by the user
      * @return if the a
      */
-    public abstract boolean verifyAnswer(DataCell dataCell, Object answer);
+    public abstract AnswerValidEnum verifyAnswer(DataCell dataCell, Object answer);
 
     /**
      * Copy the column.
@@ -252,7 +259,9 @@ public abstract class Column {
         newColumn.description = description;
         newColumn.inputType = inputType;
         newColumn.settings = settings;
-        newColumn.score = score;
+        newColumn.scoreRight = scoreRight;
+        newColumn.scoreWrong = scoreWrong;
+        newColumn.scoreSkipped = scoreSkipped;
     }
 
     /**
@@ -265,7 +274,9 @@ public abstract class Column {
         this.name = null;
         this.description = null;
         settings = -1;
-        score = -1;
+        scoreRight = -1;
+        scoreWrong = -1;
+        scoreSkipped = -1;
     }
 
     /**
@@ -279,7 +290,9 @@ public abstract class Column {
         this.name = name;
         this.description = description;
         settings = SET_DEFAULT;
-        score = SCORE_DEFAULT;
+        scoreRight = SCORE_RIGHT_DEFAULT;
+        scoreWrong = SCORE_WRONG_DEFAULT;
+        scoreSkipped = SCORE_SKIPPED_DEFAULT;
     }
 
     /**
@@ -325,8 +338,8 @@ public abstract class Column {
      *
      * @return the score of the column
      */
-    public int getScore() {
-        return score;
+    public int getScoreRight() {
+        return scoreRight;
     }
 
     /**
@@ -345,7 +358,7 @@ public abstract class Column {
      * @return if the column is valid
      */
     public boolean isValid() {
-        return !(name == null || description == null) && settings >= 0 && score >= 0;
+        return !(name == null || description == null) && settings >= 0;
     }
 
     /**
@@ -356,10 +369,13 @@ public abstract class Column {
      */
     public void verifyAndScoreAnswer(TestTestContext testTestContext, DataCell dataCell,
                                      Object answer) {
-        if (verifyAnswer(dataCell, answer)) {
-            testTestContext.addScore(score, score);
+        AnswerValidEnum verifyAnswer = verifyAnswer(dataCell, answer);
+        if (verifyAnswer == AnswerValidEnum.RIGHT) {
+            testTestContext.addScore(scoreRight, scoreRight);
+        } else if (verifyAnswer == AnswerValidEnum.SKIPPED) {
+            testTestContext.addScore(scoreSkipped, scoreRight);
         } else {
-            testTestContext.addScore(0, score);
+            testTestContext.addScore(scoreWrong, scoreRight);
         }
     }
 
@@ -449,7 +465,7 @@ public abstract class Column {
         MaterialTextView canBeShowTextView =
                 inflatedView.findViewById(R.id.canBeShowTextView);
 
-        scoreTextView.setText(context.getString(R.string.column_settings_score_view));
+        scoreTextView.setText(context.getString(R.string.column_settings_score_view, scoreRight, scoreSkipped, scoreWrong));
         ViewUtils.setBooleanView(context,
                 canBeHideTextView, isInSettings(SET_CAN_BE_HIDE));
         ViewUtils.setBooleanView(context,
@@ -472,16 +488,25 @@ public abstract class Column {
 
         final Context context = parent.getContext();
 
-        final TextInputEditText scoreInputEditText =
-                inflatedView.findViewById(R.id.scoreEditText);
+        final TextInputEditText scoreRightInputEditText =
+                inflatedView.findViewById(R.id.scoreRightEditText);
+        final TextInputEditText scoreWrongInputEditText =
+                inflatedView.findViewById(R.id.scoreWrongEditText);
+        final TextInputEditText scoreSkippedInputEditText =
+                inflatedView.findViewById(R.id.scoreSkippedEditText);
         MaterialCheckBox canBeHideTextView =
                 inflatedView.findViewById(R.id.canBeHideCheckBox);
         MaterialCheckBox canBeShowTextView =
                 inflatedView.findViewById(R.id.canBeShowCheckBox);
 
         boolean canHide = isInSettings(SET_CAN_BE_HIDE);
-        scoreInputEditText.setText(String.valueOf(score));
-        scoreInputEditText.setEnabled(canHide);
+
+        scoreRightInputEditText.setText(String.valueOf(scoreRight));
+        scoreRightInputEditText.setEnabled(canHide);
+        scoreWrongInputEditText.setText(String.valueOf(scoreWrong));
+        scoreWrongInputEditText.setEnabled(canHide);
+        scoreSkippedInputEditText.setText(String.valueOf(scoreSkipped));
+        scoreSkippedInputEditText.setEnabled(canHide);
 
         canBeHideTextView.setChecked(canHide);
         canBeShowTextView.setChecked(isInSettings(SET_CAN_BE_SHOW));
@@ -497,30 +522,74 @@ public abstract class Column {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                boolean[] scoresErrors = {false, false, false};
                 try {
-                    if (Integer.parseInt(editable.toString()) < 0) {
-                        scoreInputEditText.setError(context.getString(R.string.positive_number_required));
-                    } else {
-                        scoreInputEditText.setError(null);
-                    }
+                    scoreRight = Integer.parseInt(scoreRightInputEditText.getEditableText().toString());
                 } catch (NumberFormatException ignored) {
-                    scoreInputEditText.setError(context.getString(R.string.number_required));
+                    scoreRightInputEditText.setError(context.getString(R.string.number_required));
+                    scoreRight = SCORE_RIGHT_DEFAULT;
+                    scoresErrors[0] = true;
+                }
+
+                try {
+                    scoreWrong = Integer.parseInt(scoreWrongInputEditText.getEditableText().toString());
+                } catch (NumberFormatException ignored) {
+                    scoreWrongInputEditText.setError(context.getString(R.string.number_required));
+                    scoreWrong = SCORE_WRONG_DEFAULT;
+                    scoresErrors[1] = true;
+                }
+
+                try {
+                    scoreSkipped = Integer.parseInt(scoreSkippedInputEditText.getEditableText().toString());
+                } catch (NumberFormatException ignored) {
+                    scoreSkippedInputEditText.setError(context.getString(R.string.number_required));
+                    scoreSkipped = SCORE_SKIPPED_DEFAULT;
+                    scoresErrors[2] = true;
+                }
+
+                if (!scoresErrors[0] && scoreRight <= scoreSkipped) {
+                    scoreRightInputEditText.setError(
+                            context.getString(R.string.score_right_lesser_skipped));
+                } else if (!scoresErrors[0]) {
+                    scoreRightInputEditText.setError(null);
+                }
+                if (!scoresErrors[1] && scoreWrong >= scoreRight) {
+                    scoreWrongInputEditText.setError(
+                            context.getString(R.string.score_wrong_greatter_right));
+                } else if (!scoresErrors[1]) {
+                    scoreWrongInputEditText.setError(null);
+                }
+                if (!scoresErrors[2] && scoreSkipped < scoreWrong) {
+                    scoreSkippedInputEditText.setError(
+                            context.getString(R.string.score_skipped_lesser_wrong));
+                } else if (!scoresErrors[2]){
+                    scoreSkippedInputEditText.setError(null);
                 }
             }
         };
 
+
+
         canBeHideTextView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                scoreInputEditText.setEnabled(b);
+                scoreRightInputEditText.setEnabled(b);
+                scoreWrongInputEditText.setEnabled(b);
+                scoreSkippedInputEditText.setEnabled(b);
                 if (b) {
-                    watcher.afterTextChanged(scoreInputEditText.getEditableText());
+                    watcher.afterTextChanged(scoreRightInputEditText.getEditableText());
                 } else {
-                    scoreInputEditText.setError(null);
+                    scoreRightInputEditText.setError(null);
+                    scoreWrongInputEditText.setError(null);
+                    scoreSkippedInputEditText.setError(null);
                 }
             }
         });
-        scoreInputEditText.addTextChangedListener(watcher);
+        scoreRightInputEditText.addTextChangedListener(watcher);
+        scoreWrongInputEditText.addTextChangedListener(watcher);
+        scoreSkippedInputEditText.addTextChangedListener(watcher);
+
+        if (canHide)  watcher.afterTextChanged(scoreRightInputEditText.getEditableText());
     }
 
     /**
@@ -532,23 +601,20 @@ public abstract class Column {
      * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
      */
     public void setEditColumnSettings(ViewGroup parent) {
-        TextInputEditText scoreInputEditText =
-                parent.findViewById(R.id.scoreEditText);
+        TextInputEditText scoreRightInputEditText =
+                parent.findViewById(R.id.scoreRightEditText);
+        TextInputEditText scoreWrongInputEditText =
+                parent.findViewById(R.id.scoreWrongEditText);
+        TextInputEditText scoreSkippedInputEditText =
+                parent.findViewById(R.id.scoreSkippedEditText);
         MaterialCheckBox canBeHideTextView =
                 parent.findViewById(R.id.canBeHideCheckBox);
         MaterialCheckBox canBeShowTextView =
                 parent.findViewById(R.id.canBeShowCheckBox);
 
-        int score = -1;
-        try {
-            Editable text = scoreInputEditText.getText();
-            if (text != null) {
-                score = Integer.parseInt(text.toString());
-            }
-        } catch (NumberFormatException ignored) {
-        }
-        if (score < 0) this.score = SCORE_DEFAULT;
-        else this.score = score;
+        scoreRight = ViewUtils.getIntFromEditText(scoreRightInputEditText, SCORE_RIGHT_DEFAULT);
+        scoreWrong = ViewUtils.getIntFromEditText(scoreWrongInputEditText, SCORE_WRONG_DEFAULT);
+        scoreSkipped = ViewUtils.getIntFromEditText(scoreSkippedInputEditText, SCORE_SKIPPED_DEFAULT);
 
         setSettings(SET_CAN_BE_HIDE, canBeHideTextView.isChecked());
         setSettings(SET_CAN_BE_SHOW, canBeShowTextView.isChecked());
@@ -592,7 +658,9 @@ public abstract class Column {
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_SETTINGS, settings);
-        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE, score);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_RIGHT, scoreRight);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_WRONG, scoreWrong);
+        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_SKIPPED, scoreSkipped);
     }
 
     /**
@@ -633,8 +701,16 @@ public abstract class Column {
                 settings = XmlLoader.readInt(parser);
                 break;
 
-            case FileManager.TAG_SCORE:
-                score = XmlLoader.readInt(parser);
+            case FileManager.TAG_SCORE_RIGHT:
+                scoreRight = XmlLoader.readInt(parser, SCORE_RIGHT_DEFAULT);
+                break;
+
+            case FileManager.TAG_SCORE_WRONG:
+                scoreWrong = XmlLoader.readInt(parser, SCORE_WRONG_DEFAULT);
+                break;
+
+            case FileManager.TAG_SCORE_SKIPPED:
+                scoreSkipped = XmlLoader.readInt(parser, SCORE_SKIPPED_DEFAULT);
                 break;
 
             default:
@@ -650,7 +726,9 @@ public abstract class Column {
      */
     protected void setDefaultValueBackWardCompatibility(int fileVersion) {
         if (fileVersion < FileManager.VER_V_0_3_0) {
-            if (score < 0) score = SCORE_DEFAULT;
+            if (scoreRight < 0) scoreRight = SCORE_RIGHT_DEFAULT;
+            if (scoreWrong < 0) scoreWrong = SCORE_WRONG_DEFAULT;
+            if (scoreSkipped < 0) scoreSkipped = SCORE_SKIPPED_DEFAULT;
         }
     }
 
@@ -682,7 +760,7 @@ public abstract class Column {
         // fields
         name = previousColumn.name;
         description = previousColumn.description;
-        score = previousColumn.score;
+        scoreRight = previousColumn.scoreRight;
         setSettings(SET_CAN_BE_HIDE, previousColumn.isInSettings(SET_CAN_BE_HIDE));
         setSettings(SET_CAN_BE_SHOW, previousColumn.isInSettings(SET_CAN_BE_SHOW));
 
@@ -708,7 +786,8 @@ public abstract class Column {
             Column c = (Column) obj;
             // fields
             return Objects.equals(c.name, name) && Objects.equals(c.description, description) &&
-                    c.settings == settings && c.score == score;
+                    c.settings == settings && c.scoreRight == scoreRight &&
+                    c.scoreWrong == scoreWrong && c.scoreSkipped == scoreSkipped;
         }
         return false;
     }

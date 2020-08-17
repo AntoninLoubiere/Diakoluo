@@ -81,7 +81,7 @@ public class TestTestContext {
             boolean canHide = c.isInSettings(Column.SET_CAN_BE_HIDE);
             boolean canShow = c.isInSettings(Column.SET_CAN_BE_SHOW);
 
-            int score = c.getScore();
+            int score = c.getScoreRight();
             if (canHide && canShow) {
                 columnsAskRandom.add(c);
                 columnsAsk.add(c);
@@ -176,14 +176,14 @@ public class TestTestContext {
             int index = random.nextInt(columnsToChoose.size());
             Column column = columnsToChoose.get(index);
             Boolean previous = showColumn.get(column);
-            if (previous == null || !previous) columnSelectedScoreSum -= column.getScore();
+            if (previous == null || !previous) columnSelectedScoreSum -= column.getScoreRight();
             showColumn.put(column, true);
             columnsToChoose.remove(index);
         }
 
         for (Column column : columnsToChoose) {
             Boolean previous = showColumn.get(column);
-            if (previous != null && previous) columnSelectedScoreSum += column.getScore();
+            if (previous != null && previous) columnSelectedScoreSum += column.getScoreRight();
             showColumn.put(column, false);
         }
     }
@@ -215,7 +215,7 @@ public class TestTestContext {
         for (Column column : columnsAsk) {
             userAnswer.put(column, null);
             Boolean previous = showColumn.get(column);
-            if (previous != null && previous) columnSelectedScoreSum += column.getScore();
+            if (previous != null && previous) columnSelectedScoreSum += column.getScoreRight();
             showColumn.put(column, false);
         }
         selectShowColumn();

@@ -22,35 +22,111 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
+        <TableRow>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/scoreEditText"
-                android:layout_width="match_parent"
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/column_settings_score_edit"
-                android:inputType="numberSigned"
-                android:maxLength="@integer/max_int_digit"/>
+                android:layout_marginEnd="@dimen/default_margin"
+                android:text="@string/score_right_text_view" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
 
-        <com.google.android.material.textview.MaterialTextView
-            style="@style/TextAppearance.MaterialComponents.Body1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/default_margin"
-            android:text="@string/points" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/scoreRightEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/column_settings_score_edit"
+                    android:inputType="numberSigned"
+                    android:maxLength="@integer/max_int_digit"/>
 
-    </LinearLayout>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_margin"
+                android:text="@string/points" />
+        </TableRow>
+
+        <TableRow>
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:text="@string/score_skipped_text_view" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/scoreSkippedEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/column_settings_score_edit"
+                    android:inputType="numberSigned"
+                    android:maxLength="@integer/max_int_digit"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_margin"
+                android:text="@string/points" />
+        </TableRow>
+
+        <TableRow>
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:text="@string/score_wrong_text_view" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/scoreWrongEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/column_settings_score_edit"
+                    android:inputType="numberSigned"
+                    android:maxLength="@integer/max_int_digit"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_margin"
+                android:text="@string/points" />
+        </TableRow>
+
+    </TableLayout>
 
 
 

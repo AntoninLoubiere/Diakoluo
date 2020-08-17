@@ -304,27 +304,23 @@ public abstract class DataCell {
      * @return the view which contain the value of the user
      */
     public ShowValueResponse showValue(Context context, Column column, Object answer) {
-        String answerString = getStringValue(context, column, answer);
-
         MaterialTextView valueTextView = (MaterialTextView) showValue(context, column);
-        boolean answerIsTrue = column.verifyAnswer(this, answer);
+        AnswerValidEnum answerValid = column.verifyAnswer(this, answer);
 
-        if (answerIsTrue) {
+        if (answerValid == AnswerValidEnum.RIGHT) {
             valueTextView.setTextColor(context.getResources().getColor(R.color.trueAnswer));
+        } else if (answerValid == AnswerValidEnum.SKIPPED) {
+            valueTextView.setText(R.string.skip);
+            valueTextView.setTypeface(null, Typeface.ITALIC);
+            valueTextView.setTextColor(context.getResources().getColor(R.color.wrongAnswer));
         } else {
-            if (answerString.length() <= 0) {
-                valueTextView.setText(R.string.skip);
-                valueTextView.setTypeface(null, Typeface.ITALIC);
-            } else {
-                valueTextView.setPaintFlags(valueTextView.getPaintFlags() |
-                        Paint.STRIKE_THRU_TEXT_FLAG);
-                valueTextView.setText(getStringValue(context, column, answer));
-            }
-
+            valueTextView.setPaintFlags(valueTextView.getPaintFlags() |
+                    Paint.STRIKE_THRU_TEXT_FLAG);
+            valueTextView.setText(getStringValue(context, column, answer));
             valueTextView.setTextColor(context.getResources().getColor(R.color.wrongAnswer));
         }
 
-        return new ShowValueResponse(valueTextView, answerIsTrue);
+        return new ShowValueResponse(valueTextView, answerValid);
     }
 
 
@@ -332,18 +328,18 @@ public abstract class DataCell {
      * An response object in test
      */
     public static class ShowValueResponse {
+        final View valueView;
+        final AnswerValidEnum answerValid;
+
         /**
          * Constructor
          * @param valueView the view which contain the value
-         * @param answerIsRight if the answer is right
+         * @param answerValid if the answer is right
          */
-        ShowValueResponse(View valueView, boolean answerIsRight) {
+        ShowValueResponse(View valueView, AnswerValidEnum answerValid) {
             this.valueView = valueView;
-            this.answerIsTrue = answerIsRight;
+            this.answerValid = answerValid;
         }
-
-        final View valueView;
-        final boolean answerIsTrue;
 
         /**
          * Get the view which contain the value to show
@@ -358,7 +354,7 @@ public abstract class DataCell {
          * @return if the answer is right
          */
         public boolean isAnswerRight() {
-            return answerIsTrue;
+            return answerValid == AnswerValidEnum.RIGHT;
         }
     }
 
