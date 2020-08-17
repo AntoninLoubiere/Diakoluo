@@ -122,4 +122,5 @@
     <string name="score_right_lesser_skipped">A skipped answer will give more point than a right answer.</string>
     <string name="score_skipped_lesser_wrong">A wrong answer will give more points than a skipped answer.</string>
     <string name="column_list_skipped_item" />
+    <string name="no_score">This test doen\'t give score</string>
 </resources>

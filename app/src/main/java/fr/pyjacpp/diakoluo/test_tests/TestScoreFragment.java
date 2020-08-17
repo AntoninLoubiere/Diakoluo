@@ -70,50 +70,55 @@ public class TestScoreFragment extends Fragment {
         scoreProgressBar.setMax(testTestContext.getMaxProgressScore());
 
         final float maxScore = testTestContext.getMaxScore();
-        if (savedInstanceState == null) {
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    animation = ObjectAnimator.ofInt(scoreProgressBar, "progress", testTestContext.getProgressScore());
-                    animation.setDuration(3000);
-                    Interpolator decelerateInterpolator =
-                            new Utils.ExtremeDeceleratorInterpolator();
-                    animation.setInterpolator(decelerateInterpolator);
-                    animation.start();
-                    scoreProgressBar.setProgress(testTestContext.getProgressScore());
+        if (maxScore > 0) {
+            if (savedInstanceState == null) {
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        animation = ObjectAnimator.ofInt(scoreProgressBar, "progress", testTestContext.getProgressScore());
+                        animation.setDuration(3000);
+                        Interpolator decelerateInterpolator =
+                                new Utils.ExtremeDeceleratorInterpolator();
+                        animation.setInterpolator(decelerateInterpolator);
+                        animation.start();
+                        scoreProgressBar.setProgress(testTestContext.getProgressScore());
 
-                    primaryValueAnimator = ValueAnimator.ofFloat(0f, testTestContext.getScore());
-                    primaryValueAnimator.setDuration(3000);
-                    primaryValueAnimator.setInterpolator(decelerateInterpolator);
+                        primaryValueAnimator = ValueAnimator.ofFloat(0f, testTestContext.getScore());
+                        primaryValueAnimator.setDuration(3000);
+                        primaryValueAnimator.setInterpolator(decelerateInterpolator);
 
-                    primaryValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                            primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20((Float) valueAnimator.getAnimatedValue(), maxScore)));
-                        }
-                    });
-                    primaryValueAnimator.start();
+                        primaryValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                            @Override
+                            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                                primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20((Float) valueAnimator.getAnimatedValue(), maxScore)));
+                            }
+                        });
+                        primaryValueAnimator.start();
 
-                    secondaryValueAnimator = ValueAnimator.ofFloat(0, testTestContext.getScore());
-                    secondaryValueAnimator.setDuration(3000);
-                    secondaryValueAnimator.setInterpolator(decelerateInterpolator);
+                        secondaryValueAnimator = ValueAnimator.ofFloat(0, testTestContext.getScore());
+                        secondaryValueAnimator.setDuration(3000);
+                        secondaryValueAnimator.setInterpolator(decelerateInterpolator);
 
-                    secondaryValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                            secondaryScoreTextView.setText(getString(R.string.score_precise, (Float) valueAnimator.getAnimatedValue(), maxScore));
-                        }
-                    });
-                    secondaryValueAnimator.start();
-                }
-            }, 1000);
-            primaryScoreTextView.setText(getString(R.string.score_20, 0f));
-            secondaryScoreTextView.setText(getString(R.string.score_precise, 0f, maxScore));
+                        secondaryValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                            @Override
+                            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                                secondaryScoreTextView.setText(getString(R.string.score_precise, (Float) valueAnimator.getAnimatedValue(), maxScore));
+                            }
+                        });
+                        secondaryValueAnimator.start();
+                    }
+                }, 1000);
+                primaryScoreTextView.setText(getString(R.string.score_20, 0f));
+                secondaryScoreTextView.setText(getString(R.string.score_precise, 0f, maxScore));
+            } else {
+                primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20(testTestContext)));
+                secondaryScoreTextView.setText(getString(R.string.score_precise, testTestContext.getScore(), maxScore));
+            }
         } else {
-            primaryScoreTextView.setText(getString(R.string.score_20, ScoreUtils.getScore20(testTestContext)));
-            secondaryScoreTextView.setText(getString(R.string.score_precise, testTestContext.getScore(), maxScore));
+            primaryScoreTextView.setText(getString(R.string.no_score));
+            scoreProgressBar.setVisibility(View.GONE);
+            secondaryScoreTextView.setVisibility(View.GONE);
         }
-
 
 
         restartButton.setOnClickListener(new View.OnClickListener() {

@@ -118,12 +118,14 @@ public class TestTestContext {
     }
 
     public void addScore(int score, int maxScore) {
-        if (proportionalityScoreMethod) {
-            this.score += score * columnScoreSum / columnSelectedScoreSum;
-            this.maxScore += maxScore * columnScoreSum / columnSelectedScoreSum;
-        } else {
-            this.score += score;
-            this.maxScore += maxScore;
+        if (columnSelectedScoreSum > 0) {
+            if (proportionalityScoreMethod) {
+                this.score += score * columnScoreSum / columnSelectedScoreSum;
+                this.maxScore += maxScore * columnScoreSum / columnSelectedScoreSum;
+            } else {
+                this.score += score;
+                this.maxScore += maxScore;
+            }
         }
     }
 
