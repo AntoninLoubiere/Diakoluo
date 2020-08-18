@@ -86,7 +86,7 @@ public class DataCellString extends DataCell {
 
     @NonNull
     @Override
-    protected String getStringValue(Context context, Column column, Object answer) {
+    public String getStringValue(Context context, Column column, Object answer) {
         return (String) answer;
     }
 

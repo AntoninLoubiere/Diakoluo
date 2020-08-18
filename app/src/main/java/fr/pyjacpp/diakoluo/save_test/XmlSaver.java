@@ -93,6 +93,17 @@ public class XmlSaver {
      * @param data the data to save
      * @throws IOException if an exception occur while writing the file
      */
+    public static void writeData(OutputStream outputStream, String beacons, float data) throws IOException {
+        writeData(outputStream, beacons, String.valueOf(data));
+    }
+
+    /**
+     * Write a data between beacon.
+     * @param outputStream the output stream of the file
+     * @param beacons the beacons that hold the data
+     * @param data the data to save
+     * @throws IOException if an exception occur while writing the file
+     */
     public static void writeData(OutputStream outputStream, String beacons, boolean data) throws IOException {
         writeData(outputStream, beacons, data ? "true" : "false");
     }

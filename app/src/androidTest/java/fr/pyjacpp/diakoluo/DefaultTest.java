@@ -653,6 +653,8 @@ public class DefaultTest extends Test {
             values.add("Test");
             ((ColumnList) newColumn).setValues(values);
         }
+        newColumn.setScore(3, 1,
+                2);
 
         return newColumn;
     }
@@ -661,6 +663,10 @@ public class DefaultTest extends Test {
         if (newColumn instanceof ColumnList) {
             return setTestValue(newColumn); // some problem with empty column list
         }
+
+        newColumn.setScore(3, 1,
+                2);
+
         return newColumn;
     }
 }

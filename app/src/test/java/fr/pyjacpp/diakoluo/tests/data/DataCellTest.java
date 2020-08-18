@@ -27,7 +27,6 @@ import fr.pyjacpp.diakoluo.tests.column.Column;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
 
 public class DataCellTest {
 
@@ -63,7 +62,7 @@ public class DataCellTest {
         for (ColumnInputType inputType : ColumnInputType.values()) {
             Column currentColumn = Column.newColumn(inputType);
             DataCell dataCell = DataCell.newCellWithDefaultValue(currentColumn);
-            assertTrue(inputType.name(), currentColumn.verifyAnswer(dataCell, dataCell.getValue()));
+            assertEquals(inputType.name(), AnswerValidEnum.RIGHT, currentColumn.verifyAnswer(dataCell, dataCell.getValue()));
         }
     }
 }

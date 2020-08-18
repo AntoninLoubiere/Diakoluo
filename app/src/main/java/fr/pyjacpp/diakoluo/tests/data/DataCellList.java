@@ -87,7 +87,7 @@ public class DataCellList extends DataCell {
 
     @NonNull
     @Override
-    protected String getStringValue(Context context, Column column, Object answer) {
+    public String getStringValue(Context context, Column column, Object answer) {
         ColumnList columnList = (ColumnList) column;
         return columnList.getStringValue(context, (int) answer);
     }

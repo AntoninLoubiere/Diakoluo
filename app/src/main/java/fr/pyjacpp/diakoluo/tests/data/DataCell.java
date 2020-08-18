@@ -20,14 +20,10 @@
 package fr.pyjacpp.diakoluo.tests.data;
 
 import android.content.Context;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.google.android.material.textview.MaterialTextView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -35,7 +31,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
@@ -239,7 +234,7 @@ public abstract class DataCell {
      * @return the string representation of the answer
      */
     @NonNull
-    protected abstract String getStringValue(@Nullable Context context, Column column,
+    public abstract String getStringValue(@Nullable Context context, Column column,
                                              Object answer);
 
     /**
@@ -279,88 +274,6 @@ public abstract class DataCell {
         XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_CELL);
     }
 
-    /**
-     * Show the value to the user (view only).
-     * @see Column#showEditValueView(Context, Object)
-     * @param context the context to show the value cell
-     * @param column the column attached to the cell
-     * @return the view which contain the value
-     */
-    @NonNull
-    public View showValue(Context context, Column column) {
-        MaterialTextView valueTextView = new MaterialTextView(context);
-        valueTextView.setTextAppearance(context, R.style.Body0);
-        valueTextView.setText(getStringValue(context, column));
-        return valueTextView;
-    }
-
-    /**
-     * Show the value formatted given by the user in test. Show the value stroked if the user has
-     * wrong, green or red...
-     * @see #showValue(Context, Column, Object)
-     * @param context the context to show the value cell
-     * @param column the column attached to the cell
-     * @param answer the answer of the user
-     * @return the view which contain the value of the user
-     */
-    public ShowValueResponse showValue(Context context, Column column, Object answer) {
-        String answerString = getStringValue(context, column, answer);
-
-        MaterialTextView valueTextView = (MaterialTextView) showValue(context, column);
-        boolean answerIsTrue = column.verifyAnswer(this, answer);
-
-        if (answerIsTrue) {
-            valueTextView.setTextColor(context.getResources().getColor(R.color.trueAnswer));
-        } else {
-            if (answerString.length() <= 0) {
-                valueTextView.setText(R.string.skip);
-                valueTextView.setTypeface(null, Typeface.ITALIC);
-            } else {
-                valueTextView.setPaintFlags(valueTextView.getPaintFlags() |
-                        Paint.STRIKE_THRU_TEXT_FLAG);
-                valueTextView.setText(getStringValue(context, column, answer));
-            }
-
-            valueTextView.setTextColor(context.getResources().getColor(R.color.wrongAnswer));
-        }
-
-        return new ShowValueResponse(valueTextView, answerIsTrue);
-    }
-
-
-    /**
-     * An response object in test
-     */
-    public static class ShowValueResponse {
-        /**
-         * Constructor
-         * @param valueView the view which contain the value
-         * @param answerIsRight if the answer is right
-         */
-        ShowValueResponse(View valueView, boolean answerIsRight) {
-            this.valueView = valueView;
-            this.answerIsTrue = answerIsRight;
-        }
-
-        final View valueView;
-        final boolean answerIsTrue;
-
-        /**
-         * Get the view which contain the value to show
-         * @return the view to show
-         */
-        public View getValueView() {
-            return valueView;
-        }
-
-        /**
-         * Get if the answer is right
-         * @return if the answer is right
-         */
-        public boolean isAnswerRight() {
-            return answerIsTrue;
-        }
-    }
 
     @Override
     public boolean equals(@Nullable Object obj) {

@@ -20,12 +20,42 @@
 package fr.pyjacpp.diakoluo;
 
 import android.content.Context;
+import android.text.Editable;
 
+import androidx.core.content.res.ResourcesCompat;
+
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 
 public final class ViewUtils {
     public static void setBooleanView(Context context, MaterialTextView materialTextView, boolean value) {
-        materialTextView.setCompoundDrawablesWithIntrinsicBounds(context.getResources().getDrawable(value ? R.drawable.ic_check_coloured_24 :
-                R.drawable.ic_close_coloured_24dp), null, null, null);
+        materialTextView.setCompoundDrawablesWithIntrinsicBounds(
+                ResourcesCompat.getDrawable(context.getResources(),
+                        value ? R.drawable.ic_check_coloured_24 : R.drawable.ic_close_coloured_24dp,
+                        context.getTheme()), null, null, null);
+    }
+
+    public static int getIntFromEditText(TextInputEditText editText, int defaultInt) {
+        int result = defaultInt;
+        try {
+            Editable text = editText.getText();
+            if (text != null) {
+                result = Integer.parseInt(text.toString());
+            }
+        } catch (NumberFormatException ignored) {
+        }
+        return result;
+    }
+
+    public static float getFloatFromEditText(TextInputEditText editText, float defaultFloat) {
+        float result = defaultFloat;
+        try {
+            Editable text = editText.getText();
+            if (text != null) {
+                result = Float.parseFloat(text.toString());
+            }
+        } catch (NumberFormatException ignored) {
+        }
+        return result;
     }
 }

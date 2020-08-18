@@ -70,7 +70,9 @@ public class FileManager {
     public static final String TAG_CELL              = "cell";
     public static final String TAG_DEFAULT_VALUE     = "defaultValue";
     public static final String TAG_SETTINGS          = "settings";
-    public static final String TAG_SCORE             = "score";
+    public static final String TAG_SCORE_RIGHT       = "scoreRight";
+    public static final String TAG_SCORE_WRONG       = "scoreWrong";
+    public static final String TAG_SCORE_SKIPPED     = "scoreSkipped";
     public static final String TAG_SCORE_METHOD      = "scoreMethod";
     public static final String ATTRIBUTE_VERSION     = "version";
     public static final String ATTRIBUTE_INPUT_TYPE  = "inputType";
