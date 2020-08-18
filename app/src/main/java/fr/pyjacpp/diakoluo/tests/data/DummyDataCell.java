@@ -20,7 +20,6 @@
 package fr.pyjacpp.diakoluo.tests.data;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -138,7 +137,7 @@ public class DummyDataCell extends DataCell {
      */
     @NonNull
     @Override
-    protected String getStringValue(@Nullable Context context, Column column, Object answer) {
+    public String getStringValue(@Nullable Context context, Column column, Object answer) {
         return null; // TODO get the string representation of the answer
     }
 
@@ -177,22 +176,6 @@ public class DummyDataCell extends DataCell {
     protected void writeXmlInternal(OutputStream fileOutputStream) throws IOException {
         // TODO write all fields in a xml file
         XmlSaver.writeNotSafeData(fileOutputStream, 3);
-    }
-
-    /**
-     * Show the value to the user (view only).
-     *
-     * @param context the context to show the value cell
-     * @param column  the column attached to the cell
-     * @return the view which contain the value
-     * @see Column#showEditValueView(Context, Object)
-     */
-    @NonNull
-    @Override
-    public View showValue(Context context, Column column) {
-        // TODO implement a custom view to show the value of the cell (view only)
-        //  or remove to show string representation in a textView (super call not recommended)
-        return null;
     }
 
     @Override

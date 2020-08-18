@@ -30,6 +30,9 @@
 
 
     <color name="dividerColor">#80808080</color>
-    <color name="trueAnswer">#8bc34a</color>
-    <color name="wrongAnswer">#f44336</color>
+    <color name="answer_right">#8bc34a</color>
+    <color name="answer_wrong">#f44336</color>
+    <color name="test_score_positive">#8bc34a</color>
+    <color name="test_score_negative">#F44336</color>
+    <color name="answer_skipped">#FF9800</color>
 </resources>

@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -163,6 +164,25 @@ public class DummyColumn extends Column {
     public void verifyAndScoreAnswer(TestTestContext testTestContext, DataCell dataCell, Object answer) {
         // TODO implement to create a non binary score (0/all) or delete this method
         //  (super call not recommended)
+    }
+
+    /**
+     * Show the value to the user (view only).
+     *
+     * @param context the context to show the value cell
+     * @param dataCell the dataCell to show
+     * @return the view which contain the value
+     * @see #showEditValueView(Context, Object)
+     */
+    @NonNull
+    @Override
+    public View showViewValueView(Context context, DataCell dataCell) {
+        // TODO implement a custom view to show the value of the cell (view only)
+        //  or remove to show string representation in a textView (super call not recommended)
+
+        // TODO if the function isn't returning a MaterialTextView, #showViewValueView should be
+        //  implemented
+        return null;
     }
 
     /**

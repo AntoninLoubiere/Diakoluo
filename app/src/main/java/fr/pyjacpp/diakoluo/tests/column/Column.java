@@ -20,6 +20,9 @@
 package fr.pyjacpp.diakoluo.tests.column;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -393,6 +396,51 @@ public abstract class Column {
         columnNameTextView.setTextAppearance(context, R.style.BoldHeadline5);
         columnNameTextView.setText(context.getString(R.string.column_name_format, name));
         return columnNameTextView;
+    }
+
+    /**
+     * Show the value to the user (view only).
+     * @see Column#showViewValueView(Context, DataCell, Object)
+     * @param context the context to show the value cell
+     * @param dataCell the dataCell to show
+     * @return the view which contain the value
+     */
+    @NonNull
+    public View showViewValueView(Context context, DataCell dataCell) {
+        MaterialTextView valueTextView = new MaterialTextView(context);
+        valueTextView.setTextAppearance(context, R.style.Body0);
+        valueTextView.setText(dataCell.getStringValue(context, this));
+        return valueTextView;
+    }
+
+    /**
+     * Show the value formatted given by the user in test. Show the value stroked if the user has
+     * wrong, green or red...
+     * @see #showViewValueView(Context, DataCell)
+     * @param context the context to show the value cell
+     * @param dataCell the dataCell to show
+     * @param answer the answer of the user
+     * @return the view which contain the value of the user
+     */
+    public ShowValueResponse showViewValueView(Context context, DataCell dataCell, Object answer) {
+        MaterialTextView valueTextView = (MaterialTextView) showViewValueView(context, dataCell);
+        AnswerValidEnum answerValid = verifyAnswer(dataCell, answer);
+
+
+        if (answerValid == AnswerValidEnum.RIGHT) {
+            valueTextView.setTextColor(context.getResources().getColor(R.color.answer_right));
+        } else if (answerValid == AnswerValidEnum.SKIPPED) {
+            valueTextView.setText(R.string.skip);
+            valueTextView.setTypeface(null, Typeface.ITALIC);
+            valueTextView.setTextColor(context.getResources().getColor(R.color.answer_skipped));
+        } else {
+            valueTextView.setPaintFlags(valueTextView.getPaintFlags() |
+                    Paint.STRIKE_THRU_TEXT_FLAG);
+            valueTextView.setText(dataCell.getStringValue(context, this, answer));
+            valueTextView.setTextColor(context.getResources().getColor(R.color.answer_wrong));
+        }
+
+        return new ShowValueResponse(valueTextView, answerValid);
     }
 
     /**
@@ -836,5 +884,67 @@ public abstract class Column {
         this.scoreRight = c.scoreRight;
         this.scoreWrong = c.scoreWrong;
         this.scoreSkipped = c.scoreSkipped;
+    }
+
+    /**
+     * An response object in test
+     */
+    public class ShowValueResponse {
+        private final View valueView;
+        private final AnswerValidEnum answerValid;
+
+        /**
+         * Constructor
+         * @param valueView the view which contain the value
+         * @param answerValid if the answer is right
+         */
+        ShowValueResponse(View valueView, AnswerValidEnum answerValid) {
+            this.valueView = valueView;
+            this.answerValid = answerValid;
+        }
+
+        /**
+         * Get the view which contain the value to show
+         * @return the view to show
+         */
+        public View getValueView() {
+            return valueView;
+        }
+
+        /**
+         * Get if the answer is right
+         * @return if the answer is right
+         */
+        public boolean isAnswerRight() {
+            return answerValid == AnswerValidEnum.RIGHT;
+        }
+
+        /**
+         * Get a score view that show the score given
+         * @param context the context
+         * @return the view that show the score
+         */
+        public View getScoreView(Context context) {
+            Resources resources = context.getResources();
+
+            MaterialTextView view = new MaterialTextView(context);
+            view.setTextAppearance(context, R.style.TestScore);
+
+            int scoreGiven;
+            if (answerValid == AnswerValidEnum.RIGHT) {
+                scoreGiven = scoreRight;
+                view.setTextColor(resources.getColor(R.color.answer_right));
+            } else if (answerValid == AnswerValidEnum.SKIPPED) {
+                view.setTextColor(resources.getColor(R.color.answer_skipped));
+                scoreGiven = scoreSkipped;
+            } else {
+                view.setTextColor(resources.getColor(R.color.answer_wrong));
+                scoreGiven = scoreWrong;
+            }
+
+            view.setText(resources.getString(R.string.score_test_format, scoreGiven));
+
+            return view;
+        }
     }
 }

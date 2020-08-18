@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -51,6 +52,9 @@ public class TestFragment extends Fragment {
     private ArrayList<Column> columns;
     private final HashMap<Column, LinearLayout> columnLinearLayoutHashMap = new HashMap<>();
     private final HashMap<Column, View> columnViewHashMap = new HashMap<>();
+    private Context context;
+    private Button validButton;
+    private ProgressBar progressBar;
 
     public TestFragment() {
     }
@@ -60,10 +64,11 @@ public class TestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         inflatedView = inflater.inflate(R.layout.fragment_test, container, false);
+        context = inflatedView.getContext();
 
-        Button validButton = inflatedView.findViewById(R.id.validButton);
+        validButton = inflatedView.findViewById(R.id.validButton);
         LinearLayout linearLayout = inflatedView.findViewById(R.id.answerListLinearLayout);
-        ProgressBar progressBar = inflatedView.findViewById(R.id.progressBar);
+        progressBar = inflatedView.findViewById(R.id.progressBar);
 
         LinearLayout.LayoutParams params = new TableRow.LayoutParams();
         params.topMargin = 24;
@@ -71,10 +76,10 @@ public class TestFragment extends Fragment {
         columns = testTestContext.getTest().getTestListColumn();
 
         for (Column column : columns) {
-            LinearLayout answerRow = new LinearLayout(inflatedView.getContext());
+            LinearLayout answerRow = new LinearLayout(context);
             answerRow.setOrientation(LinearLayout.HORIZONTAL);
 
-            linearLayout.addView(column.showColumnName(inflatedView.getContext()), params);
+            linearLayout.addView(column.showColumnName(context), params);
 
             linearLayout.addView(answerRow);
 
@@ -104,9 +109,6 @@ public class TestFragment extends Fragment {
 
     private void updateAnswer() {
         if (inflatedView != null) {
-            Button validButton = inflatedView.findViewById(R.id.validButton);
-            ProgressBar progressBar = inflatedView.findViewById(R.id.progressBar);
-
             LinearLayout.LayoutParams params = new TableRow.LayoutParams();
             params.weight = 1;
 
@@ -136,13 +138,16 @@ public class TestFragment extends Fragment {
                             } else {
                                 Object answer = testTestContext.getUserAnswer().get(column);
                                 if (answer != null) {
-                                    DataCell.ShowValueResponse showValueResponse = dataCell.showValue(
-                                            inflatedView.getContext(), column, answer);
+                                    Column.ShowValueResponse showValueResponse =
+                                            column.showViewValueView(context, 
+                                                    dataCell, answer);
 
                                     answerRow.addView(showValueResponse.getValueView(), params);
                                     if (!showValueResponse.isAnswerRight()) {
                                         addAnswer(column, answerRow, params);
                                     }
+                                    TextView scoreTextView = new TextView(context);
+                                    answerRow.addView(showValueResponse.getScoreView(context));
                                 }
                             }
                         }
@@ -167,7 +172,7 @@ public class TestFragment extends Fragment {
                                 addAnswer(column, answerRow, params);
                             } else {
                                 View answerEdit = column.showEditValueTestView(
-                                        inflatedView.getContext(),
+                                        context,
                                         testTestContext.getUserAnswer().get(column));
 
                                 answerRow.addView(answerEdit, params);
@@ -184,7 +189,7 @@ public class TestFragment extends Fragment {
     private void addAnswer(Column column, LinearLayout row, LinearLayout.LayoutParams params) {
         DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
         if (dataCell != null) {
-            View answer = dataCell.showValue(row.getContext(), column);
+            View answer = column.showViewValueView(row.getContext(), dataCell);
             row.addView(answer, params);
             columnViewHashMap.put(column, answer);
         }
