@@ -48,6 +48,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -77,9 +78,9 @@ public abstract class Column {
     public static final int SET_CAN_BE_HIDE = 1;
     public static final int SET_CAN_BE_SHOW = 1 << 1;
 
-    public static final int SCORE_RIGHT_DEFAULT = 1;
-    public static final int SCORE_WRONG_DEFAULT = 0;
-    public static final int SCORE_SKIPPED_DEFAULT = 0;
+    public static final float SCORE_RIGHT_DEFAULT = 1;
+    public static final float SCORE_WRONG_DEFAULT = 0;
+    public static final float SCORE_SKIPPED_DEFAULT = 0;
 
     protected static final int SET_DEFAULT = SET_CAN_BE_HIDE | SET_CAN_BE_SHOW;
     /**
@@ -109,9 +110,9 @@ public abstract class Column {
     private String name;
     @Nullable
     private String description;
-    private int scoreRight;
-    private int scoreWrong;
-    private int scoreSkipped;
+    private float scoreRight;
+    private float scoreWrong;
+    private float scoreSkipped;
 
     /**
      * Default constructor that initialize a non-valid column.
@@ -343,7 +344,7 @@ public abstract class Column {
      *
      * @return the score of the column
      */
-    public int getScoreRight() {
+    public float getScoreRight() {
         return scoreRight;
     }
 
@@ -604,7 +605,7 @@ public abstract class Column {
             public void afterTextChanged(Editable editable) {
                 boolean[] scoresErrors = {false, false, false};
                 try {
-                    scoreRight = Integer.parseInt(scoreRightInputEditText.getEditableText().toString());
+                    scoreRight = Float.parseFloat(scoreRightInputEditText.getEditableText().toString());
                 } catch (NumberFormatException ignored) {
                     scoreRightInputEditText.setError(context.getString(R.string.number_required));
                     scoreRight = SCORE_RIGHT_DEFAULT;
@@ -612,7 +613,7 @@ public abstract class Column {
                 }
 
                 try {
-                    scoreWrong = Integer.parseInt(scoreWrongInputEditText.getEditableText().toString());
+                    scoreWrong = Float.parseFloat(scoreWrongInputEditText.getEditableText().toString());
                 } catch (NumberFormatException ignored) {
                     scoreWrongInputEditText.setError(context.getString(R.string.number_required));
                     scoreWrong = SCORE_WRONG_DEFAULT;
@@ -620,7 +621,7 @@ public abstract class Column {
                 }
 
                 try {
-                    scoreSkipped = Integer.parseInt(scoreSkippedInputEditText.getEditableText().toString());
+                    scoreSkipped = Float.parseFloat(scoreSkippedInputEditText.getEditableText().toString());
                 } catch (NumberFormatException ignored) {
                     scoreSkippedInputEditText.setError(context.getString(R.string.number_required));
                     scoreSkipped = SCORE_SKIPPED_DEFAULT;
@@ -691,9 +692,9 @@ public abstract class Column {
         MaterialCheckBox canBeShowTextView =
                 parent.findViewById(R.id.canBeShowCheckBox);
 
-        scoreRight = ViewUtils.getIntFromEditText(scoreRightInputEditText, SCORE_RIGHT_DEFAULT);
-        scoreWrong = ViewUtils.getIntFromEditText(scoreWrongInputEditText, SCORE_WRONG_DEFAULT);
-        scoreSkipped = ViewUtils.getIntFromEditText(scoreSkippedInputEditText, SCORE_SKIPPED_DEFAULT);
+        scoreRight = ViewUtils.getFloatFromEditText(scoreRightInputEditText, SCORE_RIGHT_DEFAULT);
+        scoreWrong = ViewUtils.getFloatFromEditText(scoreWrongInputEditText, SCORE_WRONG_DEFAULT);
+        scoreSkipped = ViewUtils.getFloatFromEditText(scoreSkippedInputEditText, SCORE_SKIPPED_DEFAULT);
 
         setSettings(SET_CAN_BE_HIDE, canBeHideTextView.isChecked());
         setSettings(SET_CAN_BE_SHOW, canBeShowTextView.isChecked());
@@ -781,15 +782,15 @@ public abstract class Column {
                 break;
 
             case FileManager.TAG_SCORE_RIGHT:
-                scoreRight = XmlLoader.readInt(parser, SCORE_RIGHT_DEFAULT);
+                scoreRight = XmlLoader.readFloat(parser, SCORE_RIGHT_DEFAULT);
                 break;
 
             case FileManager.TAG_SCORE_WRONG:
-                scoreWrong = XmlLoader.readInt(parser, SCORE_WRONG_DEFAULT);
+                scoreWrong = XmlLoader.readFloat(parser, SCORE_WRONG_DEFAULT);
                 break;
 
             case FileManager.TAG_SCORE_SKIPPED:
-                scoreSkipped = XmlLoader.readInt(parser, SCORE_SKIPPED_DEFAULT);
+                scoreSkipped = XmlLoader.readFloat(parser, SCORE_SKIPPED_DEFAULT);
                 break;
 
             default:
@@ -930,7 +931,7 @@ public abstract class Column {
             MaterialTextView view = new MaterialTextView(context);
             view.setTextAppearance(context, R.style.TestScore);
 
-            int scoreGiven;
+            float scoreGiven;
             if (answerValid == AnswerValidEnum.RIGHT) {
                 scoreGiven = scoreRight;
                 view.setTextColor(resources.getColor(R.color.answer_right));
@@ -942,7 +943,8 @@ public abstract class Column {
                 scoreGiven = scoreWrong;
             }
 
-            view.setText(resources.getString(R.string.score_test_format, scoreGiven));
+            DecimalFormat decimalFormat = new DecimalFormat("+0.##;-0.##");
+            view.setText(decimalFormat.format(scoreGiven));
 
             return view;
         }

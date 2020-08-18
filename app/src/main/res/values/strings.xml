@@ -123,5 +123,5 @@
     <string name="score_skipped_lesser_wrong">A wrong answer will give more points than a skipped answer.</string>
     <string name="column_list_skipped_item" />
     <string name="no_score">This test doen\'t give score</string>
-    <string name="score_test_format">%+d</string>
+    <string name="score_test_format">%+f</string>
 </resources>

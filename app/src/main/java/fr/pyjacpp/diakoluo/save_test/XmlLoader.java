@@ -121,6 +121,43 @@ public class XmlLoader {
     }
 
     /**
+     * Read a float in xml file with a default value of -1
+     * @param parser the parser of the file
+     * @return the value read
+     * @throws IOException if while loading the file an error occur
+     * @throws XmlPullParserException if while loading the file an exception occur
+     * @see #readFloat(XmlPullParser, float)
+     */
+    public static float readFloat(XmlPullParser parser) throws IOException, XmlPullParserException {
+        return readFloat(parser, -1);
+    }
+
+    /**
+     * Read a float in xml file with a default value.
+     * @param parser       the parser of the file
+     * @param defaultValue the default value
+     * @return the value read
+     * @throws IOException if while loading the file an error occur
+     * @throws XmlPullParserException if while loading the file an exception occur
+     * @see #readFloat(XmlPullParser)
+     */
+    public static float readFloat(XmlPullParser parser, float defaultValue) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, null);
+        float result = defaultValue;
+
+        if (parser.next() == XmlPullParser.TEXT) {
+            try {
+                result = Float.parseFloat(parser.getText());
+            } catch (NumberFormatException ignored) {
+                Log.w(TAG, "Read int not a number !");
+            }
+            parser.nextTag();
+        }
+        parser.require(XmlPullParser.END_TAG, XmlPullParser.NO_NAMESPACE, null);
+        return result;
+    }
+
+    /**
      * Read a boolean
      * @param parser the parser of the file
      * @param defaultValue the default value to return

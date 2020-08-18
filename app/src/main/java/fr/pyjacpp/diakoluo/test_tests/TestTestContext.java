@@ -81,7 +81,7 @@ public class TestTestContext {
             boolean canHide = c.isInSettings(Column.SET_CAN_BE_HIDE);
             boolean canShow = c.isInSettings(Column.SET_CAN_BE_SHOW);
 
-            int score = c.getScoreRight();
+            float score = c.getScoreRight();
             if (canHide && canShow) {
                 columnsAskRandom.add(c);
                 columnsAsk.add(c);
@@ -117,7 +117,7 @@ public class TestTestContext {
         return (int) (maxScore * PROGRESS_BAR_PRECISION);
     }
 
-    public void addScore(int score, int maxScore) {
+    public void addScore(float score, float maxScore) {
         if (columnSelectedScoreSum > 0) {
             if (proportionalityScoreMethod) {
                 this.score += score * columnScoreSum / columnSelectedScoreSum;

@@ -46,4 +46,16 @@ public final class ViewUtils {
         }
         return result;
     }
+
+    public static float getFloatFromEditText(TextInputEditText editText, float defaultFloat) {
+        float result = defaultFloat;
+        try {
+            Editable text = editText.getText();
+            if (text != null) {
+                result = Float.parseFloat(text.toString());
+            }
+        } catch (NumberFormatException ignored) {
+        }
+        return result;
+    }
 }
