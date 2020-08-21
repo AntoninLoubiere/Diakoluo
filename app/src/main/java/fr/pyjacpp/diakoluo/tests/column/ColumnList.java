@@ -55,11 +55,11 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
  * A column that hold a list of values.
  */
 public class ColumnList extends Column {
-    @NonNull private ArrayList<String> values = new ArrayList<>();
-    private int defaultValue = -1;
-
     private static final String TAG_VALUES = "values";
     private static final String TAG_VALUE = "value";
+    @NonNull
+    private ArrayList<String> values = new ArrayList<>();
+    private int defaultValue = -1;
     // private static final int SET_DEFAULT = Column.SET_DEFAULT;
 
     /**
@@ -150,7 +150,7 @@ public class ColumnList extends Column {
         super.getEditColumnSettings(layoutInflater, parent);
         View inflatedView = layoutInflater.inflate(R.layout.fragment_column_settings_edit_list,
                 parent, true);
-        RecyclerView recyclerView = inflatedView.findViewById(R.id.recyclerView);
+        final RecyclerView recyclerView = inflatedView.findViewById(R.id.recyclerView);
         Button addButton = inflatedView.findViewById(R.id.addOptionButton);
         LinearLayoutManager layoutManager = new LinearLayoutManager(recyclerView.getContext());
         recyclerView.setNestedScrollingEnabled(false);
@@ -162,7 +162,9 @@ public class ColumnList extends Column {
             @Override
             public void onClick(View view) {
                 values.add("");
-                adapter.notifyItemInserted(values.size() - 1);
+                int size = values.size();
+                adapter.notifyItemInserted(size - 1);
+                adapter.requestFocus(true);
             }
         });
     }
@@ -289,9 +291,20 @@ public class ColumnList extends Column {
         this.values = values;
     }
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof ColumnList && super.equals(obj)) {
+            ColumnList cL = (ColumnList) obj;
+            return cL.defaultValue == defaultValue &&
+                    cL.values.equals(values);
+        }
+        return false;
+    }
+
     private class ColumnAdapter extends RecyclerView.Adapter<ColumnAdapter.ColumnViewHolder> {
 
         private final boolean editable;
+        private boolean requestFocus;
 
         private ColumnAdapter(boolean editable) {
             super();
@@ -316,6 +329,17 @@ public class ColumnList extends Column {
         public void onBindViewHolder(@NonNull final ColumnViewHolder holder, int position) {
             if (editable) {
                 holder.editText.setText(values.get(position));
+                holder.editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        int index = holder.getAdapterPosition();
+                        if (index > 0) values.set(index, holder.editText.getText().toString());
+                    }
+                });
+                if (requestFocus) {
+                    holder.editText.requestFocus();
+                    requestFocus = false;
+                }
 
                 holder.deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -357,6 +381,10 @@ public class ColumnList extends Column {
             return values.size();
         }
 
+        public void requestFocus(boolean b) {
+            requestFocus = b;
+        }
+
         private class ColumnViewHolder extends RecyclerView.ViewHolder {
             TextView textView;
             EditText editText;
@@ -376,15 +404,5 @@ public class ColumnList extends Column {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        if (obj instanceof ColumnList && super.equals(obj)) {
-            ColumnList cL = (ColumnList) obj;
-            return cL.defaultValue == defaultValue &&
-                    cL.values.equals(values);
-        }
-        return false;
     }
 }

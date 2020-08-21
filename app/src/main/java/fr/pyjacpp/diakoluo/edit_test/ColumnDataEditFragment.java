@@ -57,6 +57,7 @@ public class ColumnDataEditFragment extends Fragment {
     private Column column;
     private Test currentEditTest;
     private LinearLayout columnSettingsParent;
+    private View editValueView = null;
 
     public ColumnDataEditFragment() {
     }
@@ -154,6 +155,8 @@ public class ColumnDataEditFragment extends Fragment {
 
     public void updateColumnSettings() {
         columnSettingsParent.removeAllViews();
+        editValueView = column.showEditValueView(columnSettingsParent.getContext(), column.getDefaultValue());
+        columnSettingsParent.addView(editValueView);
         column.getEditColumnSettings(getLayoutInflater(), columnSettingsParent);
     }
 
@@ -194,6 +197,10 @@ public class ColumnDataEditFragment extends Fragment {
             column.setName(titleEditText.getText().toString());
             column.setDescription(descriptionEditText.getText().toString());
             column.setEditColumnSettings(columnSettingsParent);
+
+            if (editValueView != null) {
+                column.setDefaultValue(column.getValueFromView(editValueView));
+            }
 
             if (parentListener != null)
                 parentListener.updateItem(columnIndex);

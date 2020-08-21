@@ -279,9 +279,9 @@ public abstract class Column {
         this.name = null;
         this.description = null;
         settings = -1;
-        scoreRight = -1;
-        scoreWrong = -1;
-        scoreSkipped = -1;
+        scoreRight = SCORE_RIGHT_DEFAULT;
+        scoreWrong = SCORE_WRONG_DEFAULT;
+        scoreSkipped = SCORE_SKIPPED_DEFAULT;
     }
 
     /**

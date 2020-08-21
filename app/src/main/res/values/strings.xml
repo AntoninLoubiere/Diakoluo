@@ -124,4 +124,5 @@
     <string name="column_list_skipped_item" />
     <string name="no_score">This test doen\'t give score</string>
     <string name="score_test_format">%+f</string>
+    <string name="default_value_column_settings">Default value (edit):</string>
 </resources>
