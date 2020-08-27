@@ -88,7 +88,9 @@ public class MainInformationViewTestFragment extends Fragment
     }
 
     private void updateViews() {
-        loadingProgressBar.setVisibility(View.GONE);
+        if (loadingProgressBar != null) {
+            loadingProgressBar.setVisibility(View.GONE);
+        }
         Context context = getContext();
         if (currentTest == null || context == null) {
             title.setVisibility(View.GONE);

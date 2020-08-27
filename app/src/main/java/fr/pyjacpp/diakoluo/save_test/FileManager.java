@@ -230,10 +230,10 @@ public class FileManager {
             fileOutputStream = new FileOutputStream(tempFile);
             FileInputStream testInputStream = null;
             try {
-                testInputStream = context.openFileInput(testRemoved.getFilename());
+                testInputStream = context.openFileInput(TEST_PREFIX + testRemoved.getFilename());
                 Utils.copyStream(testInputStream, fileOutputStream);
             } catch (IOException e) {
-                Log.e("FileManager", "Can't read test file");
+                Log.e("FileManager", "Can't read/copy test file");
             } finally {
                 if (testInputStream != null) {
                     try {
@@ -549,6 +549,12 @@ public class FileManager {
             }
         }
         return result; // file empty
+    }
+
+    public static void copyTestFromFile(Context context, File testFile, String filename) throws IOException {
+        Utils.copyStream(new FileInputStream(testFile),
+                context.openFileOutput(
+                        TEST_PREFIX + filename, Context.MODE_PRIVATE));
     }
 
     /**

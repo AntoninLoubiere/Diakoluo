@@ -92,12 +92,8 @@ public class EditTestActivity extends AppCompatActivity
         title = findViewById(R.id.title);
         ImageButton navigation = findViewById(R.id.navigationIcon);
 
-        diakoluoApplication = DiakoluoApplication.get(EditTestActivity.this);
+        diakoluoApplication = DiakoluoApplication.get(this);
 
-
-        diakoluoApplication.getCurrentEditTest(
-                new DiakoluoApplication.GetTest(false,
-                        this, this));
 
         navigation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +109,10 @@ public class EditTestActivity extends AppCompatActivity
         resetButton = findViewById(R.id.resetButton);
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        diakoluoApplication.getCurrentEditTest(
+                new DiakoluoApplication.GetTest(false,
+                        this, this));
 
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.registerReceiver(new BroadcastReceiver() {

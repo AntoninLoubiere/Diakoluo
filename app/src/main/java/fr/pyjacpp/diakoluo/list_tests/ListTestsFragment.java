@@ -35,19 +35,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
-import fr.pyjacpp.diakoluo.save_test.XmlLoader;
+import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.tests.CompactTest;
-import fr.pyjacpp.diakoluo.tests.Test;
 
 
 public class ListTestsFragment extends Fragment {
@@ -145,7 +141,7 @@ public class ListTestsFragment extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                CompactTest testToDelete = listTest.get(position);
+                final CompactTest testToDelete = listTest.get(position);
                 final File testFile = diakoluoApplication.removeTestAndCache(position);
 
                 Snackbar.make(view, getString(R.string.test_deleted, testToDelete.getName()),
@@ -155,13 +151,14 @@ public class ListTestsFragment extends Fragment {
                             @Override
                             public void onClick(View view) {
                                 try {
-                                    Test testDeleted = XmlLoader.load(new FileInputStream(testFile));
-                                    if (testDeleted != null) {
-                                        listTest.add(position, new CompactTest(testDeleted));
-                                        diakoluoApplication.saveTest(testDeleted, position);
-                                        testRecyclerViewAdapter.notifyItemInserted(position);
+                                    FileManager.copyTestFromFile(requireContext(),
+                                            testFile, testToDelete.getFilename());
+                                    listTest.add(position, testToDelete);
+                                    testRecyclerViewAdapter.notifyItemInserted(position);
+                                    if (!testFile.delete()) {
+                                        Log.e(getClass().getName(), "Can't delete the cache file");
                                     }
-                                } catch (IOException | XmlPullParserException e) {
+                                } catch (IOException e) {
                                     Log.e(getClass().getName(),
                                             "can't recover the deleted test !", e);
                                 }

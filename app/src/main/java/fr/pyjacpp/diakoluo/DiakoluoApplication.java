@@ -44,6 +44,9 @@ import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.CompactTest;
 import fr.pyjacpp.diakoluo.tests.Test;
 
+/**
+ * The global context that hold importants variables.
+ */
 public class DiakoluoApplication extends Application {
     public static final String DEFAULT_TEST = "default.dkl";
     public static final int NO_CURRENT_EDIT_TEST = -2;
@@ -76,12 +79,19 @@ public class DiakoluoApplication extends Application {
     private Thread loadCurrentEditTestThread;
     private Thread loadingThread;
 
+    /**
+     * Get the instance. If the instance haven't been loaded, this method will be locked
+     *
+     * @param context the context
+     * @return the instance of the diakoluo application
+     */
     public static DiakoluoApplication get(Context context) {
         DiakoluoApplication dk = (DiakoluoApplication) context.getApplicationContext();
         if (dk.loadingThread != null) {
             try {
                 dk.loadingThread.join();
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
         return dk;
     }
@@ -121,13 +131,25 @@ public class DiakoluoApplication extends Application {
         loadingThread.start();
     }
 
+    /**
+     * Add a test to the list.
+     *
+     * @param test the test to add
+     */
     public void addTest(final Test test) {
+        CompactTest e = new CompactTest(test);
+        listTest.add(e);
         saveTest(test);
-
-        listTest.add(new CompactTest(test));
+        e.update(test); // update the filename by the filename given
         save();
     }
 
+    /**
+     * Save the current test and update compact test.
+     *
+     * @see #saveTest(Test)
+     * @see #saveTest(Test, int)
+     */
     public void saveCurrentTest() {
         if (loadCurrentTestThread != null) {
             try {
@@ -142,19 +164,32 @@ public class DiakoluoApplication extends Application {
         }
     }
 
+    /**
+     * Save a test and update the compact test attached.
+     *
+     * @param test     the test to save
+     * @param position the position of the test
+     * @see #saveCurrentTest()
+     * @see #saveTest(Test)
+     */
     public void saveTest(Test test, int position) {
-        saveTest(test);
-
         listTest.get(position).update(test);
+        saveTest(test);
         save();
     }
 
+    /**
+     * Save a test but don't update the compact test attached.
+     *
+     * @param test the test top save
+     * @see #saveCurrentTest()
+     * @see #saveTest(Test, int)
+     */
     public void saveTest(@NonNull Test test) {
         if (test.getFilename() == null) {
             FileManager.getAvailableFilename(DiakoluoApplication.this, test);
         }
         try {
-
             FileManager.saveFromPrivateFile(DiakoluoApplication.this, test);
         } catch (IOException e) {
             Log.e("DiakoluoApplication", "Can't saveFromPrivateFile test " + test.getName());
@@ -163,6 +198,9 @@ public class DiakoluoApplication extends Application {
         Log.i("DiakoluoApplication", "Test saved");
     }
 
+    /**
+     * Save all non-test data
+     */
     public void save() {
         int numberTestCreated = sharedPreferences.getInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, -1);
         Gson gson = new Gson();
@@ -191,6 +229,11 @@ public class DiakoluoApplication extends Application {
 
     // static
 
+    /**
+     * Load the filename list.
+     *
+     * @see #loadCompactsTests()
+     */
     public void loadFilenameList() {
         Gson gson = new Gson();
         String testListFilenamesJson;
@@ -211,11 +254,22 @@ public class DiakoluoApplication extends Application {
         }
     }
 
+    /**
+     * Load a complete test from his position.
+     *
+     * @param position the position of the test to load
+     * @return the test loaded or null if can't load the test
+     */
     @Nullable
     public Test loadCompleteTest(int position) {
         return FileManager.loadFromPrivateFile(this, listTestFilename.get(position));
     }
 
+    /**
+     * Load all compact tests. List of filenames must be loaded.
+     *
+     * @see #loadFilenameList()
+     */
     public void loadCompactsTests() {
         for (String filename : listTestFilename) {
             Test e = FileManager.loadFromPrivateFile(this, filename);
@@ -226,16 +280,34 @@ public class DiakoluoApplication extends Application {
         Log.i("DiakoluoApplication", "Test loaded");
     }
 
+    /**
+     * Remove a test from the position.
+     *
+     * @param position the position to load
+     */
     public void removeTest(int position) {
         CompactTest testRemoved = listTest.remove(position);
         FileManager.delete(this, testRemoved);
     }
 
+    /**
+     * Remove a test and add to cache the file delete to recover if necessary.
+     *
+     * @param position the position to load
+     * @return the cache file of the test
+     */
     public File removeTestAndCache(int position) {
         CompactTest testRemoved = listTest.remove(position);
         return FileManager.deleteAndCache(this, testRemoved);
     }
 
+    /**
+     * Set the current test (and load it asynchronously).
+     *
+     * @param position the position of the test to load
+     * @see #setCurrentEditTest(int)
+     * @see #getCurrentTest(GetTest)
+     */
     public void setCurrentTest(int position) {
         if (position != currentTestIndex) {
             if (loadCurrentTestThread != null) loadCurrentTestThread.interrupt();
@@ -258,6 +330,13 @@ public class DiakoluoApplication extends Application {
         }
     }
 
+    /**
+     * Get the current test.
+     *
+     * @param runnable the runnable which is executed when test is gotten.
+     * @see #getCurrentEditTest(GetTest)
+     * @see #setCurrentTest(int)
+     */
     public void getCurrentTest(final GetTest runnable) {
         if (loadCurrentTestThread != null) {
             new Thread(new Runnable() {
@@ -284,23 +363,49 @@ public class DiakoluoApplication extends Application {
         }
     }
 
+    /**
+     * Get the list of compact test.
+     *
+     * @return the list of compact test.
+     */
     public ArrayList<CompactTest> getListTest() {
         return listTest;
     }
 
+    /**
+     * Get the number of test.
+     *
+     * @return the number of test
+     */
     public int getNumberTest() {
         return listTest.size();
     }
 
+    /**
+     * Get the test context (in testActivities).
+     *
+     * @return the test context of a test
+     */
     @Nullable
     public TestTestContext getTestTestContext() {
         return testTestContext;
     }
 
+    /**
+     * Set the test context of a test (in testActivities).
+     *
+     * @param testTestContext the test context of a test
+     */
     public void setTestTestContext(@Nullable TestTestContext testTestContext) {
         this.testTestContext = testTestContext;
     }
 
+    /**
+     * Get the current edit test.
+     *
+     * @param runnable the runnable which is executed when test is gotten.
+     * @see #getCurrentTest(GetTest)
+     */
     public void getCurrentEditTest(final GetTest runnable) {
         if (loadCurrentEditTestThread != null) {
             new Thread(new Runnable() {
@@ -327,7 +432,11 @@ public class DiakoluoApplication extends Application {
         }
     }
 
+    /**
+     * Apply a currentEditTest.
+     */
     public void applyCurrentEditTest() {
+        // FIXME send local broadcast instead of global variable
         if (loadCurrentEditTestThread != null) {
             try {
                 loadCurrentEditTestThread.join();
@@ -357,6 +466,16 @@ public class DiakoluoApplication extends Application {
         }
     }
 
+    /**
+     * Set the current edit test.
+     *
+     * @param position the position of the current edit test, could be also
+     *                 {@link #NEW_CURRENT_EDIT_TEST} or {@link #NO_CURRENT_EDIT_TEST}
+     * @see #getCurrentEditTest(GetTest)
+     * @see #setCurrentTest(int)
+     * @see #NO_CURRENT_EDIT_TEST
+     * @see #NEW_CURRENT_EDIT_TEST
+     */
     public void setCurrentEditTest(int position) {
         if (loadCurrentEditTestThread != null) loadCurrentEditTestThread.interrupt();
         currentEditTestIndex = position;
@@ -382,27 +501,57 @@ public class DiakoluoApplication extends Application {
         }
     }
 
+    /**
+     * Get the import context.
+     *
+     * @return the import context
+     */
     @Nullable
     public FileManager.ImportContext getCurrentImportContext() {
         return currentImportContext;
     }
 
+    /**
+     * Set the current import context.
+     *
+     * @param currentImportTest the import context to set
+     */
     public void setCurrentImportContext(@Nullable FileManager.ImportContext currentImportTest) {
         this.currentImportContext = currentImportTest;
     }
 
+    /**
+     * Get the current edit test index.
+     *
+     * @return the current edit test index
+     */
     public int getCurrentEditTestIndex() {
         return currentEditTestIndex;
     }
 
+    /**
+     * Get recycler change of the test list.
+     *
+     * @return the recycler change of the test list
+     */
     public RecyclerViewChange getTestListChanged() {
         return testListChanged;
     }
 
+    /**
+     * Set the recycler test change of the test list.
+     *
+     * @param testListChanged the recycler test list
+     */
     public void setTestListChanged(RecyclerViewChange testListChanged) {
         this.testListChanged = testListChanged;
     }
 
+    /**
+     * Get if analytics is enable.
+     *
+     * @return if analytics is enable
+     */
     public boolean getAnalyticsEnable() {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
@@ -413,6 +562,11 @@ public class DiakoluoApplication extends Application {
         }
     }
 
+    /**
+     * Set if analytic is enable.
+     *
+     * @param b if enable analytic
+     */
     public void setAnalyticsEnable(boolean b) {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
@@ -424,6 +578,11 @@ public class DiakoluoApplication extends Application {
         firebaseAnalytics.setAnalyticsCollectionEnabled(b);
     }
 
+    /**
+     * Get if crashlytics is enable.
+     *
+     * @return if crashlytics is enable
+     */
     public boolean getCrashlyticsEnable() {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
@@ -434,6 +593,11 @@ public class DiakoluoApplication extends Application {
         }
     }
 
+    /**
+     * set if crashlytics is enable.
+     *
+     * @param b if crashlytics is enable
+     */
     public void setCrashlyticsEnable(boolean b) {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
@@ -445,12 +609,22 @@ public class DiakoluoApplication extends Application {
         firebaseCrashlytics.setCrashlyticsCollectionEnabled(b);
     }
 
+    /**
+     * Get if analytics has been set.
+     *
+     * @return if analytics has been set
+     */
     public boolean getAnalyticsSet() {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
         return (i & ANALYTICS_SET) == ANALYTICS_SET;
     }
 
+    /**
+     * Set if analytics has been set.
+     *
+     * @param b if analytics has been set
+     */
     public void setAnalyticsSet(boolean b) {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
@@ -459,14 +633,37 @@ public class DiakoluoApplication extends Application {
         sharedPreferences.edit().putInt(ANALYTICS_ENABLE, set_i).apply();
     }
 
+    /**
+     * A runnable that hold actions when get a test.
+     *
+     * @see GetTest
+     */
     public interface GetTestRunnable {
+        /**
+         * If a thread is currently loading a test.
+         */
         void loadingInProgress();
 
+        /**
+         * if an error occur (or a cancel).
+         *
+         * @param canceled if the error is due to a cancel
+         */
         void error(boolean canceled);
 
+        /**
+         * If it is a success.
+         *
+         * @param test the test gotten
+         */
         void success(@NonNull Test test);
     }
 
+    /**
+     * A class that get a test.
+     *
+     * @see GetTestRunnable
+     */
     public static class GetTest {
         private boolean asyncOnly;
         private LoadingDialogFragment loadingDialogFragment = null;
@@ -474,15 +671,36 @@ public class DiakoluoApplication extends Application {
         private boolean cancelable;
         private GetTestRunnable runnable;
 
+        /**
+         * Get a test with no loading popup.
+         *
+         * @param asyncOnly if the thread is async only
+         * @param runnable  the runnable to send results
+         */
         public GetTest(boolean asyncOnly, GetTestRunnable runnable) {
             this(asyncOnly, null, false, runnable);
         }
 
+        /**
+         * Get a test with a loading popup.
+         *
+         * @param asyncOnly         if the thread is async only
+         * @param appCompatActivity the activity that will hold the popup
+         * @param runnable          the runnable to send results
+         */
         public GetTest(boolean asyncOnly, AppCompatActivity appCompatActivity,
                        GetTestRunnable runnable) {
             this(asyncOnly, appCompatActivity, true, runnable);
         }
 
+        /**
+         * Get a test with a loading popup.
+         *
+         * @param asyncOnly         if the thread is async only
+         * @param appCompatActivity the activity that will hold the popup
+         * @param cancelable        if the popup is cancelable
+         * @param runnable          the runnable to send results
+         */
         public GetTest(boolean asyncOnly,
                        AppCompatActivity appCompatActivity,
                        boolean cancelable, GetTestRunnable runnable) {
@@ -492,6 +710,11 @@ public class DiakoluoApplication extends Application {
             this.runnable = runnable;
         }
 
+        /**
+         * Send an error response.
+         *
+         * @param inThread if the function is call in a worker thread (not the ui thread)
+         */
         private void privateError(boolean inThread) {
             final boolean canceled;
 
@@ -518,6 +741,12 @@ public class DiakoluoApplication extends Application {
             }
         }
 
+        /**
+         * Send a success response.
+         *
+         * @param test     the test loaded
+         * @param inThread if the function is call in a worker thread (not the ui thread)
+         */
         private void privateSuccess(final Test test, boolean inThread) {
             if (loadingDialogFragment != null) {
                 if (loadingDialogFragment.hasBeenCancel()) {
@@ -539,6 +768,9 @@ public class DiakoluoApplication extends Application {
             }
         }
 
+        /**
+         * Send aa loading in progress or show a popup.
+         */
         private void privateLoadingInProgress() {
             if (appCompatActivity == null) {
                 runnable.loadingInProgress();

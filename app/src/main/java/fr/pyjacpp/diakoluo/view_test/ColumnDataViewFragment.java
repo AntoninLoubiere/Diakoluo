@@ -96,7 +96,7 @@ public class ColumnDataViewFragment extends Fragment {
                         descriptionEditText.setText(column.getDescription());
                         columnTypeTextView.setText(column.getInputType().name());
 
-                        column.getViewColumnSettings(inflater, columnSettingsParent); // FIXME
+                        column.getViewColumnSettings(inflater, columnSettingsParent); // FIXME  handle in handler
 
                         inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
                             @Override

@@ -124,7 +124,8 @@ public class AnswerDataViewFragment extends Fragment implements DiakoluoApplicat
 
     @Override
     public void success(@NonNull Test test) {
-        // FIXME
+        // TODO handle in handler
+
         DataRow row = test.getListRow().get(answerIndex);
 
         LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
