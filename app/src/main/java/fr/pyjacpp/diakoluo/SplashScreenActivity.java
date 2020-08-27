@@ -41,6 +41,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    // if the DiakoluoApplication haven't been loaded, #get will be blocked
                     if (DiakoluoApplication.get(SplashScreenActivity.this).getAnalyticsSet())
                         startActivity(
                                 new Intent(SplashScreenActivity.this, ListTestActivity.class)

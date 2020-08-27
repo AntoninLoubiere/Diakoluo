@@ -74,37 +74,51 @@ public class DiakoluoApplication extends Application {
     private ArrayList<String> listTestFilename;
     private Thread loadCurrentTestThread;
     private Thread loadCurrentEditTestThread;
+    private Thread loadingThread;
 
     public static DiakoluoApplication get(Context context) {
-        return (DiakoluoApplication) context.getApplicationContext();
+        DiakoluoApplication dk = (DiakoluoApplication) context.getApplicationContext();
+        if (dk.loadingThread != null) {
+            try {
+                dk.loadingThread.join();
+            } catch (InterruptedException ignored) {}
+        }
+        return dk;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        loadingThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sharedPreferences = getSharedPreferences(GLOBAL_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
-        sharedPreferences = getSharedPreferences(GLOBAL_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+                listTest = new ArrayList<>();
 
-        listTest = new ArrayList<>();
+                loadFilenameList();
 
-        loadFilenameList();
+                if (listTestFilename == null) {
+                    try {
+                        Test test = FileManager.loadFromAsset(DiakoluoApplication.this, DEFAULT_TEST);
+                        test.setFilename(null);
+                        addTest(test);
+                    } catch (IOException | XmlPullParserException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-        if (listTestFilename == null) {
-            try {
-                Test test = FileManager.loadFromAsset(this, DEFAULT_TEST);
-                test.setFilename(null);
-                addTest(test);
-            } catch (IOException | XmlPullParserException e) {
-                e.printStackTrace();
+                FirebaseCrashlytics firebaseCrashlytics = FirebaseCrashlytics.getInstance();
+                FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(DiakoluoApplication.this);
+                firebaseAnalytics.setAnalyticsCollectionEnabled(getAnalyticsEnable());
+                firebaseCrashlytics.setCrashlyticsCollectionEnabled(getCrashlyticsEnable());
+
+                loadCompactsTests();
+                loadingThread = null;
             }
-        }
+        });
 
-        FirebaseCrashlytics firebaseCrashlytics = FirebaseCrashlytics.getInstance();
-        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        firebaseAnalytics.setAnalyticsCollectionEnabled(getAnalyticsEnable());
-        firebaseCrashlytics.setCrashlyticsCollectionEnabled(getCrashlyticsEnable());
-
-        loadCompactsTests();
+        loadingThread.start();
     }
 
     public void addTest(final Test test) {
