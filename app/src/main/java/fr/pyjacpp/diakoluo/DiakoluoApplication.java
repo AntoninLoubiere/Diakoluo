@@ -24,42 +24,60 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
+import fr.pyjacpp.diakoluo.tests.CompactTest;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 public class DiakoluoApplication extends Application {
+    public static final String DEFAULT_TEST = "default.dkl";
+    public static final int NO_CURRENT_EDIT_TEST = -2;
+    public static final int NEW_CURRENT_EDIT_TEST = -1;
     private static final String GLOBAL_SHARED_PREFERENCES = "diakoluo";
     private static final String PREFERENCES_LIST_TEST_FILENAMES = "testFilenames";
     private static final String PREFERENCES_NUMBER_TEST_CREATED_FILENAMES = "numberTestCreated";
-    public static final String DEFAULT_TEST = "default.dkl";
     private static final String USER_PROPERTY_NUMBER_TEST_CREATED = "number_test";
-
     private static final String ANALYTICS_ENABLE = "analytics";
     private static final int ANALYTIC = 1 << 1;
     private static final int CRASHLYTICS = 1 << 2;
     private static final int ANALYTICS_SET = 1;
-
-    private ArrayList<Test> listTest;
+    private ArrayList<CompactTest> listTest;
+    @Nullable
     private Test currentTest = null;
+    @Nullable
     private Test currentEditTest = null;
+    @Nullable
     private FileManager.ImportContext currentImportContext = null;
-    private TestTestContext testTestContext;
-    private Integer currentIndexEditTest;
-    
+    @Nullable
+    private TestTestContext testTestContext = null;
+    private int currentEditTestIndex = -1;
+    private int currentTestIndex = -1;
+
     private RecyclerViewChange testListChanged;
 
     private SharedPreferences sharedPreferences;
+    private ArrayList<String> listTestFilename;
+    private Thread loadCurrentTestThread;
+    private Thread loadCurrentEditTestThread;
+
+    public static DiakoluoApplication get(Context context) {
+        return (DiakoluoApplication) context.getApplicationContext();
+    }
 
     @Override
     public void onCreate() {
@@ -69,14 +87,13 @@ public class DiakoluoApplication extends Application {
 
         listTest = new ArrayList<>();
 
-        Set<String> listTestFilename = sharedPreferences.getStringSet(PREFERENCES_LIST_TEST_FILENAMES,
-                null);
+        loadFilenameList();
+
         if (listTestFilename == null) {
             try {
                 Test test = FileManager.loadFromAsset(this, DEFAULT_TEST);
                 test.setFilename(null);
-                listTest.add(test);
-                saveTest();
+                addTest(test);
             } catch (IOException | XmlPullParserException e) {
                 e.printStackTrace();
             }
@@ -87,142 +104,292 @@ public class DiakoluoApplication extends Application {
         firebaseAnalytics.setAnalyticsCollectionEnabled(getAnalyticsEnable());
         firebaseCrashlytics.setCrashlyticsCollectionEnabled(getCrashlyticsEnable());
 
-        loadTest();
+        loadCompactsTests();
     }
 
-    private void saveTest() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int numberTestCreated = sharedPreferences.getInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, -1);
+    public void addTest(final Test test) {
+        saveTest(test);
 
-                Set<String> listTestFilename = new HashSet<>();
+        listTest.add(new CompactTest(test));
+        save();
+    }
 
-                for (Test test : listTest) {
-                    if (test.getFilename() == null) {
-                        FileManager.getAvailableFilename(DiakoluoApplication.this, test);
-                    }
-                    try {
-                        FileManager.saveFromPrivateFile(DiakoluoApplication.this, test);
-                        listTestFilename.add(test.getFilename());
-                    } catch (IOException e) {
-                        Log.e("DiakoluoApplication", "Can't saveFromPrivateFile test " + test.getName());
-                        e.printStackTrace();
-                    }
-                }
-
-                if (listTestFilename.size() != numberTestCreated) {
-                    FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(DiakoluoApplication.this);
-                    firebaseAnalytics.setUserProperty(USER_PROPERTY_NUMBER_TEST_CREATED,
-                            String.valueOf(listTestFilename.size()));
-                }
-
-                sharedPreferences
-                        .edit()
-                        .putStringSet(PREFERENCES_LIST_TEST_FILENAMES, listTestFilename)
-                        .putInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, listTestFilename.size())
-                        .apply();
-                Log.i("DiakoluoApplication", "Test saved");
+    public void saveCurrentTest() {
+        if (loadCurrentTestThread != null) {
+            try {
+                loadCurrentTestThread.join();
+            } catch (InterruptedException e) {
+                return;
             }
-        }).start();
-
-    }
-
-    private void loadTest() {
-        Set<String> listTestFilename = sharedPreferences.getStringSet(PREFERENCES_LIST_TEST_FILENAMES,
-                new HashSet<String>());
-
-        listTest.clear();
-
-        if (listTestFilename == null) {
-            listTestFilename = new HashSet<>();
         }
 
+        if (currentTest != null) {
+            saveTest(currentTest, currentTestIndex);
+        }
+    }
+
+    public void saveTest(Test test, int position) {
+        saveTest(test);
+
+        listTest.get(position).update(test);
+        save();
+    }
+
+    public void saveTest(@NonNull Test test) {
+        if (test.getFilename() == null) {
+            FileManager.getAvailableFilename(DiakoluoApplication.this, test);
+        }
+        try {
+
+            FileManager.saveFromPrivateFile(DiakoluoApplication.this, test);
+        } catch (IOException e) {
+            Log.e("DiakoluoApplication", "Can't saveFromPrivateFile test " + test.getName());
+            e.printStackTrace();
+        }
+        Log.i("DiakoluoApplication", "Test saved");
+    }
+
+    public void save() {
+        int numberTestCreated = sharedPreferences.getInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, -1);
+        Gson gson = new Gson();
+
+        ArrayList<String> listTestFilename = new ArrayList<>();
+
+
+        for (CompactTest compactTest : listTest) {
+            listTestFilename.add(compactTest.getFilename());
+        }
+
+        if (listTestFilename.size() != numberTestCreated) {
+            FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(DiakoluoApplication.this);
+            firebaseAnalytics.setUserProperty(USER_PROPERTY_NUMBER_TEST_CREATED,
+                    String.valueOf(listTestFilename.size()));
+        }
+
+        String s1 = gson.toJson(listTestFilename);
+
+        sharedPreferences
+                .edit()
+                .putString(PREFERENCES_LIST_TEST_FILENAMES, s1)
+                .putInt(PREFERENCES_NUMBER_TEST_CREATED_FILENAMES, listTestFilename.size())
+                .apply();
+    }
+
+    // static
+
+    public void loadFilenameList() {
+        Gson gson = new Gson();
+        String testListFilenamesJson;
+        try {
+            testListFilenamesJson = sharedPreferences.getString(PREFERENCES_LIST_TEST_FILENAMES, null);
+        } catch (ClassCastException e) {
+            // backward compatibility
+            Log.e(getClass().getName(), "BackWard compatibility");
+            testListFilenamesJson = null;
+        }
+        listTestFilename = null;
+        if (testListFilenamesJson != null) listTestFilename = gson.fromJson(testListFilenamesJson,
+                new TypeToken<ArrayList<String>>() {
+                }.getType());
+
+        if (listTestFilename == null) {
+            listTestFilename = FileManager.getListFilenameTest(this);
+        }
+    }
+
+    @Nullable
+    public Test loadCompleteTest(int position) {
+        return FileManager.loadFromPrivateFile(this, listTestFilename.get(position));
+    }
+
+    public void loadCompactsTests() {
         for (String filename : listTestFilename) {
-            try {
-                Test e = FileManager.loadFromPrivateFile(this, filename);
-                if (e != null)
-                    listTest.add(e);
-            } catch (IOException | XmlPullParserException e){
-                Log.e("DiakoluoApplication", "Can't load test " + filename);
-                e.printStackTrace();
-            }
+            Test e = FileManager.loadFromPrivateFile(this, filename);
+            if (e != null)
+                listTest.add(new CompactTest(e));
         }
 
         Log.i("DiakoluoApplication", "Test loaded");
     }
 
-    private void removeTest(int position) {
-        Test testRemoved = listTest.remove(position);
+    public void removeTest(int position) {
+        CompactTest testRemoved = listTest.remove(position);
         FileManager.delete(this, testRemoved);
-
-        saveTest();
     }
 
-    private void setCurrentTest(Test currentTest) {
-        this.currentTest = currentTest;
+    public File removeTestAndCache(int position) {
+        CompactTest testRemoved = listTest.remove(position);
+        return FileManager.deleteAndCache(this, testRemoved);
     }
 
-    /*private void setCurrentTest(int currentTest) {
-        this.currentTest = getListTest().get(currentTest);
-    }*/
+    public void setCurrentTest(int position) {
+        if (position != currentTestIndex) {
+            if (loadCurrentTestThread != null) loadCurrentTestThread.interrupt();
+            currentTestIndex = position;
+            currentTest = null;
 
-    private Test getCurrentTest() {
-        return currentTest;
+            if (position >= 0) {
+                loadCurrentTestThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        currentTest = loadCompleteTest(currentTestIndex);
+                        if (currentTest == null) {
+                            currentTestIndex = -1;
+                        }
+                        loadCurrentTestThread = null;
+                    }
+                });
+                loadCurrentTestThread.start();
+            }
+        }
     }
 
-    public ArrayList<Test> getListTest() {
+    public void getCurrentTest(final GetTest runnable) {
+        if (loadCurrentTestThread != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        runnable.privateLoadingInProgress();
+                        loadCurrentTestThread.join();
+                    } catch (InterruptedException ignored) {
+                        runnable.privateError(true);
+                        return;
+                    }
+                    if (currentTest == null) {
+                        runnable.privateError(true);
+                    } else {
+                        runnable.privateSuccess(currentTest, true);
+                    }
+                }
+            }).start();
+        } else if (currentTest == null) {
+            runnable.privateError(false);
+        } else {
+            runnable.privateSuccess(currentTest, false);
+        }
+    }
+
+    public ArrayList<CompactTest> getListTest() {
         return listTest;
     }
 
-    private TestTestContext getTestTestContext() {
+    public int getNumberTest() {
+        return listTest.size();
+    }
+
+    @Nullable
+    public TestTestContext getTestTestContext() {
         return testTestContext;
     }
 
-    private void setTestTestContext(TestTestContext testTestContext) {
+    public void setTestTestContext(@Nullable TestTestContext testTestContext) {
         this.testTestContext = testTestContext;
     }
 
-    private Test getCurrentEditTest() {
-        return currentEditTest;
+    public void getCurrentEditTest(final GetTest runnable) {
+        if (loadCurrentEditTestThread != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        runnable.privateLoadingInProgress();
+                        loadCurrentEditTestThread.join();
+                    } catch (InterruptedException ignored) {
+                        runnable.privateError(true);
+                        return;
+                    }
+                    if (currentEditTest == null) {
+                        runnable.privateError(true);
+                    } else {
+                        runnable.privateSuccess(currentEditTest, true);
+                    }
+                }
+            }).start();
+        } else if (currentEditTest == null) {
+            runnable.privateError(false);
+        } else {
+            runnable.privateSuccess(currentEditTest, false);
+        }
     }
 
-    private void setCurrentEditTest(Test currentEditTest) {
-        this.currentEditTest = currentEditTest;
-        currentIndexEditTest = null;
+    public void applyCurrentEditTest() {
+        if (loadCurrentEditTestThread != null) {
+            try {
+                loadCurrentEditTestThread.join();
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+
+        if (currentEditTestIndex == NEW_CURRENT_EDIT_TEST && currentEditTest != null) {
+            addTest(currentEditTest);
+            setCurrentEditTest(NO_CURRENT_EDIT_TEST);
+            RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
+                    RecyclerViewChange.ItemInserted
+            );
+            recyclerViewChange.setPosition(listTest.size() - 1);
+            setTestListChanged(recyclerViewChange);
+        } else if (currentEditTestIndex >= 0 && currentEditTest != null) {
+            saveTest(currentEditTest, currentEditTestIndex);
+            currentEditTest.registerModificationDate();
+
+            setCurrentEditTest(NO_CURRENT_EDIT_TEST);
+            RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
+                    RecyclerViewChange.ItemChanged
+            );
+            recyclerViewChange.setPosition(currentEditTestIndex);
+            setTestListChanged(recyclerViewChange);
+        }
     }
 
+    public void setCurrentEditTest(int position) {
+        if (loadCurrentEditTestThread != null) loadCurrentEditTestThread.interrupt();
+        currentEditTestIndex = position;
+        currentEditTest = null;
+
+        if (position >= 0 | position == NEW_CURRENT_EDIT_TEST) {
+            loadCurrentEditTestThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (currentTestIndex == NEW_CURRENT_EDIT_TEST) {
+                        currentEditTest = new Test(getString(R.string.test_default_name),
+                                getString(R.string.test_default_description));
+                    } else {
+                        currentEditTest = loadCompleteTest(currentTestIndex);
+                    }
+                    if (currentEditTest == null) {
+                        currentEditTestIndex = NO_CURRENT_EDIT_TEST;
+                    }
+                    loadCurrentEditTestThread = null;
+                }
+            });
+            loadCurrentEditTestThread.start();
+        }
+    }
+
+    @Nullable
     public FileManager.ImportContext getCurrentImportContext() {
         return currentImportContext;
     }
 
-    public void setCurrentImportContext(FileManager.ImportContext currentImportTest) {
+    public void setCurrentImportContext(@Nullable FileManager.ImportContext currentImportTest) {
         this.currentImportContext = currentImportTest;
     }
 
-    private Integer getCurrentIndexEditTest() {
-        return currentIndexEditTest;
+    public int getCurrentEditTestIndex() {
+        return currentEditTestIndex;
     }
 
-    private void setCurrentIndexEditTest(Integer currentIndexEditTest) {
-        if (currentIndexEditTest == null) {
-            currentEditTest = null;
-            this.currentIndexEditTest = null;
-        } else {
-            currentEditTest = new Test(listTest.get(currentIndexEditTest));
-            this.currentIndexEditTest = currentIndexEditTest;
-        }
-    }
-
-    private RecyclerViewChange getTestListChanged() {
+    public RecyclerViewChange getTestListChanged() {
         return testListChanged;
     }
 
-    private void setTestListChanged(RecyclerViewChange testListChanged) {
+    public void setTestListChanged(RecyclerViewChange testListChanged) {
         this.testListChanged = testListChanged;
     }
 
-    private boolean getAnalyticsEnable() {
+    public boolean getAnalyticsEnable() {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
         if ((i & ANALYTICS_SET) == 0) {
@@ -232,23 +399,7 @@ public class DiakoluoApplication extends Application {
         }
     }
 
-    private boolean getCrashlyticsEnable() {
-        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
-
-        if ((i & ANALYTICS_SET) == 0) {
-            return false;
-        } else {
-            return (i & CRASHLYTICS) == CRASHLYTICS;
-        }
-    }
-
-    private boolean getAnalyticsSet() {
-        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
-
-        return (i & ANALYTICS_SET) == ANALYTICS_SET;
-    }
-
-    private void setAnalyticsEnable(boolean b) {
+    public void setAnalyticsEnable(boolean b) {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
         int set_i = b ? i | ANALYTIC : i & (~ANALYTIC);
@@ -259,7 +410,17 @@ public class DiakoluoApplication extends Application {
         firebaseAnalytics.setAnalyticsCollectionEnabled(b);
     }
 
-    private void setCrashlyticsEnable(boolean b) {
+    public boolean getCrashlyticsEnable() {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        if ((i & ANALYTICS_SET) == 0) {
+            return false;
+        } else {
+            return (i & CRASHLYTICS) == CRASHLYTICS;
+        }
+    }
+
+    public void setCrashlyticsEnable(boolean b) {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
         int set_i = b ? i | CRASHLYTICS : i & (~CRASHLYTICS);
@@ -270,7 +431,13 @@ public class DiakoluoApplication extends Application {
         firebaseCrashlytics.setCrashlyticsCollectionEnabled(b);
     }
 
-    private void setAnalyticsSet(boolean b) {
+    public boolean getAnalyticsSet() {
+        int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
+
+        return (i & ANALYTICS_SET) == ANALYTICS_SET;
+    }
+
+    public void setAnalyticsSet(boolean b) {
         int i = sharedPreferences.getInt(ANALYTICS_ENABLE, 0);  // -1: not enable, 0 not set, 1: enable
 
         int set_i = b ? i | ANALYTICS_SET : i & (~ANALYTICS_SET);
@@ -278,94 +445,93 @@ public class DiakoluoApplication extends Application {
         sharedPreferences.edit().putInt(ANALYTICS_ENABLE, set_i).apply();
     }
 
-    // static
+    public interface GetTestRunnable {
+        void loadingInProgress();
 
-    public static DiakoluoApplication getDiakoluoApplication(Context context) {
-        return  (DiakoluoApplication) context.getApplicationContext();
+        void error(boolean canceled);
+
+        void success(@NonNull Test test);
     }
 
-    public static void setCurrentTest(Context context, Test currentTest) {
-        ((DiakoluoApplication) context.getApplicationContext()).setCurrentTest(currentTest);
-    }
+    public static class GetTest {
+        private boolean asyncOnly;
+        private LoadingDialogFragment loadingDialogFragment = null;
+        private AppCompatActivity appCompatActivity;
+        private boolean cancelable;
+        private GetTestRunnable runnable;
 
-    public static Test getCurrentTest(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentTest();
-    }
+        public GetTest(boolean asyncOnly, GetTestRunnable runnable) {
+            this(asyncOnly, null, false, runnable);
+        }
 
-    public static ArrayList<Test> getListTest(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getListTest();
-    }
+        public GetTest(boolean asyncOnly, AppCompatActivity appCompatActivity,
+                       GetTestRunnable runnable) {
+            this(asyncOnly, appCompatActivity, true, runnable);
+        }
 
-    public static TestTestContext getTestTestContext(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getTestTestContext();
-    }
+        public GetTest(boolean asyncOnly,
+                       AppCompatActivity appCompatActivity,
+                       boolean cancelable, GetTestRunnable runnable) {
+            this.asyncOnly = asyncOnly;
+            this.appCompatActivity = appCompatActivity;
+            this.cancelable = cancelable;
+            this.runnable = runnable;
+        }
 
-    public static void setTestTestContext(Context context,TestTestContext testTestContext) {
-        ((DiakoluoApplication) context.getApplicationContext()).setTestTestContext(testTestContext);
-    }
+        private void privateError(boolean inThread) {
+            final boolean canceled;
 
-    public static Test getCurrentEditTest(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentEditTest();
-    }
+            if (loadingDialogFragment != null) {
+                if (loadingDialogFragment.hasBeenCancel()) {
+                    canceled = true;
+                } else {
+                    canceled = false;
+                    loadingDialogFragment.dismiss();
+                }
+            } else {
+                canceled = false;
+            }
 
-    public static void setCurrentEditTest(Context context, Test currentEditTest) {
-        ((DiakoluoApplication) context.getApplicationContext()).setCurrentEditTest(currentEditTest);
-    }
+            if (!inThread && asyncOnly) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runnable.error(canceled);
+                    }
+                }).start();
+            } else {
+                runnable.error(canceled);
+            }
+        }
 
-    public static FileManager.ImportContext getCurrentImportContext(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentImportContext();
-    }
+        private void privateSuccess(final Test test, boolean inThread) {
+            if (loadingDialogFragment != null) {
+                if (loadingDialogFragment.hasBeenCancel()) {
+                    privateError(inThread);
+                    return;
+                } else {
+                    loadingDialogFragment.dismiss();
+                }
+            }
+            if (!inThread && asyncOnly) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runnable.success(test);
+                    }
+                }).start();
+            } else {
+                runnable.success(test);
+            }
+        }
 
-    public static void setCurrentImportContext(Context context, FileManager.ImportContext currentEditTest) {
-        ((DiakoluoApplication) context.getApplicationContext()).setCurrentImportContext(currentEditTest);
+        private void privateLoadingInProgress() {
+            if (appCompatActivity == null) {
+                runnable.loadingInProgress();
+            } else {
+                loadingDialogFragment = new LoadingDialogFragment(cancelable);
+                loadingDialogFragment.show(appCompatActivity.getSupportFragmentManager(), null);
+            }
+        }
     }
-
-    public static Integer getCurrentIndexEditTest(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getCurrentIndexEditTest();
-    }
-
-    public static void setCurrentIndexEditTest(Context context, Integer currentIndexEditTest) {
-        ((DiakoluoApplication) context.getApplicationContext()).setCurrentIndexEditTest(currentIndexEditTest);
-    }
-
-    public static void setTestListChanged(Context context, RecyclerViewChange setTestListChanged) {
-        ((DiakoluoApplication) context.getApplicationContext()).setTestListChanged(setTestListChanged);
-    }
-
-    public static RecyclerViewChange getTestListChanged(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getTestListChanged();
-    }
-
-    public static void saveTest(Context context) {
-        ((DiakoluoApplication) context.getApplicationContext()).saveTest();
-    }
-
-    public static void removeTest(Context context, int position) {
-        ((DiakoluoApplication) context.getApplicationContext()).removeTest(position);
-    }
-
-    public static boolean getAnalyticsEnable(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getAnalyticsEnable();
-    }
-
-    public static boolean getCrashlyticsEnable(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getCrashlyticsEnable();
-    }
-
-    public static boolean getAnalyticsSet(Context context) {
-        return ((DiakoluoApplication) context.getApplicationContext()).getAnalyticsSet();
-    }
-
-    public static void setAnalyticsEnable(Context context, boolean b) {
-        ((DiakoluoApplication) context.getApplicationContext()).setAnalyticsEnable(b);
-    }
-
-    public static void setCrashlyticsEnable(Context context, boolean b) {
-        ((DiakoluoApplication) context.getApplicationContext()).setCrashlyticsEnable(b);
-    }
-
-    public static void setAnalyticsSet(Context context, boolean b) {
-        ((DiakoluoApplication) context.getApplicationContext()).setAnalyticsSet(b);
-    }
-
 }

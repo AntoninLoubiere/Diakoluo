@@ -22,6 +22,8 @@ package fr.pyjacpp.diakoluo.edit_test;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -33,6 +35,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
@@ -43,11 +47,17 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.Utils;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-public class MainInformationEditTestFragment extends Fragment {
+public class MainInformationEditTestFragment extends Fragment implements DiakoluoApplication.GetTestRunnable {
     private OnFragmentInteractionListener mListener;
     private View inflatedView;
     private TextView numberTestDid;
-    private Test currentEditTest;
+    @Nullable private Test currentEditTest;
+    private EditText title;
+    private DateFormat dateFormat;
+    private DateFormat timeFormat;
+    private EditText description;
+    private TextView createdDate;
+    private TextView lastModification;
 
     public MainInformationEditTestFragment() {
         // Required empty public constructor
@@ -61,17 +71,93 @@ public class MainInformationEditTestFragment extends Fragment {
 
         inflatedView.findViewById(R.id.titleTextView);
 
-        DateFormat dateFormat = android.text.format.DateFormat.getLongDateFormat(container.getContext().getApplicationContext());
-        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(container.getContext().getApplicationContext());
+        dateFormat = android.text.format.DateFormat.getLongDateFormat(container.getContext().getApplicationContext());
+        timeFormat = android.text.format.DateFormat.getTimeFormat(container.getContext().getApplicationContext());
 
 
-        EditText title = inflatedView.findViewById(R.id.titleEditText);
-        EditText description = inflatedView.findViewById(R.id.descriptionEditText);
-        TextView createdDate = inflatedView.findViewById(R.id.createdDateTextView);
-        TextView lastModification = inflatedView.findViewById(R.id.lastModificationTextView);
+        title = inflatedView.findViewById(R.id.titleEditText);
+        description = inflatedView.findViewById(R.id.descriptionEditText);
+        createdDate = inflatedView.findViewById(R.id.createdDateTextView);
+        lastModification = inflatedView.findViewById(R.id.lastModificationTextView);
         numberTestDid = inflatedView.findViewById(R.id.numberTestDid);
 
-        currentEditTest = DiakoluoApplication.getCurrentEditTest(container.getContext());
+        DiakoluoApplication.get(container.getContext()).getCurrentEditTest(
+                new DiakoluoApplication.GetTest(
+                        true, (AppCompatActivity) getActivity(), false, this));
+
+        return inflatedView;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getFromTestVar();
+    }
+
+    private void getFromTestVar() {
+        if (currentEditTest != null) {
+            Spinner scoreMethod = inflatedView.findViewById(R.id.scoreMethodSpinner);
+            scoreMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                TextView helperSpinnerText = inflatedView.findViewById(R.id.spinnerHelperText);
+
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    helperSpinnerText.setText(
+                            getResources().getStringArray(R.array.score_method_helper_text)[i]
+                    );
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                }
+            });
+
+            title.setText(currentEditTest.getName());
+            description.setText(currentEditTest.getDescription());
+            scoreMethod.setSelection(currentEditTest.getScoreMethod() ? 0 : 1);
+        }
+    }
+
+    public void updateTestDid() {
+        if (currentEditTest != null) {
+            numberTestDid.setText(
+                    String.format(
+                            getString(R.string.number_test_did_format),
+                            currentEditTest.getNumberTestDid()
+                    )
+            );
+        }
+    }
+
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        mListener.errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        currentEditTest = test;
 
         title.addTextChangedListener(new EditTextTextWatcher(title) {
             @Override
@@ -103,71 +189,21 @@ public class MainInformationEditTestFragment extends Fragment {
                 )
         );
 
-        updateTestDid();
-
-        return inflatedView;
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        getFromTestVar();
-    }
-
-    private void getFromTestVar() {
-        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext());
-
-        EditText title = inflatedView.findViewById(R.id.titleEditText);
-        EditText description = inflatedView.findViewById(R.id.descriptionEditText);
-        Spinner scoreMethod = inflatedView.findViewById(R.id.scoreMethodSpinner);
-        scoreMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            TextView helperSpinnerText = inflatedView.findViewById(R.id.spinnerHelperText);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                helperSpinnerText.setText(
-                        getResources().getStringArray(R.array.score_method_helper_text)[i]
-                );
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+            public void run() {
+                updateTestDid();
+                getFromTestVar();
             }
         });
-
-        title.setText(currentEditTest.getName());
-        description.setText(currentEditTest.getDescription());
-        scoreMethod.setSelection(currentEditTest.getScoreMethod() ? 0 : 1);
-    }
-
-    public void updateTestDid() {
-        numberTestDid.setText(
-                String.format(
-                        getString(R.string.number_test_did_format),
-                        currentEditTest.getNumberTestDid()
-                )
-        );
     }
 
     public interface OnFragmentInteractionListener {
         Utils.EditValidator titleEditTestValidator(String text);
+
         Utils.EditValidator descriptionEditTestValidator(String text);
+
+        void errorFinish(boolean canceled);
     }
 
     abstract class EditTextTextWatcher implements TextWatcher {
@@ -194,7 +230,7 @@ public class MainInformationEditTestFragment extends Fragment {
             if (validatorResponse.isError()) {
                 String msg = getString(validatorResponse.getErrorMessageResourceId());
                 if (validatorResponse.isWarning()) {
-                    Drawable warningIcon= ResourcesCompat.getDrawable(getResources(),
+                    Drawable warningIcon = ResourcesCompat.getDrawable(getResources(),
                             R.drawable.ic_warning_yellow_24dp, null);
                     if (warningIcon != null) {
                         warningIcon.setBounds(0, 0, warningIcon.getIntrinsicWidth(), warningIcon.getIntrinsicHeight());

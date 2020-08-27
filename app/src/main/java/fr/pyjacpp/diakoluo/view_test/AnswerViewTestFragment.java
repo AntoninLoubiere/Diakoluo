@@ -31,14 +31,16 @@ import androidx.fragment.app.Fragment;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.tests.Test;
 
 
 public class AnswerViewTestFragment extends Fragment implements
-        AnswerViewTestRecyclerListFragment.OnParentFragmentInteractionListener {
+        AnswerViewTestRecyclerListFragment.OnParentFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
 
     private OnFragmentInteractionListener mListener;
 
     private boolean detailAnswer;
+    private View inflatedView;
 
     public AnswerViewTestFragment() {
     }
@@ -46,14 +48,12 @@ public class AnswerViewTestFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View inflatedView = inflater.inflate(R.layout.fragment_view_answer_test, container, false);
+        inflatedView = inflater.inflate(R.layout.fragment_view_answer_test, container, false);
 
         detailAnswer = inflatedView.findViewById(R.id.answerDataViewFragmentContainer) != null;
 
-        if (detailAnswer && DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getNumberRow() > 0) {
-            onItemClick(inflatedView, 0); // show first element
-        }
-
+        DiakoluoApplication.get(requireContext()).getCurrentTest(
+                new DiakoluoApplication.GetTest(true, this));
         return inflatedView;
     }
 
@@ -80,12 +80,28 @@ public class AnswerViewTestFragment extends Fragment implements
             getChildFragmentManager()
                     .beginTransaction()
                     .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
-                    .replace(R.id.answerDataViewFragmentContainer,AnswerDataViewFragment.newInstance(position))
+                    .replace(R.id.answerDataViewFragmentContainer, AnswerDataViewFragment.newInstance(position))
                     .commit();
         } else {
-            Intent intent = new Intent(view.getContext(), AnswerDataViewActivity.class);
+            Intent intent = new Intent(requireContext(), AnswerDataViewActivity.class);
             intent.putExtra(AnswerDataViewFragment.ARG_ANSWER_INDEX, position);
             startActivity(intent);
+        }
+    }
+
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        if (detailAnswer && test.getNumberRow() > 0) {
+            onItemClick(inflatedView, 0); // show first element
         }
     }
 

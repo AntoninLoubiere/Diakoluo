@@ -22,22 +22,28 @@ package fr.pyjacpp.diakoluo.test_tests;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.tests.Test;
 
-public class TestScoreActivity extends AppCompatActivity implements TestScoreFragment.OnFragmentInteractionListener {
+public class TestScoreActivity extends AppCompatActivity implements TestScoreFragment.OnFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
+
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_score);
 
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(DiakoluoApplication.getCurrentTest(this).getName());
+            DiakoluoApplication.get(this).getCurrentTest(
+                    new DiakoluoApplication.GetTest(false, this,
+                            false, this));
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
@@ -51,16 +57,32 @@ public class TestScoreActivity extends AppCompatActivity implements TestScoreFra
 
     @Override
     public void restartButton() {
-        TestTestContext testTestContext = DiakoluoApplication.getTestTestContext(this);
-        testTestContext.reset();
-        testTestContext.selectShowColumn();
-        startActivity(new Intent(this, TestActivity.class));
-        finish();
+        TestTestContext testTestContext = DiakoluoApplication.get(this).getTestTestContext();
+        if (testTestContext != null) {
+            testTestContext.reset();
+            testTestContext.selectShowColumn();
+            startActivity(new Intent(this, TestActivity.class));
+            finish();
+        }
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        actionBar.setTitle(test.getName());
     }
 }

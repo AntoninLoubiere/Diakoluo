@@ -38,7 +38,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
@@ -47,6 +46,7 @@ import fr.pyjacpp.diakoluo.save_test.CsvLoader;
 import fr.pyjacpp.diakoluo.save_test.CsvSaver;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.test_tests.TestSettingsActivity;
+import fr.pyjacpp.diakoluo.tests.CompactTest;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.view_test.MainInformationViewTestFragment;
 import fr.pyjacpp.diakoluo.view_test.ViewTestActivity;
@@ -63,11 +63,15 @@ public class ListTestActivity extends AppCompatActivity
 
     private int currentTestSelected = -1;
     private FloatingActionButton addButton;
+    
+    private DiakoluoApplication diakoluoApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_test);
+
+        this.diakoluoApplication = DiakoluoApplication.get(this);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
@@ -81,13 +85,14 @@ public class ListTestActivity extends AppCompatActivity
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DiakoluoApplication.setCurrentEditTest(ListTestActivity.this, new Test("", ""));
+                DiakoluoApplication.get(ListTestActivity.this).setCurrentEditTest(
+                        DiakoluoApplication.NEW_CURRENT_EDIT_TEST);
                 startActivity(new Intent(ListTestActivity.this, EditTestActivity.class));
             }
         });
 
         if (detailMainInformationTest) {
-            if (DiakoluoApplication.getListTest(this).size() > 0)
+            if (DiakoluoApplication.get(this).getListTest().size() > 0)
                 updateDetail(0);
         }
     }
@@ -104,15 +109,15 @@ public class ListTestActivity extends AppCompatActivity
     private void updateDetail(int position) {
         if (mainInformationViewTestFragment != null) {
             if (position < 0) {
-                DiakoluoApplication.setCurrentTest(this, null);
+                DiakoluoApplication.get(this).setCurrentTest(
+                        DiakoluoApplication.NO_CURRENT_EDIT_TEST);
             } else {
-                DiakoluoApplication.setCurrentTest(this,
-                        DiakoluoApplication.getListTest(this).get(position));
+                DiakoluoApplication.get(this).setCurrentTest(position);
             }
 
             currentTestSelected = position;
 
-            mainInformationViewTestFragment.updateContent(this);
+            mainInformationViewTestFragment.updateContent();
         }
     }
 
@@ -141,10 +146,9 @@ public class ListTestActivity extends AppCompatActivity
 
     @Override
     public void onPlayButtonClick(View view, int position) {
-        Test currentTest = DiakoluoApplication.getListTest(view.getContext()).get(position);
-        if (currentTest.canBePlay()) {
-            DiakoluoApplication.setCurrentTest(view.getContext(),
-                    currentTest);
+        CompactTest currentTest = DiakoluoApplication.get(this).getListTest().get(position);
+        if (currentTest.isPlayable()) {
+            DiakoluoApplication.get(this).setCurrentTest(position);
 
             startActivity(new Intent(view.getContext(), TestSettingsActivity.class));
         } // TODO warning
@@ -152,15 +156,14 @@ public class ListTestActivity extends AppCompatActivity
 
     @Override
     public void onSeeButtonClick(View view, int position) {
-        DiakoluoApplication.setCurrentTest(view.getContext(),
-                DiakoluoApplication.getListTest(view.getContext()).get(position));
+        DiakoluoApplication.get(this).setCurrentTest(position);
 
         startActivity(new Intent(view.getContext(), ViewTestActivity.class));
     }
 
     @Override
     public void onEditMenuItemClick(View view, int position) {
-        DiakoluoApplication.setCurrentIndexEditTest(view.getContext(), position);
+        DiakoluoApplication.get(this).setCurrentEditTest(position);
         startActivity(new Intent(view.getContext(), EditTestActivity.class));
     }
 
@@ -187,14 +190,16 @@ public class ListTestActivity extends AppCompatActivity
         FileManager.exportTestResult(this, requestCode, resultCode, data, addButton, new FileManager.ResultListener() {
             @Override
             public void showXmlImportDialog(FileManager.ImportXmlContext importContext) {
-                DiakoluoApplication.setCurrentImportContext(ListTestActivity.this, importContext);
+                DiakoluoApplication.get(ListTestActivity.this)
+                        .setCurrentImportContext(importContext);
                 ImportXmlDialogFragment importXmlDialogFragment = new ImportXmlDialogFragment();
                 importXmlDialogFragment.show(getSupportFragmentManager(), "dialog");
             }
 
             @Override
             public void showCsvImportDialog(FileManager.ImportCsvContext importContext) {
-                DiakoluoApplication.setCurrentImportContext(ListTestActivity.this, importContext);
+                DiakoluoApplication.get(ListTestActivity.this)
+                        .setCurrentImportContext(importContext);
                 ImportCsvDialogFragment importCsvDialogFragment = new ImportCsvDialogFragment();
                 importCsvDialogFragment.show(getSupportFragmentManager(), "dialog");
             }
@@ -203,29 +208,30 @@ public class ListTestActivity extends AppCompatActivity
 
     @Override
     public void createXmlFile(int position, boolean saveNumberTestDone) {
-        FileManager.exportXmlTest(ListTestActivity.this, position, saveNumberTestDone);
+        FileManager.exportXmlTest(ListTestActivity.this, saveNumberTestDone);
     }
 
     @Override
     public void createCsvFile(int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
-        FileManager.exportCsvTest(ListTestActivity.this, position, columnHeader, columnTypeHeader, separator, lineSeparator);
+        FileManager.exportCsvTest(ListTestActivity.this, columnHeader, columnTypeHeader, separator, lineSeparator);
     }
 
     @Override
     public void loadXmlFile() {
         // Add test and update recycler
-        DiakoluoApplication diakoluoApplication = DiakoluoApplication.getDiakoluoApplication(this);
-        FileManager.ImportXmlContext currentImportContext = (FileManager.ImportXmlContext) diakoluoApplication.getCurrentImportContext();
-        importTest(diakoluoApplication, currentImportContext.importTest);
-
+        FileManager.ImportXmlContext currentImportContext = 
+                (FileManager.ImportXmlContext) diakoluoApplication.getCurrentImportContext();
+        if (currentImportContext != null) {
+            importTest(diakoluoApplication, currentImportContext.importTest);
+        }
     }
 
 
     @Override
     public void loadCsvFile(String name, int separatorId, boolean loadColumnName, boolean loadColumnType) {
-        DiakoluoApplication diakoluoApplication = DiakoluoApplication.getDiakoluoApplication(this);
-
-        FileManager.ImportCsvContext importContext = (FileManager.ImportCsvContext) diakoluoApplication.getCurrentImportContext();
+        FileManager.ImportCsvContext importContext = 
+                (FileManager.ImportCsvContext) diakoluoApplication.getCurrentImportContext();
+        if (importContext == null) return;
         ParcelFileDescriptor pfd = null;
         try {
             pfd = getContentResolver().openFileDescriptor(importContext.fileUri, "r");
@@ -286,12 +292,12 @@ public class ListTestActivity extends AppCompatActivity
                     .setIcon(R.drawable.ic_error_red_24dp)
                     .show();
         } else {
-            ArrayList<Test> listTest = diakoluoApplication.getListTest();
-            listTest.add(currentImportTest);
+            int numberTest = diakoluoApplication.getNumberTest();
+            diakoluoApplication.addTest(currentImportTest);
 
             Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentListTest);
             if (fragment != null) {
-                ((ListTestsFragment) fragment).notifyUpdateInserted(listTest.size());
+                ((ListTestsFragment) fragment).notifyUpdateInserted(numberTest);
             }
         }
         diakoluoApplication.setCurrentImportContext(null);

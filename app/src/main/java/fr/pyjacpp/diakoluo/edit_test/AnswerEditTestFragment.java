@@ -29,6 +29,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -42,13 +43,14 @@ import fr.pyjacpp.diakoluo.tests.Test;
 
 public class AnswerEditTestFragment extends Fragment implements
         AnswerEditTestRecyclerListFragment.OnParentFragmentInteractionListener,
-        AnswerDataEditFragment.OnParentFragmentInteractionListener {
+        AnswerDataEditFragment.OnParentFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
     private OnFragmentInteractionListener mListener;
 
     private boolean answerDetail;
     @Nullable
     private AnswerDataEditFragment answerDataEditFragment;
     private AnswerEditTestRecyclerListFragment answerEditTestRecyclerListFragment;
+    @Nullable private Test editTest;
 
     public AnswerEditTestFragment() {
         // Required empty public constructor
@@ -58,25 +60,26 @@ public class AnswerEditTestFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflatedView = inflater.inflate(R.layout.fragment_edit_answer_test, container, false);
+        final View inflatedView = inflater.inflate(R.layout.fragment_edit_answer_test, container, false);
 
         answerDetail = inflatedView.findViewById(R.id.answerDataEditFragmentContainer) != null;
         answerEditTestRecyclerListFragment = (AnswerEditTestRecyclerListFragment)
                 getChildFragmentManager().findFragmentById(R.id.answerEditTestRecyclerListFragment);
 
+        DiakoluoApplication.get(inflatedView.getContext()).getCurrentEditTest(
+                new DiakoluoApplication.GetTest(true,
+                        (AppCompatActivity) getActivity(), false, this));
+
         Button addAnswerButton = inflatedView.findViewById(R.id.addAnswerButton);
         addAnswerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateNewItem(view.getContext());
-                onItemClick(view,
-                        DiakoluoApplication.getCurrentEditTest(view.getContext()).getNumberRow() - 1);
+                if (editTest != null) {
+                    updateNewItem();
+                    onItemClick(editTest.getNumberRow() - 1);
+                }
             }
         });
-
-        if (answerDetail && DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getNumberRow() > 0) {
-            onItemClick(inflatedView, 0); // show first element
-        }
 
         return inflatedView;
     }
@@ -99,11 +102,11 @@ public class AnswerEditTestFragment extends Fragment implements
     }
 
     @Override
-    public void onItemClick(View view, int position) {
-        onItemClick(view, position, false);
+    public void onItemClick(int position) {
+        onItemClick(position, false);
     }
 
-    public void onItemClick(View view, int position, boolean forceUpdate) {
+    public void onItemClick(int position, boolean forceUpdate) {
         if (answerDetail) {
             if (answerDataEditFragment == null || answerDataEditFragment.getAnswerIndex() != position | forceUpdate) {
                 if (position >= 0) {
@@ -124,7 +127,7 @@ public class AnswerEditTestFragment extends Fragment implements
                 }
             }
         } else {
-            Intent intent = new Intent(view.getContext(), AnswerDataEditActivity.class);
+            Intent intent = new Intent(requireContext(), AnswerDataEditActivity.class);
             intent.putExtra(AnswerDataEditFragment.ARG_ANSWER_INDEX, position);
             startActivity(intent);
         }
@@ -157,18 +160,17 @@ public class AnswerEditTestFragment extends Fragment implements
 
     @Override
     public void onDelete(View view, int position) {
-        if (answerDetail && answerDataEditFragment != null) {
+        if (answerDetail && answerDataEditFragment != null && editTest != null) {
             int answerIndex = answerDataEditFragment.getAnswerIndex();
             if (position == answerIndex) {
                 answerDataEditFragment.setAnswerIndex(-1);
 
-                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
-                if (position < currentEditTest.getNumberRow()) {
-                    onItemClick(view, position, true);
-                } else if (currentEditTest.getNumberRow() > 0) {
-                    onItemClick(view, currentEditTest.getNumberRow() - 1, true);
+                if (position < editTest.getNumberRow()) {
+                    onItemClick(position, true);
+                } else if (editTest.getNumberRow() > 0) {
+                    onItemClick(editTest.getNumberRow() - 1, true);
                 } else {
-                    onItemClick(view, -1, true);
+                    onItemClick(-1, true);
                 }
             } else if (position < answerIndex) {
                 answerDataEditFragment.setAnswerIndex(answerIndex - 1);
@@ -185,17 +187,38 @@ public class AnswerEditTestFragment extends Fragment implements
         answerEditTestRecyclerListFragment.applyRecyclerChanges(recyclerViewChange);
     }
 
-    void updateNewItem(Context context) {
-        ArrayList<DataRow> listRow = DiakoluoApplication.getCurrentEditTest(context).getListRow();
-        listRow.add(new DataRow());
+    void updateNewItem() {
+        if (editTest != null) {
+            ArrayList<DataRow> listRow = editTest.getListRow();
+            listRow.add(new DataRow());
 
-        RecyclerViewChange answerListChanged = new RecyclerViewChange(
-                RecyclerViewChange.ItemInserted
-        );
-        answerListChanged.setPosition(listRow.size() - 1);
-        answerEditTestRecyclerListFragment.applyRecyclerChanges(answerListChanged);
+            RecyclerViewChange answerListChanged = new RecyclerViewChange(
+                    RecyclerViewChange.ItemInserted
+            );
+            answerListChanged.setPosition(listRow.size() - 1);
+            answerEditTestRecyclerListFragment.applyRecyclerChanges(answerListChanged);
+        }
+    }
+
+    @Override
+    public void loadingInProgress() {
+
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        mListener.errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        editTest = test;
+        if (answerDetail && editTest.getNumberRow() > 0) {
+            onItemClick(0); // show first element
+        }
     }
 
     public interface OnFragmentInteractionListener {
+        void errorFinish(boolean canceled);
     }
 }

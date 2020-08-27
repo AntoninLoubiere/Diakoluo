@@ -28,13 +28,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.OnSwipeTouchListener;
 import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.Test;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 
 public class ColumnDataViewFragment extends Fragment {
     static final String ARG_COLUMN_INDEX = "column_index";
@@ -42,6 +43,7 @@ public class ColumnDataViewFragment extends Fragment {
     private int columnIndex;
 
     private OnFragmentInteractionListener mListener;
+    private View inflatedView;
 
     public ColumnDataViewFragment() {
     }
@@ -64,36 +66,51 @@ public class ColumnDataViewFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View inflatedView = inflater.inflate(R.layout.fragment_view_column_data, container, false);
+        inflatedView = inflater.inflate(R.layout.fragment_view_column_data, container, false);
 
-        TextView titleEditText = inflatedView.findViewById(R.id.titleTextView);
-        TextView descriptionEditText = inflatedView.findViewById(R.id.descriptionTextView);
-        TextView columnTypeTextView = inflatedView.findViewById(R.id.columnTypeTextView);
-        LinearLayout columnSettingsParent = inflatedView.findViewById(R.id.columnSettings);
+        DiakoluoApplication.get(requireContext()).getCurrentTest(
+                new DiakoluoApplication.GetTest(false, (AppCompatActivity) getActivity(),
+                        false, new DiakoluoApplication.GetTestRunnable() {
+                    @Override
+                    public void loadingInProgress() {
+                    }
 
-        final Test currentTest = DiakoluoApplication.getCurrentTest(inflatedView.getContext());
-        final Column column = currentTest.getListColumn().get(columnIndex);
+                    @Override
+                    public void error(boolean canceled) {
 
-        titleEditText.setText(column.getName());
-        descriptionEditText.setText(column.getDescription());
-        columnTypeTextView.setText(column.getInputType().name());
+                    }
 
-        column.getViewColumnSettings(inflater, columnSettingsParent);
+                    @Override
+                    public void success(@NonNull Test test) {
+                        Column column = test.getListColumn().get(columnIndex);
 
-        inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
-            @Override
-            public void onSwipeRight() {
-                mListener.onSwipeRight();
-            }
+                        TextView titleEditText = inflatedView.findViewById(R.id.titleTextView);
+                        TextView descriptionEditText = inflatedView.findViewById(R.id.descriptionTextView);
+                        TextView columnTypeTextView = inflatedView.findViewById(R.id.columnTypeTextView);
+                        LinearLayout columnSettingsParent = inflatedView.findViewById(R.id.columnSettings);
 
-            @Override
-            public void onSwipeLeft() {
-                mListener.onSwipeLeft();
-            }
-        });
+                        titleEditText.setText(column.getName());
+                        descriptionEditText.setText(column.getDescription());
+                        columnTypeTextView.setText(column.getInputType().name());
+
+                        column.getViewColumnSettings(inflater, columnSettingsParent); // FIXME
+
+                        inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
+                            @Override
+                            public void onSwipeRight() {
+                                mListener.onSwipeRight();
+                            }
+
+                            @Override
+                            public void onSwipeLeft() {
+                                mListener.onSwipeLeft();
+                            }
+                        });
+                    }
+                }));
 
         return inflatedView;
     }

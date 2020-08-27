@@ -55,7 +55,8 @@ public class ImportCsvDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         final View inflatedView = inflater.inflate(R.layout.fragment_dialog_import_csv, container, false);
 
-        FileManager.ImportContext _currentImportContext = DiakoluoApplication.getCurrentImportContext(inflatedView.getContext());
+        FileManager.ImportContext _currentImportContext =
+                DiakoluoApplication.get(inflatedView.getContext()).getCurrentImportContext();
         final FileManager.ImportCsvContext currentImportContext;
         if (_currentImportContext instanceof FileManager.ImportCsvContext) {
             currentImportContext = (FileManager.ImportCsvContext) _currentImportContext;

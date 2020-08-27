@@ -21,10 +21,15 @@ package fr.pyjacpp.diakoluo.view_test;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -44,22 +49,59 @@ public class ViewTestActivity extends AppCompatActivity
         ColumnViewTestFragment.OnFragmentInteractionListener,
         ColumnViewTestRecyclerListFragment.OnFragmentInteractionListener,
         ColumnDataViewFragment.OnFragmentInteractionListener,
-        MainInformationViewTestFragment.OnFragmentInteractionListener{
+        MainInformationViewTestFragment.OnFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
 
     private ViewTestPagerAdapterFragment adapter;
+    @Nullable private Test currentTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_test);
 
-        final Test currentTest = DiakoluoApplication.getCurrentTest(this);
+        DiakoluoApplication.get(this).getCurrentTest(
+                new DiakoluoApplication.GetTest(true, this,
+                        false, this));
 
-        TextView title = findViewById(R.id.title);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
+    public void onSwipeRight() {
+    }
+
+    @Override
+    public void onSwipeLeft() {
+    }
+
+    @Override
+    public void errorFinish(boolean canceled) {
+        finish();
+        if (!canceled) Log.e(getClass().getName(), "No current test, abort.");
+    }
+
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        currentTest = test;
+
+        final TextView title = findViewById(R.id.title);
         ImageButton navigation = findViewById(R.id.navigationIcon);
         ImageButton resetButton = findViewById(R.id.resetButton);
 
-        title.setText(currentTest.getName());
         navigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,7 +110,7 @@ public class ViewTestActivity extends AppCompatActivity
         });
 
         TabLayout tabLayout = findViewById(R.id.viewTestTabLayout);
-        ViewPager viewPager = findViewById(R.id.viewTestViewPager);
+        final ViewPager viewPager = findViewById(R.id.viewTestViewPager);
 
         viewPager.setOffscreenPageLimit(2);
 
@@ -76,10 +118,9 @@ public class ViewTestActivity extends AppCompatActivity
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         adapter = new ViewTestPagerAdapterFragment(
                 getSupportFragmentManager(),
-                FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, this
+                FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,
+                ViewTestActivity.this
         );
-        viewPager.setAdapter(adapter);
-
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,8 +138,9 @@ public class ViewTestActivity extends AppCompatActivity
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 currentTest.reset();
-                                DiakoluoApplication.saveTest(ViewTestActivity.this);
-                                MainInformationViewTestFragment mainInformationViewTestFragment = (MainInformationViewTestFragment) adapter.getFragmentAtPosition(0);
+                                DiakoluoApplication.get(ViewTestActivity.this).saveCurrentTest();
+                                MainInformationViewTestFragment mainInformationViewTestFragment =
+                                        (MainInformationViewTestFragment) adapter.getFragmentAtPosition(0);
                                 mainInformationViewTestFragment.updateTestDid();
                                 dialogInterface.dismiss();
                             }
@@ -107,19 +149,13 @@ public class ViewTestActivity extends AppCompatActivity
             }
         });
 
-    }
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                viewPager.setAdapter(adapter);
+                title.setText(currentTest.getName());
+            }
+        });
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
-
-    @Override
-    public void onSwipeRight() {
-    }
-
-    @Override
-    public void onSwipeLeft() {
     }
 }

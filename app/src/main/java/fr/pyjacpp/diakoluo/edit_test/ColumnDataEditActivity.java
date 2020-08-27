@@ -22,10 +22,13 @@ package fr.pyjacpp.diakoluo.edit_test;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -38,23 +41,25 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-public class ColumnDataEditActivity extends AppCompatActivity implements ColumnDataEditFragment.OnFragmentInteractionListener{
+public class ColumnDataEditActivity extends AppCompatActivity implements ColumnDataEditFragment.OnFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
 
     private int columnIndex;
-    private Test currentTest;
+    @Nullable private Test currentTest;
 
     private Button previousButton;
     private Button nextButton;
     private TextView navigationTextView;
     private ActionBar actionBar;
+    private boolean fragmentCreated;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_column_data);
 
         columnIndex = getIntent().getIntExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, 0);
-        currentTest = DiakoluoApplication.getCurrentEditTest(this);
+
+        fragmentCreated = savedInstanceState != null;
 
         previousButton = findViewById(R.id.previousButton);
         nextButton = findViewById(R.id.nextButton);
@@ -67,11 +72,9 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
         }
 
-        if (savedInstanceState == null) {
-            createFragment();
-        } else {
-            updateNavigation();
-        }
+        DiakoluoApplication.get(this).getCurrentEditTest(
+                new DiakoluoApplication.GetTest(true, this,
+                        true, this));
 
         Button validButton = findViewById(R.id.validButton);
         validButton.setOnClickListener(new View.OnClickListener() {
@@ -97,6 +100,7 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
     }
 
     private void createFragment() {
+        fragmentCreated = true;
         ColumnDataEditFragment fragment = ColumnDataEditFragment.newInstance(columnIndex);
 
         getSupportFragmentManager()
@@ -104,37 +108,38 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
                 .setCustomAnimations(R.anim.fragment_fade_scale_enter, R.anim.fragment_fade_scale_exit)
                 .replace(R.id.columnDataEditFragmentContainer, fragment)
                 .commit();
-
         updateNavigation();
     }
 
     private void updateNavigation() {
-        if (actionBar != null) {
-            String name = currentTest.getListColumn().get(columnIndex).getName();
-            if (Objects.equals(name, ""))
-                actionBar.setTitle(R.string.app_name);
-            else
-                actionBar.setTitle(name);
-        }
-
-        navigationTextView.setText(getString(R.string.navigation_info, columnIndex + 1,
-                currentTest.getNumberColumn()));
-
-        if (columnIndex > 0) {
-            if (!previousButton.isEnabled()) {
-                previousButton.setVisibility(View.VISIBLE);
-                previousButton.setEnabled(true);
+        if (currentTest != null) {
+            if (actionBar != null) {
+                String name = currentTest.getListColumn().get(columnIndex).getName();
+                if (Objects.equals(name, ""))
+                    actionBar.setTitle(R.string.app_name);
+                else
+                    actionBar.setTitle(name);
             }
-            previousButton.setText(currentTest.getListColumn().get(columnIndex - 1).getName());
-        } else {
-            previousButton.setEnabled(false);
-            previousButton.setVisibility(View.GONE);
-        }
 
-        if (columnIndex < currentTest.getNumberColumn() - 1) {
-            nextButton.setText(currentTest.getListColumn().get(columnIndex + 1).getName());
-        } else {
-            nextButton.setText(R.string.create_new_data_edit);
+            navigationTextView.setText(getString(R.string.navigation_info, columnIndex + 1,
+                    currentTest.getNumberColumn()));
+
+            if (columnIndex > 0) {
+                if (!previousButton.isEnabled()) {
+                    previousButton.setVisibility(View.VISIBLE);
+                    previousButton.setEnabled(true);
+                }
+                previousButton.setText(currentTest.getListColumn().get(columnIndex - 1).getName());
+            } else {
+                previousButton.setEnabled(false);
+                previousButton.setVisibility(View.GONE);
+            }
+
+            if (columnIndex < currentTest.getNumberColumn() - 1) {
+                nextButton.setText(currentTest.getListColumn().get(columnIndex + 1).getName());
+            } else {
+                nextButton.setText(R.string.create_new_data_edit);
+            }
         }
     }
 
@@ -155,34 +160,42 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
 
     @Override
     public void onSwipeLeft() {
-        if (columnIndex < currentTest.getNumberColumn() - 1) {
-            columnIndex += 1;
-            createFragment();
-            getIntent().putExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, columnIndex);
-        } else {
-            // new
-            new MaterialAlertDialogBuilder(this)
-                    .setTitle(R.string.dialog_new_column_title)
-                    .setMessage(R.string.dialog_new_column_message)
-                    .setIcon(R.drawable.ic_add_accent_color_24dp)
-                    .setPositiveButton(R.string.dialog_create_new_data_edit, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            // update recyclers
-                            Intent intent = new Intent();
-                            intent.setAction(EditTestActivity.ACTION_BROADCAST_NEW_COLUMN_RECYCLER);
-                            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(ColumnDataEditActivity.this);
-                            localBroadcastManager.sendBroadcastSync(intent);
-                            onSwipeLeft();
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                        }
-                    })
-                    .show();
+        if (currentTest != null) {
+            if (columnIndex < currentTest.getNumberColumn() - 1) {
+                columnIndex += 1;
+                createFragment();
+                getIntent().putExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, columnIndex);
+            } else {
+                // new
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.dialog_new_column_title)
+                        .setMessage(R.string.dialog_new_column_message)
+                        .setIcon(R.drawable.ic_add_accent_color_24dp)
+                        .setPositiveButton(R.string.dialog_create_new_data_edit, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // update recyclers
+                                Intent intent = new Intent();
+                                intent.setAction(EditTestActivity.ACTION_BROADCAST_NEW_COLUMN_RECYCLER);
+                                LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(ColumnDataEditActivity.this);
+                                localBroadcastManager.sendBroadcastSync(intent);
+                                onSwipeLeft();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        })
+                        .show();
+            }
         }
+    }
+
+    @Override
+    public void errorFinish(boolean canceled) {
+        finish();
+        if (!canceled) Log.e(getClass().getName(), "No current test, abort.");
     }
 
     @Override
@@ -192,5 +205,24 @@ public class ColumnDataEditActivity extends AppCompatActivity implements ColumnD
         intent.putExtra(EditTestActivity.EXTRA_INT_POSITION, position);
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.sendBroadcast(intent);
+    }
+
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        currentTest = test;
+        if (fragmentCreated) {
+            updateNavigation();
+        } else {
+            createFragment();
+        }
     }
 }

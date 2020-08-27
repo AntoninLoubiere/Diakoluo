@@ -29,12 +29,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder> {
     private final Context context;
+    @NonNull private Test currentTest;
 
     static class AnswerViewHolder extends RecyclerView.ViewHolder {
 
@@ -47,8 +47,9 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
         }
     }
 
-    AnswerAdapter(Context context) {
+    AnswerAdapter(Context context, @NonNull Test currentTest) {
         this.context = context;
+        this.currentTest = currentTest;
     }
 
     @NonNull
@@ -62,8 +63,6 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull AnswerViewHolder holder, int position) {
-        Test currentTest = DiakoluoApplication.getCurrentTest(context);
-
         if (currentTest.getNumberColumn() >= 1) {
             holder.textView.setText(
                     currentTest.getRowFirstCellString(context, position)
@@ -77,7 +76,7 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
 
     @Override
     public int getItemCount() {
-        return DiakoluoApplication.getCurrentTest(context).getNumberRow();
+        return currentTest.getNumberRow();
     }
 
 }

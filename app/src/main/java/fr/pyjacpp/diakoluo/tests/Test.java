@@ -343,7 +343,7 @@ public class Test {
      * Get if the test can be play.
      * @return if the test can be play
      */
-    public boolean canBePlay() {
+    public boolean isPlayable() {
         ColumnToShow r = getNumberColumnToAsk();
         return r.numberColumnToShowMin <= r.numberColumnToShowMax &&
                 r.numberColumnTotal > 1 && r.numberColumnToShowMax > 0 && listRow.size() > 0;

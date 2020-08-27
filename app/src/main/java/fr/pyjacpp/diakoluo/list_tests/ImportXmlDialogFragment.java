@@ -52,7 +52,8 @@ public class ImportXmlDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         final View inflatedView = inflater.inflate(R.layout.fragment_dialog_import_xml, container, false);
 
-        FileManager.ImportContext _currentImportContext = DiakoluoApplication.getCurrentImportContext(inflatedView.getContext());
+        FileManager.ImportContext _currentImportContext = DiakoluoApplication.get(requireContext())
+                .getCurrentImportContext();
         final FileManager.ImportXmlContext currentImportContext;
         if (_currentImportContext instanceof FileManager.ImportXmlContext) {
             currentImportContext = (FileManager.ImportXmlContext) _currentImportContext;

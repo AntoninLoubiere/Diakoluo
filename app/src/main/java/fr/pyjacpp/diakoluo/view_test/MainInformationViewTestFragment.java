@@ -21,12 +21,16 @@ package fr.pyjacpp.diakoluo.view_test;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.text.DateFormat;
@@ -35,7 +39,8 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-public class MainInformationViewTestFragment extends Fragment {
+public class MainInformationViewTestFragment extends Fragment
+        implements DiakoluoApplication.GetTestRunnable {
     private OnFragmentInteractionListener mListener;
     private TextView title;
     private TextView description;
@@ -45,7 +50,9 @@ public class MainInformationViewTestFragment extends Fragment {
     private TextView scoreMethod;
     private View separator1;
     private View separator2;
+    @Nullable
     private Test currentTest;
+    private ProgressBar loadingProgressBar;
 
     public MainInformationViewTestFragment() {
         // Required empty public constructor
@@ -63,23 +70,41 @@ public class MainInformationViewTestFragment extends Fragment {
         lastModification = inflatedView.findViewById(R.id.lastModificationTextView);
         numberTestDid = inflatedView.findViewById(R.id.numberTestDid);
         scoreMethod = inflatedView.findViewById(R.id.scoreMethod);
+        loadingProgressBar = inflatedView.findViewById(R.id.loadingProgressBar);
 
         separator1 = inflatedView.findViewById(R.id.separator1);
         separator2 = inflatedView.findViewById(R.id.separator2);
 
-        updateContent(inflatedView.getContext());
+        updateContent();
 
         return inflatedView;
     }
 
-    public void updateContent(Context context){
+    public void updateContent() {
+        currentTest = null;
+        updateViews();
+        DiakoluoApplication.get(requireContext()).getCurrentTest(
+                new DiakoluoApplication.GetTest(true, this));
+    }
 
-        DateFormat dateFormat = android.text.format.DateFormat.getLongDateFormat(context.getApplicationContext());
-        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context.getApplicationContext());
+    private void updateViews() {
+        loadingProgressBar.setVisibility(View.GONE);
+        Context context = getContext();
+        if (currentTest == null || context == null) {
+            title.setVisibility(View.GONE);
+            description.setVisibility(View.GONE);
+            createdDate.setVisibility(View.GONE);
+            lastModification.setVisibility(View.GONE);
+            numberTestDid.setVisibility(View.GONE);
+            scoreMethod.setVisibility(View.GONE);
+            separator1.setVisibility(View.GONE);
+            separator2.setVisibility(View.GONE);
+        } else {
+            final DateFormat dateFormat = android.text.format.DateFormat.getLongDateFormat(
+                    context.getApplicationContext());
+            final DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(
+                    context.getApplicationContext());
 
-        currentTest = DiakoluoApplication.getCurrentTest(context);
-
-        if (currentTest != null) {
             title.setVisibility(View.VISIBLE);
             title.setText(currentTest.getName());
 
@@ -107,22 +132,45 @@ public class MainInformationViewTestFragment extends Fragment {
             numberTestDid.setVisibility(View.VISIBLE);
             scoreMethod.setText(getString(R.string.score_method_view,
                     getResources()
-                            .getStringArray(R.array.score_method)[currentTest.getScoreMethod() ? 0 : 1]));
+                            .getStringArray(R.array.score_method)
+                            [currentTest.getScoreMethod() ? 0 : 1]));
             updateTestDid();
 
             separator1.setVisibility(View.VISIBLE);
             separator2.setVisibility(View.VISIBLE);
-        } else {
-            title.setVisibility(View.GONE);
-            description.setVisibility(View.GONE);
-            createdDate.setVisibility(View.GONE);
-            lastModification.setVisibility(View.GONE);
-            numberTestDid.setVisibility(View.GONE);
-            scoreMethod.setVisibility(View.GONE);
-            separator1.setVisibility(View.GONE);
-            separator2.setVisibility(View.GONE);
         }
+    }
 
+    @Override
+    public void loadingInProgress() {
+        loadingProgressBar.post(new Runnable() {
+            @Override
+            public void run() {
+                if (currentTest == null)
+                    loadingProgressBar.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                updateViews();
+            }
+        });
+    }
+
+    @Override
+    public void success(@NonNull final Test test) {
+        currentTest = test;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                updateViews();
+            }
+        });
     }
 
     @Override
@@ -143,12 +191,14 @@ public class MainInformationViewTestFragment extends Fragment {
     }
 
     void updateTestDid() {
-        numberTestDid.setText(
-                String.format(
-                        getString(R.string.number_test_did_format),
-                        currentTest.getNumberTestDid()
-                )
-        );
+        if (currentTest != null) {
+            numberTestDid.setText(
+                    String.format(
+                            getString(R.string.number_test_did_format),
+                            currentTest.getNumberTestDid()
+                    )
+            );
+        }
     }
 
     public interface OnFragmentInteractionListener {

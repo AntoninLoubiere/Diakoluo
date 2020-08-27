@@ -41,7 +41,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (DiakoluoApplication.getAnalyticsSet(SplashScreenActivity.this))
+                    if (DiakoluoApplication.get(SplashScreenActivity.this).getAnalyticsSet())
                         startActivity(
                                 new Intent(SplashScreenActivity.this, ListTestActivity.class)
                         );

@@ -25,14 +25,22 @@ import android.view.animation.Interpolator;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 
 /**
  * A utils class that hold useful methods.
  */
 public final class Utils {
+
+    public static final DecimalFormat SCORE_DECIMAL_FORMATTER = new DecimalFormat("+0.##;-0.##");
+
     /**
      * Remove useless spaces around a string
+     *
      * @param s the string to process
      * @return the string clean up
      */
@@ -62,12 +70,12 @@ public final class Utils {
     /**
      * Map a var in interval [inMin; inMax] to [outMin; outMax]. (If the var doesn't respect the
      * interval, the out will not respect the interval too but proportions will be respect.
-     *
      * From Arduino map code (appendix:
      * https://www.arduino.cc/reference/en/language/functions/math/map/#_example_code).
-     * @param var the var to process
-     * @param inMin the min of the var
-     * @param inMax the max of the var
+     *
+     * @param var    the var to process
+     * @param inMin  the min of the var
+     * @param inMax  the max of the var
      * @param outMin the min of the return
      * @param outMax the max of the return
      * @return the mapped var
@@ -95,12 +103,32 @@ public final class Utils {
     }
 
     /**
+     * Copy a stream into another stream
+     *
+     * @param inputStream  the input stream to copy
+     * @param outputStream the output stream where to copy
+     * @throws IOException if while writing or reading a stream an exception occur.
+     */
+    public static void copyStream(InputStream inputStream, OutputStream outputStream) throws IOException {
+        byte[] buffer = new byte[2048];
+        int len;
+        while ((len = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, len);
+        }
+    }
+
+    public static String formatScore(float score) {
+        return SCORE_DECIMAL_FORMATTER.format(score);
+    }
+
+    /**
      * A extreme decelerator that start rapid and slow at the end (quadratic function upside-down).
      */
     public static class ExtremeDeceleratorInterpolator implements Interpolator {
 
         /**
          * The interpolation
+         *
          * @param v thr value to map
          * @return the mapped value
          */
@@ -130,6 +158,7 @@ public final class Utils {
 
         /**
          * Constructor that create an error validator.
+         *
          * @param errorMessageResourceId the resource id of the error message
          */
         public EditValidator(Integer errorMessageResourceId) {
@@ -140,8 +169,9 @@ public final class Utils {
 
         /**
          * Constructor that create an error or warning validator.
+         *
          * @param errorMessageResourceId the resource id of the message
-         * @param warning if it is a warning and not an error
+         * @param warning                if it is a warning and not an error
          */
         public EditValidator(Integer errorMessageResourceId, boolean warning) {
             this.errorMessageResourceId = errorMessageResourceId;
@@ -151,6 +181,7 @@ public final class Utils {
 
         /**
          * Get the error message resource id.
+         *
          * @return the error message resource id
          */
         public Integer getErrorMessageResourceId() {
@@ -159,6 +190,7 @@ public final class Utils {
 
         /**
          * Get if the validator contain an error (or a warning !).
+         *
          * @return if the validator contain an error or a warning
          */
         public boolean isError() {
@@ -167,6 +199,7 @@ public final class Utils {
 
         /**
          * If the validator contain a warning
+         *
          * @return if the validator contain a warning
          */
         public boolean isWarning() {
@@ -186,6 +219,7 @@ public final class Utils {
 
         /**
          * Default constructor
+         *
          * @param context the context of the application or the activity
          * @param success the code to execute in case of success
          */
@@ -197,6 +231,7 @@ public final class Utils {
 
         /**
          * Run validation on the list of validator.
+         *
          * @param errorValidatorDeque the list of validator to test
          */
         public void run(ArrayDeque<EditValidator> errorValidatorDeque) {
@@ -209,7 +244,6 @@ public final class Utils {
             }
 
             verifyAndAsk();
-            this.errorValidatorDeque = null;
         }
 
         /**
@@ -219,6 +253,7 @@ public final class Utils {
         private void verifyAndAsk() {
             if (errorValidatorDeque.isEmpty()) {
                 if (!errorInDeque) success.run();
+                errorValidatorDeque = null;
             } else {
                 EditValidator validator = errorValidatorDeque.pop();
 
@@ -260,6 +295,7 @@ public final class Utils {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     dialogInterface.dismiss();
+                                    errorValidatorDeque = null;
                                 }
                             })
                             .show();
@@ -270,4 +306,6 @@ public final class Utils {
             }
         }
     }
+
+
 }

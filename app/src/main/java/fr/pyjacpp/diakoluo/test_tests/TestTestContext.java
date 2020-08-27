@@ -19,15 +19,12 @@
 
 package fr.pyjacpp.diakoluo.test_tests;
 
-import android.content.Context;
-
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.column.Column;
@@ -47,7 +44,7 @@ public class TestTestContext {
 
     private ArrayList<DataRow> listRowToAsk;
 
-    private final Test test;
+    @NonNull private final Test test;
 
     private int currentIndex;
     private boolean answerGive;
@@ -58,20 +55,10 @@ public class TestTestContext {
     private final ArrayList<Column> columnsAskRandom = new ArrayList<>();
     private final ArrayList<Column> columnsAsk = new ArrayList<>();
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    protected TestTestContext(Test test, int numberQuestionToAsk, int numberColumnToShow,
+    protected TestTestContext(@NonNull Test test, int numberQuestionToAsk, int numberColumnToShow,
                               boolean proportionalityScoreMethod) {
         this.test = test;
         this.numberQuestionToAsk = numberQuestionToAsk;
-        this.proportionalityScoreMethod = proportionalityScoreMethod;
-        initialize(numberColumnToShow);
-    }
-
-    TestTestContext(Context context, int numberQuestionToAsk, int numberColumnToShow,
-                    boolean proportionalityScoreMethod) {
-        this.numberQuestionToAsk = numberQuestionToAsk;
-
-        test = DiakoluoApplication.getCurrentTest(context);
         this.proportionalityScoreMethod = proportionalityScoreMethod;
         initialize(numberColumnToShow);
     }
@@ -162,6 +149,7 @@ public class TestTestContext {
         return userAnswer;
     }
 
+    @NonNull
     public Test getTest() {
         return test;
     }

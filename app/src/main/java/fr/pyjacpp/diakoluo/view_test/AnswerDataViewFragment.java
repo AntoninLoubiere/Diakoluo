@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.TableRow;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -35,21 +36,23 @@ import java.util.ArrayList;
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.OnSwipeTouchListener;
 import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.DataRow;
+import fr.pyjacpp.diakoluo.tests.Test;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
-public class AnswerDataViewFragment extends Fragment {
+public class AnswerDataViewFragment extends Fragment implements DiakoluoApplication.GetTestRunnable {
     static final String ARG_ANSWER_INDEX = "answer_index";
 
     private int answerIndex;
 
     private OnFragmentInteractionListener mListener;
+    private View inflatedView;
 
     public AnswerDataViewFragment() {
     }
 
-    
+
     public static AnswerDataViewFragment newInstance(int answerIndex) {
         AnswerDataViewFragment fragment = new AnswerDataViewFragment();
         Bundle args = new Bundle();
@@ -67,34 +70,16 @@ public class AnswerDataViewFragment extends Fragment {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final View inflatedView = inflater.inflate(R.layout.fragment_view_answer_data, container, false);
-        LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
+        inflatedView = inflater.inflate(R.layout.fragment_view_answer_data, container, false);
 
-        DataRow row = DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getListRow().get(answerIndex);
-
-        LinearLayout.LayoutParams params = new TableRow.LayoutParams();
-        params.topMargin = 24;
-
-        ArrayList<Column> listColumn = DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getListColumn();
-        for (int i = 0; i < listColumn.size(); i++) {
-            Column column = listColumn.get(i);
-
-            DataCell dataCell = row.getListCells().get(column);
-            if (dataCell != null) {
-                View columnTitle = column.showColumnName(inflatedView.getContext());
-
-                if (i > 0)
-                    columnTitle.setLayoutParams(params);
-
-                layout.addView(columnTitle);
-                layout.addView(column.showViewValueView(inflatedView.getContext(), dataCell));
-            }
-        }
+        DiakoluoApplication.get(requireContext()).getCurrentTest(
+                new DiakoluoApplication.GetTest(
+                        false, (AppCompatActivity) getActivity(), false,
+                        this));
 
         inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
             @Override
@@ -128,9 +113,48 @@ public class AnswerDataViewFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        mListener.errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        // FIXME
+        DataRow row = test.getListRow().get(answerIndex);
+
+        LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
+
+        LinearLayout.LayoutParams params = new TableRow.LayoutParams();
+        params.topMargin = 24;
+
+        ArrayList<Column> listColumn = test.getListColumn();
+        for (int i = 0; i < listColumn.size(); i++) {
+            Column column = listColumn.get(i);
+
+            DataCell dataCell = row.getListCells().get(column);
+            if (dataCell != null) {
+                View columnTitle = column.showColumnName(requireContext());
+
+                if (i > 0)
+                    columnTitle.setLayoutParams(params);
+
+                layout.addView(columnTitle);
+                layout.addView(column.showViewValueView(requireContext(), dataCell));
+            }
+        }
+    }
+
     interface OnFragmentInteractionListener {
         void onSwipeRight();
+
         void onSwipeLeft();
+
+        void errorFinish(boolean canceled);
     }
 }
 

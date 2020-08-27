@@ -22,6 +22,8 @@ package fr.pyjacpp.diakoluo.save_test;
 import android.util.Log;
 import android.util.Xml;
 
+import androidx.annotation.Nullable;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -48,6 +50,7 @@ public class XmlLoader {
      * @throws IOException if while loading the file an error occur
      * @throws XmlPullParserException if while loading the file an exception occur
      */
+    @Nullable
     public static Test load(InputStream fileInputStream) throws IOException, XmlPullParserException {
             // configure parser
         XmlPullParser parser = Xml.newPullParser();
