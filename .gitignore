@@ -36,3 +36,5 @@ captures/
 \.idea/
 
 app/google-services.json
+
+app/exts.gradle
