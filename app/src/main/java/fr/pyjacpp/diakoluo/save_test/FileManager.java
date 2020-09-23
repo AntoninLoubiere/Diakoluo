@@ -268,7 +268,7 @@ public class FileManager {
         if (fileCreateContext == null) {
             DiakoluoApplication diakoluoApplication = DiakoluoApplication.get(activity);
             diakoluoApplication.getCurrentTest(
-                    new DiakoluoApplication.GetTest(false, activity,
+                    new DiakoluoApplication.GetTest(true, activity,
                             new DiakoluoApplication.GetTestRunnable() {
                                 @Override
                                 public void loadingInProgress() {

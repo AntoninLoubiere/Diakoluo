@@ -85,14 +85,14 @@ public class ListTestActivity extends AppCompatActivity
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DiakoluoApplication.get(ListTestActivity.this).setCurrentEditTest(
+                diakoluoApplication.setCurrentEditTest(
                         DiakoluoApplication.NEW_CURRENT_EDIT_TEST);
                 startActivity(new Intent(ListTestActivity.this, EditTestActivity.class));
             }
         });
 
         if (detailMainInformationTest) {
-            if (DiakoluoApplication.get(this).getListTest().size() > 0)
+            if (diakoluoApplication.getListTest().size() > 0)
                 updateDetail(0);
         }
     }
@@ -109,10 +109,10 @@ public class ListTestActivity extends AppCompatActivity
     private void updateDetail(int position) {
         if (mainInformationViewTestFragment != null) {
             if (position < 0) {
-                DiakoluoApplication.get(this).setCurrentTest(
+                diakoluoApplication.setCurrentTest(
                         DiakoluoApplication.NO_CURRENT_EDIT_TEST);
             } else {
-                DiakoluoApplication.get(this).setCurrentTest(position);
+                diakoluoApplication.setCurrentTest(position);
             }
 
             currentTestSelected = position;
@@ -146,9 +146,9 @@ public class ListTestActivity extends AppCompatActivity
 
     @Override
     public void onPlayButtonClick(View view, int position) {
-        CompactTest currentTest = DiakoluoApplication.get(this).getListTest().get(position);
+        CompactTest currentTest = diakoluoApplication.getListTest().get(position);
         if (currentTest.isPlayable()) {
-            DiakoluoApplication.get(this).setCurrentTest(position);
+            diakoluoApplication.setCurrentTest(position);
 
             startActivity(new Intent(view.getContext(), TestSettingsActivity.class));
         } // TODO warning
@@ -156,14 +156,14 @@ public class ListTestActivity extends AppCompatActivity
 
     @Override
     public void onSeeButtonClick(View view, int position) {
-        DiakoluoApplication.get(this).setCurrentTest(position);
+        diakoluoApplication.setCurrentTest(position);
 
         startActivity(new Intent(view.getContext(), ViewTestActivity.class));
     }
 
     @Override
     public void onEditMenuItemClick(View view, int position) {
-        DiakoluoApplication.get(this).setCurrentEditTest(position);
+        diakoluoApplication.setCurrentEditTest(position);
         startActivity(new Intent(view.getContext(), EditTestActivity.class));
     }
 
@@ -190,16 +190,14 @@ public class ListTestActivity extends AppCompatActivity
         FileManager.exportTestResult(this, requestCode, resultCode, data, addButton, new FileManager.ResultListener() {
             @Override
             public void showXmlImportDialog(FileManager.ImportXmlContext importContext) {
-                DiakoluoApplication.get(ListTestActivity.this)
-                        .setCurrentImportContext(importContext);
+                diakoluoApplication.setCurrentImportContext(importContext);
                 ImportXmlDialogFragment importXmlDialogFragment = new ImportXmlDialogFragment();
                 importXmlDialogFragment.show(getSupportFragmentManager(), "dialog");
             }
 
             @Override
             public void showCsvImportDialog(FileManager.ImportCsvContext importContext) {
-                DiakoluoApplication.get(ListTestActivity.this)
-                        .setCurrentImportContext(importContext);
+                diakoluoApplication.setCurrentImportContext(importContext);
                 ImportCsvDialogFragment importCsvDialogFragment = new ImportCsvDialogFragment();
                 importCsvDialogFragment.show(getSupportFragmentManager(), "dialog");
             }
@@ -208,11 +206,13 @@ public class ListTestActivity extends AppCompatActivity
 
     @Override
     public void createXmlFile(int position, boolean saveNumberTestDone) {
+        diakoluoApplication.setCurrentTest(position);
         FileManager.exportXmlTest(ListTestActivity.this, saveNumberTestDone);
     }
 
     @Override
     public void createCsvFile(int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
+        diakoluoApplication.setCurrentTest(position);
         FileManager.exportCsvTest(ListTestActivity.this, columnHeader, columnTypeHeader, separator, lineSeparator);
     }
 

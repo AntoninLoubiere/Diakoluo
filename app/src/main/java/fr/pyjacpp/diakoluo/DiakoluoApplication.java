@@ -262,7 +262,7 @@ public class DiakoluoApplication extends Application {
      */
     @Nullable
     public Test loadCompleteTest(int position) {
-        return FileManager.loadFromPrivateFile(this, listTestFilename.get(position));
+        return FileManager.loadFromPrivateFile(this, listTest.get(position).getFilename());
     }
 
     /**
@@ -457,6 +457,10 @@ public class DiakoluoApplication extends Application {
             saveTest(currentEditTest, currentEditTestIndex);
             currentEditTest.registerModificationDate();
 
+            if (currentTestIndex == currentEditTestIndex) {
+                currentTest = currentEditTest;
+            }
+
             setCurrentEditTest(NO_CURRENT_EDIT_TEST);
             RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
                     RecyclerViewChange.ItemChanged
@@ -481,15 +485,17 @@ public class DiakoluoApplication extends Application {
         currentEditTestIndex = position;
         currentEditTest = null;
 
-        if (position >= 0 | position == NEW_CURRENT_EDIT_TEST) {
+        if (position >= 0 || position == NEW_CURRENT_EDIT_TEST) {
             loadCurrentEditTestThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if (currentTestIndex == NEW_CURRENT_EDIT_TEST) {
+                    if (currentEditTestIndex == NEW_CURRENT_EDIT_TEST) {
                         currentEditTest = new Test(getString(R.string.test_default_name),
                                 getString(R.string.test_default_description));
+                    } else if (currentEditTestIndex == currentTestIndex && currentTest != null) {
+                        currentEditTest = new Test(currentTest);
                     } else {
-                        currentEditTest = loadCompleteTest(currentTestIndex);
+                        currentEditTest = loadCompleteTest(currentEditTestIndex);
                     }
                     if (currentEditTest == null) {
                         currentEditTestIndex = NO_CURRENT_EDIT_TEST;

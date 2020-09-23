@@ -72,7 +72,7 @@ public class ColumnDataViewFragment extends Fragment {
         inflatedView = inflater.inflate(R.layout.fragment_view_column_data, container, false);
 
         DiakoluoApplication.get(requireContext()).getCurrentTest(
-                new DiakoluoApplication.GetTest(false, (AppCompatActivity) getActivity(),
+                new DiakoluoApplication.GetTest(true, (AppCompatActivity) getActivity(),
                         false, new DiakoluoApplication.GetTestRunnable() {
                     @Override
                     public void loadingInProgress() {
