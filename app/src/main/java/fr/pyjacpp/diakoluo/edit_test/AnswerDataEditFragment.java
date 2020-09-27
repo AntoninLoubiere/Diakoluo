@@ -21,6 +21,8 @@ package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -37,10 +40,11 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.OnSwipeTouchListener;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.DataRow;
+import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
-public class AnswerDataEditFragment extends Fragment {
+public class AnswerDataEditFragment extends Fragment implements DiakoluoApplication.GetTestRunnable {
     static final String ARG_ANSWER_INDEX = "answer_index";
 
     private final HashMap<Column, View> columnAnswerEditHashMap = new HashMap<>();
@@ -51,6 +55,9 @@ public class AnswerDataEditFragment extends Fragment {
 
     private View inflatedView;
     private int answerIndex;
+    @Nullable
+    private Test editTest;
+    private LinearLayout layout;
 
     public AnswerDataEditFragment() {
     }
@@ -79,44 +86,11 @@ public class AnswerDataEditFragment extends Fragment {
         inflatedView = inflater.inflate(R.layout.fragment_edit_answer_data, container, false);
 
         if (answerIndex >= 0) {
-            LinearLayout layout = inflatedView.findViewById(R.id.answerListLinearLayout);
+            layout = inflatedView.findViewById(R.id.answerListLinearLayout);
 
-            DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
-
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(layout.getLayoutParams());
-            params.topMargin = 24;
-
-            View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean b) {
-                    if (!b)
-                        saveChanges();
-                }
-            };
-
-            ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
-            for (int i = 0; i < listColumn.size(); i++) {
-                Column column = listColumn.get(i);
-
-                DataCell dataCell = row.getListCells().get(column);
-                View columnTitle = column.showColumnName(inflatedView.getContext());
-
-                if (i > 0)
-                    columnTitle.setLayoutParams(params);
-
-                layout.addView(columnTitle);
-
-                if (dataCell == null) {
-                    dataCell = DataCell.newCellWithDefaultValue(column);
-                    row.getListCells().put(column, dataCell);
-                }
-
-                View columnValue = column.showEditValueView(inflatedView.getContext(),
-                        dataCell.getValue());
-                columnAnswerEditHashMap.put(column, columnValue);
-                columnValue.setOnFocusChangeListener(onFocusChangeListener);
-                layout.addView(columnValue);
-            }
+            DiakoluoApplication.get(inflatedView.getContext()).getCurrentEditTest(
+                    new DiakoluoApplication.GetTest(true,
+                            (AppCompatActivity) getActivity(), false, this));
         }
 
         inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
@@ -164,10 +138,10 @@ public class AnswerDataEditFragment extends Fragment {
     }
 
     private void saveChanges() {
-        if (answerIndex >= 0) {
-            DataRow row = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListRow().get(answerIndex);
+        if (answerIndex >= 0 && editTest != null) {
+            DataRow row = editTest.getListRow().get(answerIndex);
+            ArrayList<Column> listColumn = editTest.getListColumn();
 
-            ArrayList<Column> listColumn = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getListColumn();
             for (int i = 0; i < listColumn.size(); i++) {
                 Column column = listColumn.get(i);
 
@@ -203,10 +177,69 @@ public class AnswerDataEditFragment extends Fragment {
         }
     }
 
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        mListener.errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        editTest = test;
+        final DataRow row = editTest.getListRow().get(answerIndex);
+
+        final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(layout.getLayoutParams());
+        params.topMargin = 24;
+
+        final View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b)
+                    saveChanges();
+            }
+        };
+
+        final ArrayList<Column> listColumn = editTest.getListColumn();
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < listColumn.size(); i++) {
+                    Column column = listColumn.get(i);
+
+                    DataCell dataCell = row.getListCells().get(column);
+                    View columnTitle = column.showColumnName(inflatedView.getContext());
+
+                    if (i > 0)
+                        columnTitle.setLayoutParams(params);
+
+                    layout.addView(columnTitle);
+
+                    if (dataCell == null) {
+                        dataCell = DataCell.newCellWithDefaultValue(column);
+                        row.getListCells().put(column, dataCell);
+                    }
+
+                    View columnValue = column.showEditValueView(inflatedView.getContext(),
+                            dataCell.getValue());
+                    columnAnswerEditHashMap.put(column, columnValue);
+                    columnValue.setOnFocusChangeListener(onFocusChangeListener);
+                    layout.addView(columnValue);
+                }
+            }
+        });
+    }
+
     interface OnFragmentInteractionListener {
         void updateAnswerRecyclerItem(int position);
+
         void onSwipeRight();
+
         void onSwipeLeft();
+
+        void errorFinish(boolean canceled);
     }
 
     interface OnParentFragmentInteractionListener {

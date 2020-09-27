@@ -25,6 +25,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,6 +34,8 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -48,6 +52,7 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.Utils;
+import fr.pyjacpp.diakoluo.tests.CompactTest;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 public class EditTestActivity extends AppCompatActivity
@@ -58,7 +63,7 @@ public class EditTestActivity extends AppCompatActivity
         ColumnEditTestFragment.OnFragmentInteractionListener,
         ColumnDataEditFragment.OnFragmentInteractionListener,
         ColumnEditTestRecyclerListFragment.OnFragmentInteractionListener,
-        MainInformationEditTestFragment.OnFragmentInteractionListener {
+        MainInformationEditTestFragment.OnFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
 
     public static final String ACTION_BROADCAST_UPDATE_COLUMN_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.UPDATE_COLUMN_RECYCLER";
     public static final String ACTION_BROADCAST_UPDATE_ANSWER_RECYCLER = "fr.pyjacpp.diakoluo.edit_test.UPDATE_ANSWER_RECYCLER";
@@ -67,18 +72,29 @@ public class EditTestActivity extends AppCompatActivity
     public static final String EXTRA_INT_POSITION = "position";
 
     private EditTestPagerAdapterFragment adapter;
+    @Nullable
+    private Test editTest;
+    private int editTestIndex;
+    private ArrayList<CompactTest> listTest;
+    private TextView title;
+    private DiakoluoApplication diakoluoApplication;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private Button cancelButton;
+    private Button validButton;
+    private ImageButton resetButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_test);
 
-        TextView title = findViewById(R.id.title);
+        title = findViewById(R.id.title);
         ImageButton navigation = findViewById(R.id.navigationIcon);
 
-        final Test currentEditTest = DiakoluoApplication.getCurrentEditTest(this);
-        title.setText(currentEditTest == null || currentEditTest.getName().equals("") ?
-                getString(R.string.app_name) : currentEditTest.getName());
+        diakoluoApplication = DiakoluoApplication.get(this);
+
+
         navigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,82 +102,17 @@ public class EditTestActivity extends AppCompatActivity
             }
         });
 
-        TabLayout tabLayout = findViewById(R.id.viewTestTabLayout);
-        ViewPager viewPager = findViewById(R.id.viewTestViewPager);
-        Button cancelButton = findViewById(R.id.cancelButton);
-        Button validButton = findViewById(R.id.validButton);
-        ImageButton resetButton = findViewById(R.id.resetButton);
+        tabLayout = findViewById(R.id.viewTestTabLayout);
+        viewPager = findViewById(R.id.viewTestViewPager);
+        cancelButton = findViewById(R.id.cancelButton);
+        validButton = findViewById(R.id.validButton);
+        resetButton = findViewById(R.id.resetButton);
 
-        viewPager.setOffscreenPageLimit(2);
-
-        tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        adapter = new EditTestPagerAdapterFragment(
-                getSupportFragmentManager(),
-                FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, this
-        );
-        viewPager.setAdapter(adapter);
 
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
-        validButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Test editTest = DiakoluoApplication.getCurrentEditTest(EditTestActivity.this);
-
-                ArrayDeque<Utils.EditValidator> errorValidatorDeque = new ArrayDeque<>();
-
-                saveInTestVar();
-
-                Utils.EditValidator response = titleEditTestValidator(editTest.getName());
-                errorValidatorDeque.add(response);
-
-                response = descriptionEditTestValidator(editTest.getDescription());
-                errorValidatorDeque.add(response);
-
-                Utils.VerifyAndAsk verifyAndAsk = new Utils.VerifyAndAsk(EditTestActivity.this, new Runnable() {
-                    @Override
-                    public void run() {
-                        createModifyEditTest();
-                    }
-                });
-                verifyAndAsk.run(errorValidatorDeque);
-            }
-        });
-
-        resetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new MaterialAlertDialogBuilder(EditTestActivity.this)
-                        .setTitle(R.string.dialog_reset_title)
-                        .setMessage(R.string.dialog_reset_message)
-                        .setIcon(R.drawable.ic_reset_accent_color_24dp)
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        })
-                        .setPositiveButton(R.string.reset, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                if (currentEditTest != null) {
-                                    currentEditTest.reset();
-                                    MainInformationEditTestFragment mainInformationEditTestFragment  =
-                                            (MainInformationEditTestFragment) adapter.getFragmentAtPosition(0);
-                                    mainInformationEditTestFragment.updateTestDid();
-                                    dialogInterface.dismiss();
-                                }
-                            }
-                        })
-                        .show();
-            }
-        });
+        diakoluoApplication.getCurrentEditTest(
+                new DiakoluoApplication.GetTest(false,
+                        this, this));
 
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.registerReceiver(new BroadcastReceiver() {
@@ -204,49 +155,43 @@ public class EditTestActivity extends AppCompatActivity
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<Test> listTest = DiakoluoApplication.getListTest(EditTestActivity.this);
-                Test editTest = DiakoluoApplication.getCurrentEditTest(EditTestActivity.this);
-                Integer currentIndex = DiakoluoApplication.getCurrentIndexEditTest(EditTestActivity.this);
-
-                if (currentIndex == null) {
-                    listTest.add(editTest);
-                    DiakoluoApplication.setCurrentIndexEditTest(EditTestActivity.this, null);
-                    RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
-                            RecyclerViewChange.ItemInserted
-                    );
-                    recyclerViewChange.setPosition(listTest.size() - 1);
-                    DiakoluoApplication.setTestListChanged(EditTestActivity.this, recyclerViewChange);
-                } else {
-                    listTest.set(currentIndex, editTest);
-                    DiakoluoApplication.setCurrentIndexEditTest(EditTestActivity.this, null);
-                    RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
-                            RecyclerViewChange.ItemChanged
-                    );
-                    editTest.registerModificationDate();
-                    recyclerViewChange.setPosition(currentIndex);
-                    DiakoluoApplication.setTestListChanged(EditTestActivity.this, recyclerViewChange);
-                }
-                DiakoluoApplication.saveTest(EditTestActivity.this);
+                DiakoluoApplication.get(EditTestActivity.this).applyCurrentEditTest();
             }
         }).start();
     }
 
     private void saveInTestVar() {
-        Test editTest = DiakoluoApplication.getCurrentEditTest(EditTestActivity.this);
+        if (editTest != null) {
+            EditText title = findViewById(R.id.titleEditText);
+            EditText description = findViewById(R.id.descriptionEditText);
+            Spinner scoreMethod = findViewById(R.id.scoreMethodSpinner);
 
-        EditText title = findViewById(R.id.titleEditText);
-        EditText description = findViewById(R.id.descriptionEditText);
-        Spinner scoreMethod = findViewById(R.id.scoreMethodSpinner);
+            editTest.setName(title.getText().toString());
+            editTest.setDescription(description.getText().toString());
+            editTest.setScoreMethod(scoreMethod.getSelectedItemPosition() == 0);
+        }
+    }
 
-        editTest.setName(title.getText().toString());
-        editTest.setDescription(description.getText().toString());
-        editTest.setScoreMethod(scoreMethod.getSelectedItemPosition() == 0);
+    private void updateNewColumn() {
+        Fragment columnEditTestFragment = adapter.getFragmentAtPosition(1);
+
+        if (columnEditTestFragment != null) {
+            ((ColumnEditTestFragment) columnEditTestFragment).updateNewItem(this);
+        }
+    }
+
+    private void updateNewAnswer() {
+        Fragment answerEditTestFragment = adapter.getFragmentAtPosition(2);
+
+        if (answerEditTestFragment != null) {
+            ((AnswerEditTestFragment) answerEditTestFragment).updateNewItem();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (DiakoluoApplication.getCurrentEditTest(EditTestActivity.this) != null)
+        if (editTest != null)
             saveInTestVar();
     }
 
@@ -255,13 +200,10 @@ public class EditTestActivity extends AppCompatActivity
         if (text.length() <= 0) {
             return new Utils.EditValidator(R.string.error_label_title_blank);
         } else {
-            ArrayList<Test> listTest = DiakoluoApplication.getListTest(this);
-            Integer currentIndexEditTest = DiakoluoApplication.getCurrentIndexEditTest(this);
-
             for (int i = 0; i < listTest.size(); i++) {
-                Test test = listTest.get(i);
+                CompactTest test = listTest.get(i);
 
-                if (test.getName().equalsIgnoreCase(text) && (currentIndexEditTest == null || currentIndexEditTest != i)) {
+                if (test.getName().equalsIgnoreCase(text) && (editTestIndex != i)) {
 
                     return new Utils.EditValidator(R.string.error_label_title_already_exist, true);
                 }
@@ -277,7 +219,7 @@ public class EditTestActivity extends AppCompatActivity
 
     @Override
     public void updateAnswerRecycler(final RecyclerViewChange recyclerViewChange) {
-        Fragment answerEditTestFragment  = adapter.getFragmentAtPosition(2);
+        Fragment answerEditTestFragment = adapter.getFragmentAtPosition(2);
 
         if (answerEditTestFragment != null) {
             ((AnswerEditTestFragment) answerEditTestFragment).updateAnswerRecycler(recyclerViewChange);
@@ -293,7 +235,7 @@ public class EditTestActivity extends AppCompatActivity
 
     @Override
     public void updateColumnRecyclerItem(final int position) {
-        Fragment columnEditTestFragment  = adapter.getFragmentAtPosition(1);
+        Fragment columnEditTestFragment = adapter.getFragmentAtPosition(1);
 
         if (columnEditTestFragment != null) {
             ((ColumnEditTestFragment) columnEditTestFragment).updateItem(position);
@@ -308,19 +250,106 @@ public class EditTestActivity extends AppCompatActivity
     public void onSwipeLeft() {
     }
 
-    private void updateNewColumn() {
-        Fragment columnEditTestFragment  = adapter.getFragmentAtPosition(1);
-
-        if (columnEditTestFragment != null) {
-            ((ColumnEditTestFragment) columnEditTestFragment).updateNewItem(this);
-        }
+    @Override
+    public void errorFinish(boolean canceled) {
+        finish();
+        if (!canceled) Log.e(getClass().getName(), "No current test, abort.");
     }
 
-    private void updateNewAnswer() {
-        Fragment answerEditTestFragment  = adapter.getFragmentAtPosition(2);
+    @Override
+    public void loadingInProgress() {
 
-        if (answerEditTestFragment != null) {
-            ((AnswerEditTestFragment) answerEditTestFragment).updateNewItem(this);
-        }
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        editTest = test;
+
+        listTest = diakoluoApplication.getListTest();
+        editTestIndex = diakoluoApplication.getCurrentEditTestIndex();
+
+        viewPager.setOffscreenPageLimit(2);
+
+        tabLayout.setupWithViewPager(viewPager);
+        adapter = new EditTestPagerAdapterFragment(
+                getSupportFragmentManager(),
+                FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, this
+        );
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        validButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (editTest != null) {
+                    ArrayDeque<Utils.EditValidator> errorValidatorDeque = new ArrayDeque<>();
+
+                    saveInTestVar();
+
+                    Utils.EditValidator response = titleEditTestValidator(editTest.getName());
+                    errorValidatorDeque.add(response);
+
+                    response = descriptionEditTestValidator(editTest.getDescription());
+                    errorValidatorDeque.add(response);
+
+                    Utils.VerifyAndAsk verifyAndAsk = new Utils.VerifyAndAsk(EditTestActivity.this, new Runnable() {
+                        @Override
+                        public void run() {
+                            createModifyEditTest();
+                        }
+                    });
+                    verifyAndAsk.run(errorValidatorDeque);
+                }
+            }
+        });
+
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new MaterialAlertDialogBuilder(EditTestActivity.this)
+                        .setTitle(R.string.dialog_reset_title)
+                        .setMessage(R.string.dialog_reset_message)
+                        .setIcon(R.drawable.ic_reset_accent_color_24dp)
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setPositiveButton(R.string.reset, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (editTest != null) {
+                                    editTest.reset();
+                                    MainInformationEditTestFragment mainInformationEditTestFragment =
+                                            (MainInformationEditTestFragment) adapter.getFragmentAtPosition(0);
+                                    mainInformationEditTestFragment.updateTestDid();
+                                    dialogInterface.dismiss();
+                                }
+                            }
+                        })
+                        .show();
+            }
+        });
+
+        new Handler(getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                String name = editTest.getName();
+                title.setText(name.equals("") ?
+                        getString(R.string.app_name) : name);
+                viewPager.setAdapter(adapter);
+            }
+        });
     }
 }

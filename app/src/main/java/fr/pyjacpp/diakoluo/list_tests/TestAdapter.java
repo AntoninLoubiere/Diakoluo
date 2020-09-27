@@ -34,7 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.tests.Test;
+import fr.pyjacpp.diakoluo.tests.CompactTest;
 
 class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<TestAdapter.TestViewHolder> {
     private final Context context;
@@ -87,10 +87,10 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
 
     @Override
     public void onBindViewHolder(@NonNull final TestViewHolder holder, final int position) {
-        final Test currentTest = DiakoluoApplication.getListTest(context).get(position);
+        final CompactTest currentTest = DiakoluoApplication.get(context).getListTest().get(position);
 
         holder.title.setText(currentTest.getName());
-        holder.description.setText(currentTest.getDescription());
+        holder.description.setText(currentTest.getCompactDescription());
 
         holder.playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,7 +153,7 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
             }
         });
 
-        if (!currentTest.canBePlay()) {
+        if (!currentTest.isPlayable()) {
             holder.playButton.setImageDrawable(
                     ResourcesCompat.getDrawable(context.getResources(),
                             R.drawable.ic_play_arrow_gray_24dp, null));
@@ -162,7 +162,7 @@ class TestAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Test
 
     @Override
     public int getItemCount() {
-        return DiakoluoApplication.getListTest(context).size();
+        return DiakoluoApplication.get(context).getListTest().size();
     }
 
     public TestViewListener getListener() {

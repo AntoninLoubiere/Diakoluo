@@ -49,14 +49,14 @@ public class SettingsActivity extends AppCompatActivity {
         analyticsCheckBox = findViewById(R.id.analyticsCheckBox);
         crashCheckBox = findViewById(R.id.crashCheckBox);
 
-        analyticsCheckBox.setChecked(DiakoluoApplication.getAnalyticsEnable(this));
-        crashCheckBox.setChecked(DiakoluoApplication.getCrashlyticsEnable(this));
+        analyticsCheckBox.setChecked(DiakoluoApplication.get(this).getAnalyticsEnable());
+        crashCheckBox.setChecked(DiakoluoApplication.get(this).getCrashlyticsEnable());
     }
 
     @Override
     protected void onStop() {
-        DiakoluoApplication.setAnalyticsEnable(this, analyticsCheckBox.isChecked());
-        DiakoluoApplication.setCrashlyticsEnable(this, crashCheckBox.isChecked());
+        DiakoluoApplication.get(this).setAnalyticsEnable(analyticsCheckBox.isChecked());
+        DiakoluoApplication.get(this).setCrashlyticsEnable(crashCheckBox.isChecked());
         super.onStop();
     }
 

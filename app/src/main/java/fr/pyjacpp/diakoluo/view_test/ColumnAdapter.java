@@ -20,7 +20,6 @@
 package fr.pyjacpp.diakoluo.view_test;
 
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,12 +28,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 class ColumnAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<ColumnAdapter.ColumnViewHolder> {
-    private final Context context;
+    private final Test currentTest;
 
     static class ColumnViewHolder extends RecyclerView.ViewHolder {
 
@@ -49,8 +47,8 @@ class ColumnAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Co
         }
     }
 
-    ColumnAdapter(Context context) {
-        this.context = context;
+    ColumnAdapter(Test currentTest) {
+        this.currentTest = currentTest;
     }
 
     @NonNull
@@ -64,7 +62,6 @@ class ColumnAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Co
 
     @Override
     public void onBindViewHolder(@NonNull ColumnViewHolder holder, int position) {
-        Test currentTest = DiakoluoApplication.getCurrentTest(context);
 
         holder.title.setText(currentTest.getListColumn().get(position).getName());
         holder.description.setText(currentTest.getListColumn().get(position).getDescription());
@@ -73,7 +70,7 @@ class ColumnAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<Co
 
     @Override
     public int getItemCount() {
-        return DiakoluoApplication.getCurrentTest(context).getNumberColumn();
+        return currentTest.getNumberColumn();
     }
 
 }

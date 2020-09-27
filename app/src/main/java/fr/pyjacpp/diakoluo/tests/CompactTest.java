@@ -19,30 +19,67 @@
 
 package fr.pyjacpp.diakoluo.tests;
 
-class CompactTest {
+/**
+ * An object that represent a test with commons informations stored but no data so it's save memory.
+ */
+public class CompactTest {
+    private static final short MAX_DESCRIPTION_LENGTH = 100;
     private String name;
     private String compactDescription;
+    private String filename;
+    private boolean playable;
 
-    public CompactTest(String name, String description) {
-        this.name = name;
-        this.compactDescription = description; // FIXME need to be cut ?
+    /**
+     * Create a new compact test form a test.
+     * @param test the test to wrap
+     */
+    public CompactTest(Test test) {
+        update(test);
     }
 
-    private String filename;
+    /**
+     * Update the compact from the test.
+     * @param test the test which is associated with this
+     */
+    public void update(Test test) {
+        name = test.getName();
+        String description = test.getDescription();
+        compactDescription = description.length() > MAX_DESCRIPTION_LENGTH ?
+                description.substring(0, MAX_DESCRIPTION_LENGTH) + '…' : description;
+        filename = test.getFilename();
+        playable = test.isPlayable();
+    }
 
+    /**
+     * Get the name of the test.
+     * @return the name of the test
+     */
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    /**
+     * Get a description that doesn't exceeded {@link #MAX_DESCRIPTION_LENGTH}.
+     * @return the description of the test may be truncated
+     * @see #MAX_DESCRIPTION_LENGTH
+     */
     public String getCompactDescription() {
         return compactDescription;
     }
 
-    public void setCompactDescription(String compactDescription) {
-        this.compactDescription = compactDescription;
+    /**
+     * Get the filename that save the test.
+     * @return the filename of the test
+     */
+    public String getFilename() {
+        return filename;
+    }
+
+    /**
+     * Get if the test is playable.
+     * @return if the test is playable
+     */
+    public boolean isPlayable() {
+        return playable;
     }
 }

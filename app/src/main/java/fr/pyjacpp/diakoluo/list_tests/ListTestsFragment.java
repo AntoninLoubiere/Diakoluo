@@ -22,6 +22,7 @@ package fr.pyjacpp.diakoluo.list_tests;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,15 +35,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
-import fr.pyjacpp.diakoluo.tests.Test;
+import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.tests.CompactTest;
 
 
 public class ListTestsFragment extends Fragment {
+    private DiakoluoApplication diakoluoApplication;
     private OnFragmentInteractionListener listener;
     private RecyclerView testRecyclerView;
     private TestAdapter testRecyclerViewAdapter;
@@ -55,6 +60,8 @@ public class ListTestsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        diakoluoApplication = DiakoluoApplication.get(requireContext());
+
         final View inflatedLayout = inflater.inflate(R.layout.fragment_recycler_list, container, true);
 
         testRecyclerView = inflatedLayout.findViewById(R.id.recyclerView);
@@ -77,7 +84,8 @@ public class ListTestsFragment extends Fragment {
 
             @Override
             public void onDeleteMenuItemClick(final View view, final int position) {
-                final ArrayList<Test> listTest = DiakoluoApplication.getListTest(view.getContext());
+                final ArrayList<CompactTest> listTest =
+                        diakoluoApplication.getListTest();
 
                 new MaterialAlertDialogBuilder(view.getContext())
                         .setTitle(R.string.dialog_delete_test_title)
@@ -112,7 +120,6 @@ public class ListTestsFragment extends Fragment {
         });
 
 
-
         testRecyclerView.setHasFixedSize(true);
         testRecyclerView.setLayoutManager(testRecyclerViewLayoutManager);
         testRecyclerView.setAdapter(testRecyclerViewAdapter);
@@ -124,7 +131,8 @@ public class ListTestsFragment extends Fragment {
     }
 
     private void deleteTest(final View view, final int position) {
-        final ArrayList<Test> listTest = DiakoluoApplication.getListTest(view.getContext());
+        final ArrayList<CompactTest> listTest = diakoluoApplication
+                .getListTest();
         testRecyclerView.removeViewAt(position);
         testRecyclerViewAdapter.notifyItemRemoved(position);
 
@@ -133,8 +141,8 @@ public class ListTestsFragment extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final Test testToDelete = listTest.get(position);
-                DiakoluoApplication.removeTest(view.getContext(), position);
+                final CompactTest testToDelete = listTest.get(position);
+                final File testFile = diakoluoApplication.removeTestAndCache(position);
 
                 Snackbar.make(view, getString(R.string.test_deleted, testToDelete.getName()),
                         Snackbar.LENGTH_LONG)
@@ -142,9 +150,18 @@ public class ListTestsFragment extends Fragment {
                         .setAction(R.string.cancel, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                listTest.add(position, testToDelete);
-                                DiakoluoApplication.saveTest(view.getContext());
-                                testRecyclerViewAdapter.notifyItemInserted(position);
+                                try {
+                                    FileManager.copyTestFromFile(requireContext(),
+                                            testFile, testToDelete.getFilename());
+                                    listTest.add(position, testToDelete);
+                                    testRecyclerViewAdapter.notifyItemInserted(position);
+                                    if (!testFile.delete()) {
+                                        Log.e(getClass().getName(), "Can't delete the cache file");
+                                    }
+                                } catch (IOException e) {
+                                    Log.e(getClass().getName(),
+                                            "can't recover the deleted test !", e);
+                                }
                             }
                         })
                         .setAnchorView(R.id.addFloatingButton).show();
@@ -157,10 +174,10 @@ public class ListTestsFragment extends Fragment {
         super.onResume();
         Context context = getContext();
         if (context != null) {
-            RecyclerViewChange testListChanged = DiakoluoApplication.getTestListChanged(context);
+            RecyclerViewChange testListChanged = DiakoluoApplication.get(context).getTestListChanged();
             if (testListChanged != null) {
                 testListChanged.apply(testRecyclerViewAdapter);
-                DiakoluoApplication.setTestListChanged(context, null);
+                DiakoluoApplication.get(context).setTestListChanged(null);
             }
         }
     }
@@ -180,12 +197,17 @@ public class ListTestsFragment extends Fragment {
         testRecyclerViewAdapter.notifyItemInserted(position);
     }
 
-    public interface OnFragmentInteractionListener{
+    public interface OnFragmentInteractionListener {
         void onItemClick(View view, int position);
+
         void onPlayButtonClick(View view, int position);
+
         void onSeeButtonClick(View view, int position);
+
         void onEditMenuItemClick(View view, int position);
+
         void onDeleteTest(int position, int listTestSize);
+
         void onExportMenuItemClick(View view, int position);
     }
 }

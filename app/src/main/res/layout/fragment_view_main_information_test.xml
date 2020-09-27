@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
   ~
   ~ This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
@@ -40,8 +39,8 @@
             android:id="@+id/separator1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/dividerColor"
-            android:layout_below="@id/titleTextView"/>
+            android:layout_below="@id/titleTextView"
+            android:background="@color/dividerColor" />
 
         <TextView
             android:id="@+id/createdDateTextView"
@@ -58,9 +57,9 @@
             style="@style/TextAppearance.MaterialComponents.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="italic"
+            android:layout_below="@id/createdDateTextView"
             android:text="@string/last_modification_test_format"
-            android:layout_below="@id/createdDateTextView"/>
+            android:textStyle="italic" />
 
         <TextView
             android:id="@+id/descriptionTextView"
@@ -95,6 +94,13 @@
             android:layout_below="@id/scoreMethod"
             android:layout_marginTop="@dimen/default_margin"
             android:text="@string/number_test_did_format" />
+
+        <ProgressBar
+            android:id="@+id/loadingProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 

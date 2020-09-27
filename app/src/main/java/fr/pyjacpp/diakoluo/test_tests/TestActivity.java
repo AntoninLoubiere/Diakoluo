@@ -22,21 +22,27 @@ package fr.pyjacpp.diakoluo.test_tests;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.tests.Test;
 
-public class TestActivity extends AppCompatActivity implements TestFragment.OnFragmentInteractionListener{
+public class TestActivity extends AppCompatActivity implements TestFragment.OnFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
+
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(DiakoluoApplication.getCurrentTest(this).getName());
+            DiakoluoApplication.get(this).getCurrentTest(
+                    new DiakoluoApplication.GetTest(false, this,
+                            false, this));
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
@@ -48,8 +54,21 @@ public class TestActivity extends AppCompatActivity implements TestFragment.OnFr
     @Override
     public void showScore(TestTestContext context) {
         context.getTest().addNumberTestDid();
-        DiakoluoApplication.saveTest(this);
+        DiakoluoApplication.get(this).saveCurrentTest();
         startActivity(new Intent(getApplicationContext(), TestScoreActivity.class));
         finish();
+    }
+
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        actionBar.setTitle(test.getName());
     }
 }

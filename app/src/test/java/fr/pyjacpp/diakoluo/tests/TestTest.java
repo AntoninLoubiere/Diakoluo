@@ -110,7 +110,7 @@ public class TestTest {
 
     @Test
     public void canBePlay() {
-        assertTrue(defaultTest.canBePlay());
+        assertTrue(defaultTest.isPlayable());
     }
 
     @Test

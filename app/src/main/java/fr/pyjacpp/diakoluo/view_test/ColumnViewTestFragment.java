@@ -27,32 +27,35 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
-
+import fr.pyjacpp.diakoluo.tests.Test;
 
 
 public class ColumnViewTestFragment extends Fragment implements
-        ColumnViewTestRecyclerListFragment.OnParentFragmentInteractionListener {
+        ColumnViewTestRecyclerListFragment.OnParentFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
     private OnFragmentInteractionListener mListener;
 
     private boolean columnDetail;
+    private View inflatedView;
 
     public ColumnViewTestFragment() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View inflatedView = inflater.inflate(R.layout.fragment_view_column_test, container, false);
+        inflatedView = inflater.inflate(R.layout.fragment_view_column_test, container, false);
 
         columnDetail = inflatedView.findViewById(R.id.columnDataViewFragmentContainer) != null;
 
-        if (columnDetail && DiakoluoApplication.getCurrentTest(inflatedView.getContext()).getNumberColumn() > 0) {
-            onItemClick(inflatedView, 0); // show first element
-        }
+        DiakoluoApplication.get(requireContext()).getCurrentTest(
+                new DiakoluoApplication.GetTest(true, (AppCompatActivity) getActivity(),
+                        this));
 
         return inflatedView;
     }
@@ -90,6 +93,23 @@ public class ColumnViewTestFragment extends Fragment implements
         }
     }
 
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        mListener.errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        if (columnDetail && test.getNumberColumn() > 0) {
+            onItemClick(inflatedView, 0); // show first element
+        }
+    }
+
     public interface OnFragmentInteractionListener {
+        void errorFinish(boolean canceled);
     }
 }

@@ -48,12 +48,12 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.Utils;
 import fr.pyjacpp.diakoluo.ViewUtils;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
@@ -546,7 +546,11 @@ public abstract class Column {
         MaterialTextView canBeShowTextView =
                 inflatedView.findViewById(R.id.canBeShowTextView);
 
-        scoreTextView.setText(context.getString(R.string.column_settings_score_view, scoreRight, scoreSkipped, scoreWrong));
+        scoreTextView.setText(context.getString(R.string.column_settings_score_view,
+                Utils.formatScore(scoreRight),
+                Utils.formatScore(scoreSkipped),
+                Utils.formatScore(scoreWrong)));
+
         ViewUtils.setBooleanView(context,
                 canBeHideTextView, isInSettings(SET_CAN_BE_HIDE));
         ViewUtils.setBooleanView(context,
@@ -943,8 +947,7 @@ public abstract class Column {
                 scoreGiven = scoreWrong;
             }
 
-            DecimalFormat decimalFormat = new DecimalFormat("+0.##;-0.##");
-            view.setText(decimalFormat.format(scoreGiven));
+            view.setText(Utils.formatScore(scoreGiven));
 
             return view;
         }

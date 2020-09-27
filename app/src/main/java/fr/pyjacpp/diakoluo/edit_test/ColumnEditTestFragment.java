@@ -29,6 +29,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 public class ColumnEditTestFragment extends Fragment implements
         ColumnEditTestRecyclerListFragment.OnParentFragmentInteractionListener,
-        ColumnDataEditFragment.OnParentFragmentInteractionListener{
+        ColumnDataEditFragment.OnParentFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
     private OnFragmentInteractionListener mListener;
 
     private boolean columnDetail;
@@ -53,6 +54,8 @@ public class ColumnEditTestFragment extends Fragment implements
     @Nullable
     private ColumnDataEditFragment columnDataEditFragment = null;
     private ColumnEditTestRecyclerListFragment columnEditTestRecyclerListFragment;
+    @Nullable
+    private Test editTest;
 
     public ColumnEditTestFragment() {
         // Required empty public constructor
@@ -63,7 +66,11 @@ public class ColumnEditTestFragment extends Fragment implements
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View inflatedView = inflater.inflate(R.layout.fragment_edit_column_test, container, false);
+        final View inflatedView = inflater.inflate(R.layout.fragment_edit_column_test, container, false);
+
+        DiakoluoApplication.get(inflatedView.getContext()).getCurrentEditTest(
+                new DiakoluoApplication.GetTest(true,
+                        (AppCompatActivity) getActivity(), false, this));
 
         columnDetail = inflatedView.findViewById(R.id.columnDataEditFragmentContainer) != null;
 
@@ -74,38 +81,37 @@ public class ColumnEditTestFragment extends Fragment implements
         addColumnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateNewItem(view.getContext());
-                onItemClick(view, DiakoluoApplication.getCurrentEditTest(view.getContext()).getNumberColumn() - 1);
+                if (editTest != null) {
+                    updateNewItem(view.getContext());
+                    onItemClick(editTest.getNumberColumn() - 1);
+                }
             }
         });
-
-        if (columnDetail && DiakoluoApplication.getCurrentEditTest(inflatedView.getContext()).getNumberColumn() > 0) {
-            onItemClick(inflatedView, 0); // show first element
-        }
 
         return inflatedView;
     }
 
     void updateNewItem(Context context) {
-        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(context);
-        ArrayList<Column> listColumn = currentEditTest.getListColumn();
-        Column column = Column.newColumn(ColumnInputType.DEFAULT_INPUT_TYPE, context.getString(R.string.default_column_name, listColumn.size() + 1), "");
-        listColumn.add(column);
+        if (editTest != null) {
+            ArrayList<Column> listColumn = editTest.getListColumn();
+            Column column = Column.newColumn(ColumnInputType.DEFAULT_INPUT_TYPE, context.getString(R.string.default_column_name, listColumn.size() + 1), "");
+            listColumn.add(column);
 
-        for (DataRow row : currentEditTest.getListRow()) {
-            row.getListCells().put(column, DataCell.newCellWithDefaultValue(column));
-        }
-        RecyclerViewChange columnListChanged = new RecyclerViewChange(
-                RecyclerViewChange.ItemInserted
-        );
-        columnListChanged.setPosition(listColumn.size() - 1);
-        columnEditTestRecyclerListFragment.applyRecyclerChanges(columnListChanged);
+            for (DataRow row : editTest.getListRow()) {
+                row.getListCells().put(column, DataCell.newCellWithDefaultValue(column));
+            }
+            RecyclerViewChange columnListChanged = new RecyclerViewChange(
+                    RecyclerViewChange.ItemInserted
+            );
+            columnListChanged.setPosition(listColumn.size() - 1);
+            columnEditTestRecyclerListFragment.applyRecyclerChanges(columnListChanged);
 
-        if (currentEditTest.getNumberColumn() <= 1) {
-            RecyclerViewChange recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.ItemRangeChanged);
-            recyclerViewChange.setPositionStart(0);
-            recyclerViewChange.setPositionEnd(currentEditTest.getNumberRow() - 1);
-            mListener.updateAnswerRecycler(recyclerViewChange);
+            if (editTest.getNumberColumn() <= 1) {
+                RecyclerViewChange recyclerViewChange = new RecyclerViewChange(RecyclerViewChange.ItemRangeChanged);
+                recyclerViewChange.setPositionStart(0);
+                recyclerViewChange.setPositionEnd(editTest.getNumberRow() - 1);
+                mListener.updateAnswerRecycler(recyclerViewChange);
+            }
         }
     }
 
@@ -127,11 +133,11 @@ public class ColumnEditTestFragment extends Fragment implements
     }
 
     @Override
-    public void onItemClick(View view, int position) {
-        onItemClick(view, position, false);
+    public void onItemClick(int position) {
+        onItemClick(position, false);
     }
 
-    public void onItemClick(View view, int position, boolean forceUpdate) {
+    public void onItemClick(int position, boolean forceUpdate) {
         if (columnDetail) {
             if (columnDataEditFragment == null || columnDataEditFragment.getColumnIndex() != position || forceUpdate) {
                 if (position >= 0) {
@@ -153,7 +159,7 @@ public class ColumnEditTestFragment extends Fragment implements
                 }
             }
         } else {
-            Intent intent = new Intent(view.getContext(), ColumnDataEditActivity.class);
+            Intent intent = new Intent(requireContext(), ColumnDataEditActivity.class);
             intent.putExtra(ColumnDataEditFragment.ARG_COLUMN_INDEX, position);
             startActivity(intent);
         }
@@ -186,18 +192,17 @@ public class ColumnEditTestFragment extends Fragment implements
 
     @Override
     public void onDeleteItem(View view, int position) {
-        if (columnDetail && columnDataEditFragment != null) {
+        if (columnDetail && columnDataEditFragment != null && editTest != null) {
             int columnIndex = columnDataEditFragment.getColumnIndex();
             if (position == columnIndex) {
                 columnDataEditFragment.setColumnIndex(-1);
 
-                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
-                if (position < currentEditTest.getNumberColumn()) {
-                    onItemClick(view, position, true);
-                } else if (currentEditTest.getNumberColumn() > 0) {
-                    onItemClick(view, currentEditTest.getNumberColumn() - 1, true);
+                if (position < editTest.getNumberColumn()) {
+                    onItemClick(position, true);
+                } else if (editTest.getNumberColumn() > 0) {
+                    onItemClick(editTest.getNumberColumn() - 1, true);
                 } else {
-                    onItemClick(view, -1, true);
+                    onItemClick(-1, true);
                 }
             } else if (position < columnIndex) {
                 columnDataEditFragment.setColumnIndex(columnIndex - 1);
@@ -210,7 +215,26 @@ public class ColumnEditTestFragment extends Fragment implements
         columnEditTestRecyclerListFragment.updateItem(position);
     }
 
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        mListener.errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        editTest = test;
+        if (columnDetail && editTest.getNumberColumn() > 0) {
+            onItemClick(0); // show first element
+        }
+    }
+
     public interface OnFragmentInteractionListener {
         void updateAnswerRecycler(RecyclerViewChange recyclerViewChange);
+
+        void errorFinish(boolean canceled);
     }
 }

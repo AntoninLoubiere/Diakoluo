@@ -30,7 +30,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.column.Column;
@@ -40,6 +39,7 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
     private final Context context;
 
     private final AnswerViewListener listener;
+    @NonNull private final Test currentTest;
 
     interface AnswerViewListener {
         void onItemClick(View view, View itemView);
@@ -60,9 +60,10 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
         }
     }
 
-    AnswerAdapter(Context context, AnswerViewListener listener) {
+    AnswerAdapter(Context context, AnswerViewListener listener, @NonNull Test currentTest) {
         this.context = context;
         this.listener = listener;
+        this.currentTest = currentTest;
     }
 
     @NonNull
@@ -76,8 +77,6 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull final AnswerViewHolder holder, final int position) {
-        Test currentTest = DiakoluoApplication.getCurrentEditTest(context);
-
         if (currentTest.getNumberColumn() >= 1) {
             Column column = currentTest.getListColumn().get(0);
             DataCell dataCell = currentTest.getListRow().get(position).getListCells().get(
@@ -118,11 +117,6 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
 
     @Override
     public int getItemCount() {
-        Test currentEditTest = DiakoluoApplication.getCurrentEditTest(context);
-        if (currentEditTest == null) {
-            return 0;
-        } else {
-            return currentEditTest.getNumberRow();
-        }
+        return currentTest.getNumberRow();
     }
 }

@@ -147,7 +147,7 @@ public class TestScoreFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-        testTestContext = DiakoluoApplication.getTestTestContext(context);
+        testTestContext = DiakoluoApplication.get(context).getTestTestContext();
     }
 
     @Override

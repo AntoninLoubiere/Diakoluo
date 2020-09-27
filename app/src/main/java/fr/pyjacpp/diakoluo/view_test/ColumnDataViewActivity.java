@@ -20,10 +20,13 @@
 package fr.pyjacpp.diakoluo.view_test;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,26 +34,30 @@ import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-public class ColumnDataViewActivity extends AppCompatActivity implements ColumnDataViewFragment.OnFragmentInteractionListener{
+public class ColumnDataViewActivity extends AppCompatActivity
+        implements ColumnDataViewFragment.OnFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
 
     private int columnIndex;
     private ActionBar actionBar;
+    @Nullable
     private Test currentTest;
     private Button previousButton;
     private Button nextButton;
     private TextView navigationTextView;
+    private boolean fragmentCreated;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_column_data);
 
-        currentTest = DiakoluoApplication.getCurrentTest(this);
         columnIndex = getIntent().getIntExtra(ColumnDataViewFragment.ARG_COLUMN_INDEX, 0);
 
         previousButton = findViewById(R.id.previousButton);
         nextButton = findViewById(R.id.nextButton);
         navigationTextView = findViewById(R.id.navigationTextView);
+
+        fragmentCreated = savedInstanceState != null;
 
         actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -59,11 +66,10 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
         }
 
-        if (savedInstanceState == null) {
-            createFragment();
-        } else {
-            updateNavigation();
-        }
+        DiakoluoApplication.get(this).getCurrentTest(
+                new DiakoluoApplication.GetTest(true, this, false,
+                        this));
+
 
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +77,6 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
                 onSwipeRight();
             }
         });
-
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,6 +86,7 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
     }
 
     private void createFragment() {
+        fragmentCreated = true;
         ColumnDataViewFragment fragment = ColumnDataViewFragment.newInstance(
                 columnIndex
         );
@@ -94,33 +100,35 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
     }
 
     private void updateNavigation() {
-        if (actionBar != null) {
-            actionBar.setTitle(currentTest.getListColumn().get(columnIndex).getName());
-        }
-
-        navigationTextView.setText(getString(R.string.navigation_info, columnIndex + 1,
-                currentTest.getNumberColumn()));
-
-        if (columnIndex > 0) {
-            if (!previousButton.isEnabled()) {
-                previousButton.setVisibility(View.VISIBLE);
-                previousButton.setEnabled(true);
+        if (currentTest != null) {
+            if (actionBar != null) {
+                actionBar.setTitle(currentTest.getListColumn().get(columnIndex).getName());
             }
-            previousButton.setText(currentTest.getListColumn().get(columnIndex - 1).getName());
-        } else {
-            previousButton.setEnabled(false);
-            previousButton.setVisibility(View.GONE);
-        }
 
-        if (columnIndex < currentTest.getNumberColumn() - 1) {
-            if (!nextButton.isEnabled()) {
-                nextButton.setVisibility(View.VISIBLE);
-                nextButton.setEnabled(true);
+            navigationTextView.setText(getString(R.string.navigation_info, columnIndex + 1,
+                    currentTest.getNumberColumn()));
+
+            if (columnIndex > 0) {
+                if (!previousButton.isEnabled()) {
+                    previousButton.setVisibility(View.VISIBLE);
+                    previousButton.setEnabled(true);
+                }
+                previousButton.setText(currentTest.getListColumn().get(columnIndex - 1).getName());
+            } else {
+                previousButton.setEnabled(false);
+                previousButton.setVisibility(View.GONE);
             }
-            nextButton.setText(currentTest.getListColumn().get(columnIndex + 1).getName());
-        } else {
-            nextButton.setEnabled(false);
-            nextButton.setVisibility(View.GONE);
+
+            if (columnIndex < currentTest.getNumberColumn() - 1) {
+                if (!nextButton.isEnabled()) {
+                    nextButton.setVisibility(View.VISIBLE);
+                    nextButton.setEnabled(true);
+                }
+                nextButton.setText(currentTest.getListColumn().get(columnIndex + 1).getName());
+            } else {
+                nextButton.setEnabled(false);
+                nextButton.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -135,10 +143,12 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
 
     @Override
     public void onSwipeLeft() {
-        if (columnIndex < currentTest.getNumberColumn() - 1) {
-            columnIndex += 1;
-            createFragment();
-            getIntent().putExtra(ColumnDataViewFragment.ARG_COLUMN_INDEX, columnIndex);
+        if (currentTest != null) {
+            if (columnIndex < currentTest.getNumberColumn() - 1) {
+                columnIndex += 1;
+                createFragment();
+                getIntent().putExtra(ColumnDataViewFragment.ARG_COLUMN_INDEX, columnIndex);
+            }
         }
     }
 
@@ -148,4 +158,23 @@ public class ColumnDataViewActivity extends AppCompatActivity implements ColumnD
         return true;
     }
 
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        finish();
+        if (!canceled) Log.e(getClass().getName(), "No current test, abort.");
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        currentTest = test;
+        if (fragmentCreated) {
+            updateNavigation();
+        } else {
+            createFragment();
+        }
+    }
 }

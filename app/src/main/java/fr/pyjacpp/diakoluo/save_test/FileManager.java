@@ -28,7 +28,10 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -37,14 +40,18 @@ import com.google.android.material.snackbar.Snackbar;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.Utils;
+import fr.pyjacpp.diakoluo.tests.CompactTest;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 /**
@@ -57,25 +64,25 @@ public class FileManager {
     public static final int VER_ACTUAL = VER_V_0_3_0;
 
     // tag constants
-    public static final String TAG_TEST              = "test";
-    public static final String TAG_NAME              = "name";
-    public static final String TAG_DESCRIPTION       = "description";
-    public static final String TAG_NUMBER_TEST_DID   = "numberTestDid";
-    public static final String TAG_CREATED_DATE      = "createdDate";
+    public static final String TAG_TEST = "test";
+    public static final String TAG_NAME = "name";
+    public static final String TAG_DESCRIPTION = "description";
+    public static final String TAG_NUMBER_TEST_DID = "numberTestDid";
+    public static final String TAG_CREATED_DATE = "createdDate";
     public static final String TAG_LAST_MODIFICATION = "lastModification";
-    public static final String TAG_COLUMNS           = "columns";
-    public static final String TAG_COLUMN            = "column";
-    public static final String TAG_ROWS              = "rows";
-    public static final String TAG_ROW               = "row";
-    public static final String TAG_CELL              = "cell";
-    public static final String TAG_DEFAULT_VALUE     = "defaultValue";
-    public static final String TAG_SETTINGS          = "settings";
-    public static final String TAG_SCORE_RIGHT       = "scoreRight";
-    public static final String TAG_SCORE_WRONG       = "scoreWrong";
-    public static final String TAG_SCORE_SKIPPED     = "scoreSkipped";
-    public static final String TAG_SCORE_METHOD      = "scoreMethod";
-    public static final String ATTRIBUTE_VERSION     = "version";
-    public static final String ATTRIBUTE_INPUT_TYPE  = "inputType";
+    public static final String TAG_COLUMNS = "columns";
+    public static final String TAG_COLUMN = "column";
+    public static final String TAG_ROWS = "rows";
+    public static final String TAG_ROW = "row";
+    public static final String TAG_CELL = "cell";
+    public static final String TAG_DEFAULT_VALUE = "defaultValue";
+    public static final String TAG_SETTINGS = "settings";
+    public static final String TAG_SCORE_RIGHT = "scoreRight";
+    public static final String TAG_SCORE_WRONG = "scoreWrong";
+    public static final String TAG_SCORE_SKIPPED = "scoreSkipped";
+    public static final String TAG_SCORE_METHOD = "scoreMethod";
+    public static final String ATTRIBUTE_VERSION = "version";
+    public static final String ATTRIBUTE_INPUT_TYPE = "inputType";
 
     private static final String MIME_TYPE = "*/*";
 
@@ -94,8 +101,9 @@ public class FileManager {
 
     /**
      * Save a test in a private file.
+     *
      * @param context the context of the application
-     * @param test the test to save
+     * @param test    the test to save
      * @throws IOException ig an IOException occur while writing the file
      */
     public static void saveFromPrivateFile(Context context, Test test) throws IOException {
@@ -107,29 +115,32 @@ public class FileManager {
 
     /**
      * Load a test from a private file.
-     * @param context the context of the application
+     *
+     * @param context  the context of the application
      * @param filename the name of the file to load
-     * @return the test loaded
-     * @throws IOException if an exception occur while reading the file
-     * @throws XmlPullParserException if an exception occur while reading the file
+     * @return the test loaded or null if an error occur
      */
-    public static Test loadFromPrivateFile(Context context, String filename) throws IOException, XmlPullParserException {
-
+    @Nullable
+    public static Test loadFromPrivateFile(Context context, String filename) {
         try (FileInputStream fileInputStream = context.openFileInput(TEST_PREFIX + filename)) {
             Test loadedTest = XmlLoader.load(fileInputStream);
             if (loadedTest != null) {
                 loadedTest.setFilename(filename);
             }
             return loadedTest;
+        } catch (IOException | XmlPullParserException e) {
+            Log.e("DiakoluoApplication", "Can't load test " + filename, e);
+            return null;
         }
     }
 
     /**
      * Load a test from an asset.
-     * @param context the context of the application
+     *
+     * @param context  the context of the application
      * @param filename the name of the file to load
      * @return the test loaded
-     * @throws IOException if an exception occur while reading the file
+     * @throws IOException            if an exception occur while reading the file
      * @throws XmlPullParserException if an exception occur while reading the file
      */
     public static Test loadFromAsset(Context context, String filename) throws IOException, XmlPullParserException {
@@ -145,8 +156,9 @@ public class FileManager {
 
     /**
      * Get an available filename in private files.
+     *
      * @param context the context of the application
-     * @param test the test to find a filename available
+     * @param test    the test to find a filename available
      */
     public static void getAvailableFilename(Context context, Test test) {
         String fileExtension = DKL_EXTENSION;
@@ -169,7 +181,8 @@ public class FileManager {
 
     /**
      * Verify if a filename exist in privates files.
-     * @param context the context of the application
+     *
+     * @param context  the context of the application
      * @param filename the name to verify
      * @return if the filename already exist or not
      */
@@ -184,57 +197,149 @@ public class FileManager {
         return false;
     }
 
+    public static ArrayList<String> getListFilenameTest(Context context) {
+        ArrayList<String> strings = new ArrayList<>();
+        for (String f : context.fileList()) {
+            if (f.startsWith(TEST_PREFIX)) strings.add(f.substring(TEST_PREFIX.length()));
+        }
+        return strings;
+    }
+
     /**
      * Delete a private file.
-     * @param context the context of the application
+     *
+     * @param context     the context of the application
      * @param testRemoved the test removed
      */
-    public static void delete(Context context, Test testRemoved) {
+    public static void delete(Context context, CompactTest testRemoved) {
         context.deleteFile(TEST_PREFIX + testRemoved.getFilename());
     }
 
     /**
-     * Export a test as xml file.
-     * @param activity the activity that export the test
-     * @param position the position of the test in the list
+     * Delete a private file. And cache the file deleted to recover if needed.
+     *
+     * @param context     the context of the application
+     * @param testRemoved the test removed
+     * @return get the cache file that hold the deleted test
+     */
+    public static File deleteAndCache(Context context, CompactTest testRemoved) {
+        File tempFile = null;
+        FileOutputStream fileOutputStream = null;
+        try {
+            tempFile = File.createTempFile(TEST_PREFIX, DKL_EXTENSION, context.getCacheDir());
+            fileOutputStream = new FileOutputStream(tempFile);
+            FileInputStream testInputStream = null;
+            try {
+                testInputStream = context.openFileInput(TEST_PREFIX + testRemoved.getFilename());
+                Utils.copyStream(testInputStream, fileOutputStream);
+            } catch (IOException e) {
+                Log.e("FileManager", "Can't read/copy test file");
+            } finally {
+                if (testInputStream != null) {
+                    try {
+                        testInputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            Log.e("FileManager", "Can't create a temp file");
+        } finally {
+            if (fileOutputStream != null) {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        delete(context, testRemoved);
+        return tempFile;
+    }
+
+    /**
+     * Export the current test as xml file.
+     *
+     * @param activity           the activity that export the test
      * @param saveNumberTestDone if save the number of test done
      */
-    public static void exportXmlTest(Activity activity, int position, boolean saveNumberTestDone) {
+    public static void exportXmlTest(final AppCompatActivity activity, final boolean saveNumberTestDone) {
         if (fileCreateContext == null) {
-            Test testToSave = DiakoluoApplication.getListTest(activity).get(position);
-            fileCreateContext = new XmlCreateContext(position, saveNumberTestDone);
+            DiakoluoApplication diakoluoApplication = DiakoluoApplication.get(activity);
+            diakoluoApplication.getCurrentTest(
+                    new DiakoluoApplication.GetTest(true, activity,
+                            new DiakoluoApplication.GetTestRunnable() {
+                                @Override
+                                public void loadingInProgress() {
 
-            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-            intent.setType(MIME_TYPE);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.putExtra(Intent.EXTRA_TITLE, testToSave.getDefaultFilename() + DKL_EXTENSION);
+                                }
 
-            activity.startActivityForResult(intent, CREATE_DOCUMENT_REQUEST_CODE);
+                                @Override
+                                public void error(boolean canceled) {
+                                    if (!canceled)
+                                        showError(activity, R.string.dialog_export_error_title,
+                                                R.string.dialog_error_cant_load_test);
+                                }
+
+                                @Override
+                                public void success(@NonNull Test test) {
+                                    fileCreateContext = new XmlCreateContext(saveNumberTestDone);
+
+                                    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                                    intent.setType(MIME_TYPE);
+                                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                    intent.putExtra(Intent.EXTRA_TITLE, test.getDefaultFilename() + DKL_EXTENSION);
+
+                                    activity.startActivityForResult(intent, CREATE_DOCUMENT_REQUEST_CODE);
+                                }
+                            }));
         } else {
             Log.w("FileManager", "Can't export test, already waiting result");
         }
     }
 
     /**
-     * Export a test as csv file.
-     * @param activity the activity that export the test
-     * @param position the position of the test in the list
-     * @param columnHeader if columns name need to be saved
+     * Export the current test as csv file.
+     *
+     * @param activity         the activity that export the test
+     * @param columnHeader     if columns name need to be saved
      * @param columnTypeHeader if column type need to be save
-     * @param separator the separator of cell to use
-     * @param lineSeparator the line separator to use
+     * @param separator        the separator of cell to use
+     * @param lineSeparator    the line separator to use
      */
-    public static void exportCsvTest(Activity activity, int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
+    public static void exportCsvTest(final AppCompatActivity activity, final boolean columnHeader, final boolean columnTypeHeader, final String separator, final String lineSeparator) {
         if (fileCreateContext == null) {
-            Test testToSave = DiakoluoApplication.getListTest(activity).get(position);
-            fileCreateContext = new CsvCreateContext(position, columnHeader, columnTypeHeader, separator, lineSeparator);
+            DiakoluoApplication diakoluoApplication = DiakoluoApplication.get(activity);
+            diakoluoApplication.getCurrentTest(
+                    new DiakoluoApplication.GetTest(false, activity,
+                            new DiakoluoApplication.GetTestRunnable() {
 
-            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-            intent.setType(MIME_TYPE);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.putExtra(Intent.EXTRA_TITLE, testToSave.getDefaultFilename() + CSV_EXTENSION);
+                                @Override
+                                public void loadingInProgress() {
+                                }
 
-            activity.startActivityForResult(intent, CREATE_DOCUMENT_REQUEST_CODE);
+                                @Override
+                                public void error(boolean canceled) {
+                                    if (!canceled)
+                                        showError(activity, R.string.dialog_export_error_title,
+                                                R.string.dialog_error_cant_load_test);
+                                }
+
+                                @Override
+                                public void success(@NonNull Test test) {
+                                    fileCreateContext = new CsvCreateContext(columnHeader, columnTypeHeader, separator, lineSeparator);
+
+                                    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                                    intent.setType(MIME_TYPE);
+                                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                    intent.putExtra(Intent.EXTRA_TITLE,
+                                            test.getDefaultFilename() + CSV_EXTENSION);
+
+                                    activity.startActivityForResult(intent, CREATE_DOCUMENT_REQUEST_CODE);
+                                }
+                            }));
+
         } else {
             Log.w("FileManager", "Can't export test, already waiting result");
         }
@@ -242,6 +347,7 @@ public class FileManager {
 
     /**
      * Import a test.
+     *
      * @param activity the activity which import the test
      */
     public static void importTest(Activity activity) {
@@ -254,64 +360,44 @@ public class FileManager {
 
     /**
      * Activities that export and import test must call this method
-     * @param activity the activity which import and/or export test
-     * @param requestCode the request code of the activity result
-     * @param resultCode the result code of the activity result function
-     * @param data the data given by the activity result
+     *
+     * @param activity           the activity which import and/or export test
+     * @param requestCode        the request code of the activity result
+     * @param resultCode         the result code of the activity result function
+     * @param data               the data given by the activity result
      * @param snackbarAnchorView if the snackbar need to be anchored
-     * @param resultListener the result listener to receive results
+     * @param resultListener     the result listener to receive results
      */
-    public static void exportTestResult(Activity activity, int requestCode, int resultCode,
-                                        @Nullable Intent data, @Nullable View snackbarAnchorView,
+    public static void exportTestResult(final AppCompatActivity activity, int requestCode, int resultCode,
+                                        @Nullable Intent data, @Nullable final View snackbarAnchorView,
                                         ResultListener resultListener) { // activity must call this in activity on result
         if (requestCode == CREATE_DOCUMENT_REQUEST_CODE) {
             // process create document
             if (resultCode == Activity.RESULT_OK) {
                 if (data != null) {
-                    Uri uri = data.getData();
+                    final Uri uri = data.getData();
 
                     if (uri != null) {
-                        try {
-                            Test testToSave = DiakoluoApplication.getListTest(activity).get(fileCreateContext.position);
-                            ParcelFileDescriptor pfd = activity.getContentResolver().openFileDescriptor(uri, "w");
+                        DiakoluoApplication.get(activity).getCurrentTest(
+                                new DiakoluoApplication.GetTest(false, activity,
+                                        new DiakoluoApplication.GetTestRunnable() {
+                                            @Override
+                                            public void loadingInProgress() {
 
-                            if (pfd != null) {
-                                FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor());
-                                try {
-                                    if (fileCreateContext instanceof  XmlCreateContext) {
-                                        XmlSaver.save(fos, testToSave, ((XmlCreateContext) fileCreateContext).saveNumberTestDone);
-                                    } else if (fileCreateContext instanceof CsvCreateContext) {
-                                        CsvCreateContext fileCreateContext = (CsvCreateContext) FileManager.fileCreateContext;
-                                        CsvSaver.save(
-                                                fos,
-                                                testToSave,
-                                                fileCreateContext.columnHeader,
-                                                fileCreateContext.columnTypeHeader,
-                                                fileCreateContext.lineSeparator,
-                                                fileCreateContext.separator);
-                                    } else {
-                                        throw new IllegalStateException("File create context has a incorrect type");
-                                    }
-                                } finally {
-                                    fos.close();
-                                    pfd.close();
-                                }
-                                Snackbar.make(activity.findViewById(android.R.id.content), R.string.test_exported, BaseTransientBottomBar.LENGTH_LONG)
-                                        .setAnchorView(snackbarAnchorView).show();
-                            }
-                        } catch (IOException e) {
-                            new MaterialAlertDialogBuilder(activity)
-                                    .setTitle(R.string.dialog_export_error_title)
-                                    .setMessage(R.string.dialog_export_error_message)
-                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            dialogInterface.dismiss();
-                                        }
-                                    })
-                                    .setIcon(R.drawable.ic_error_red_24dp)
-                                    .show();
-                        }
+                                            }
+
+                                            @Override
+                                            public void error(boolean canceled) {
+                                                if (!canceled)
+                                                    showError(activity, R.string.dialog_export_error_title,
+                                                            R.string.dialog_error_cant_load_test);
+                                            }
+
+                                            @Override
+                                            public void success(@NonNull Test test) {
+                                                onExportTest(activity, snackbarAnchorView, uri, test);
+                                            }
+                                            }));
                     }
                 }
             }
@@ -323,83 +409,127 @@ public class FileManager {
                     Uri uri = data.getData();
 
                     if (uri != null) {
-                        InputStream inputStream = null;
-                        try {
-                            inputStream = activity.getContentResolver().openInputStream(uri);
-
-                            if (inputStream == null) {
-                                throw new IOException("Error");
-                            }
-
-                            Boolean b = detectFileType(inputStream);
-
-                            inputStream.close();
-                            // reset inputStream
-                            inputStream =
-                                    activity.getContentResolver().openInputStream(uri);
-
-                            if (inputStream == null) {
-                                throw new IOException("Error");
-                            }
-
-                            if (b == null) {
-                                throw new IOException("Type not detected");
-                            } else if (b == BOOLEAN_DIAKOLUO_TYPE) {
-                                // Process .dkl
-                                Test testLoaded = XmlLoader.load(inputStream);
-                                if (testLoaded.isValid()) {
-                                    resultListener.showXmlImportDialog(new ImportXmlContext(testLoaded));
-                                } else {
-                                    throw new IOException("Test not imported");
-                                }
-                            } else {
-                                // Process .csv
-                                String[] firstsLines= new String[NUMBER_LINE_SHOW_CSV + 1];
-                                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-                                String line;
-                                int lineCount = -1;
-                                while ((line = bufferedReader.readLine()) != null) {
-                                    lineCount += 1;
-                                    if (lineCount < NUMBER_LINE_SHOW_CSV) {
-                                        firstsLines[lineCount] = line;
-                                    } else {
-                                        firstsLines[NUMBER_LINE_SHOW_CSV] = "...";
-                                        break;
-                                    }
-                                }
-
-                                resultListener.showCsvImportDialog(new ImportCsvContext(firstsLines, uri));
-                            }
-                        } catch (IOException | ClassCastException | XmlPullParserException e) {
-                            new MaterialAlertDialogBuilder(activity)
-                                    .setTitle(R.string.dialog_import_error_title)
-                                    .setMessage(R.string.dialog_import_error_message)
-                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            dialogInterface.dismiss();
-                                        }
-                                    })
-                                    .setIcon(R.drawable.ic_error_red_24dp)
-                                    .show();
-                            e.printStackTrace();
-                        } finally {
-                            if (inputStream != null) {
-                                try {
-                                    inputStream.close();
-                                } catch (IOException ignored) {
-                                }
-                            }
-                        }
+                        onImportTest(activity, resultListener, uri);
                     }
                 }
             }
         }
     }
 
+    private static void onImportTest(Activity activity, ResultListener resultListener, Uri uri) {
+        InputStream inputStream = null;
+        try {
+            inputStream = activity.getContentResolver().openInputStream(uri);
+
+            if (inputStream == null) {
+                throw new IOException("Error");
+            }
+
+            Boolean b = detectFileType(inputStream);
+
+            inputStream.close();
+            // reset inputStream
+            inputStream =
+                    activity.getContentResolver().openInputStream(uri);
+
+            if (inputStream == null) {
+                throw new IOException("Error");
+            }
+
+            if (b == null) {
+                throw new IOException("Type not detected");
+            } else if (b == BOOLEAN_DIAKOLUO_TYPE) {
+                // Process .dkl
+                Test testLoaded = XmlLoader.load(inputStream);
+                if (testLoaded != null && testLoaded.isValid()) {
+                    resultListener.showXmlImportDialog(new ImportXmlContext(testLoaded));
+                } else {
+                    throw new IOException("Test not imported");
+                }
+            } else {
+                // Process .csv
+                String[] firstsLines = new String[NUMBER_LINE_SHOW_CSV + 1];
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                int lineCount = -1;
+                while ((line = bufferedReader.readLine()) != null) {
+                    lineCount += 1;
+                    if (lineCount < NUMBER_LINE_SHOW_CSV) {
+                        firstsLines[lineCount] = line;
+                    } else {
+                        firstsLines[NUMBER_LINE_SHOW_CSV] = "...";
+                        break;
+                    }
+                }
+
+                resultListener.showCsvImportDialog(new ImportCsvContext(firstsLines, uri));
+            }
+        } catch (IOException | ClassCastException | XmlPullParserException e) {
+            showError(activity, R.string.dialog_import_error_title, R.string.dialog_import_error_message);
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+    }
+
+    private static void onExportTest(Activity activity, @Nullable View snackbarAnchorView, Uri uri,
+                                     Test testToSave) {
+        try {
+            ParcelFileDescriptor pfd = activity.getContentResolver().openFileDescriptor(uri, "w");
+
+            if (pfd != null) {
+                FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor());
+                try {
+                    if (fileCreateContext instanceof XmlCreateContext) {
+                        XmlSaver.save(fos, testToSave, ((XmlCreateContext) fileCreateContext).saveNumberTestDone);
+                    } else if (fileCreateContext instanceof CsvCreateContext) {
+                        CsvCreateContext fileCreateContext = (CsvCreateContext) FileManager.fileCreateContext;
+                        CsvSaver.save(
+                                fos,
+                                testToSave,
+                                fileCreateContext.columnHeader,
+                                fileCreateContext.columnTypeHeader,
+                                fileCreateContext.lineSeparator,
+                                fileCreateContext.separator);
+                    } else {
+                        throw new IllegalStateException("File create context has a incorrect type");
+                    }
+                } finally {
+                    fos.close();
+                    pfd.close();
+                }
+                Snackbar.make(activity.findViewById(android.R.id.content), R.string.test_exported, BaseTransientBottomBar.LENGTH_LONG)
+                        .setAnchorView(snackbarAnchorView).show();
+            }
+        } catch (IOException e) {
+            showError(activity, R.string.dialog_export_error_title, R.string.dialog_export_error_message);
+        }
+    }
+
+    private static void showError(Activity activity,
+                                  @StringRes int titleRes, @StringRes int descriptionRes) {
+        new MaterialAlertDialogBuilder(activity)
+                .setTitle(titleRes)
+                .setMessage(descriptionRes)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setIcon(R.drawable.ic_error_red_24dp)
+                .show();
+    }
+
     /**
      * Detect the file type by starting reading the file
+     *
      * @param reader the reader that represent the file to detect type
      * @return the file detected
      * @throws IOException if an exception occur while detecting the file type
@@ -413,8 +543,7 @@ public class FileManager {
             if (c == '<') {
                 result = BOOLEAN_DIAKOLUO_TYPE;
                 break;
-            }
-            else if (c != '\n' && c != ' ' && c != '\t') {
+            } else if (c != '\n' && c != ' ' && c != '\t') {
                 result = !BOOLEAN_DIAKOLUO_TYPE;
                 break;
             }
@@ -422,34 +551,56 @@ public class FileManager {
         return result; // file empty
     }
 
+    public static void copyTestFromFile(Context context, File testFile, String filename) throws IOException {
+        Utils.copyStream(new FileInputStream(testFile),
+                context.openFileOutput(
+                        TEST_PREFIX + filename, Context.MODE_PRIVATE));
+    }
+
+    /**
+     * The result listener.
+     */
+    public interface ResultListener {
+        /**
+         * Show the xml import dialog
+         *
+         * @param importXmlContext the context of the import
+         */
+        void showXmlImportDialog(ImportXmlContext importXmlContext);
+
+        /**
+         * Show the xml import dialog
+         *
+         * @param importCsvContext the context of the import
+         */
+        void showCsvImportDialog(ImportCsvContext importCsvContext);
+    }
+
     /**
      * The file create context that hold the position of the test to save.
      */
     private static class FileCreateContext {
-        private final int position;
 
         /**
          * Default constructor.
-         * @param position the position of the test to save
          */
-        FileCreateContext(int position) {
-            this.position = position;
+        FileCreateContext() {
         }
     }
 
     /**
      * The file create context of a xml file.
      */
-    private static class XmlCreateContext extends FileCreateContext{
+    private static class XmlCreateContext extends FileCreateContext {
         private final boolean saveNumberTestDone;
 
         /**
          * Default constructor.
-         * @param position the position of the test to save
+         *
          * @param saveNumberTestDone if number of test done need to be save
          */
-        XmlCreateContext(int position, boolean saveNumberTestDone) {
-            super(position);
+        XmlCreateContext(boolean saveNumberTestDone) {
+            super();
             this.saveNumberTestDone = saveNumberTestDone;
         }
     }
@@ -457,7 +608,7 @@ public class FileManager {
     /**
      * The file create context of a csv file.
      */
-    private static class CsvCreateContext extends FileCreateContext{
+    private static class CsvCreateContext extends FileCreateContext {
         private final boolean columnHeader;
         private final boolean columnTypeHeader;
         private final String separator;
@@ -466,14 +617,14 @@ public class FileManager {
 
         /**
          * Default constructor.
-         * @param position the position of the test to save
-         * @param columnHeader if the name of columns need to be save
+         *
+         * @param columnHeader     if the name of columns need to be save
          * @param columnTypeHeader if the type of column need to be save
-         * @param separator the separator of cell in a csv line
-         * @param lineSeparator the separator of lines
+         * @param separator        the separator of cell in a csv line
+         * @param lineSeparator    the separator of lines
          */
-        CsvCreateContext(int position, boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
-            super(position);
+        CsvCreateContext(boolean columnHeader, boolean columnTypeHeader, String separator, String lineSeparator) {
+            super();
             this.columnHeader = columnHeader;
             this.columnTypeHeader = columnTypeHeader;
             this.separator = separator;
@@ -495,6 +646,7 @@ public class FileManager {
 
         /**
          * Default constructor.
+         *
          * @param importTest the test loaded
          */
         ImportXmlContext(Test importTest) {
@@ -511,30 +663,14 @@ public class FileManager {
 
         /**
          * Default constructor
+         *
          * @param firstLines first lines of the files. The size is {@link #NUMBER_LINE_SHOW_CSV}
-         * @param fileUri the file uri to load
+         * @param fileUri    the file uri to load
          * @see #NUMBER_LINE_SHOW_CSV
          */
         ImportCsvContext(String[] firstLines, Uri fileUri) {
             this.firstLines = firstLines;
             this.fileUri = fileUri;
         }
-    }
-
-    /**
-     * The result listener.
-     */
-    public interface  ResultListener {
-        /**
-         * Show the xml import dialog
-         * @param importXmlContext the context of the import
-         */
-        void showXmlImportDialog(ImportXmlContext importXmlContext);
-
-        /**
-         * Show the xml import dialog
-         * @param importCsvContext the context of the import
-         */
-        void showCsvImportDialog(ImportCsvContext importCsvContext);
     }
 }

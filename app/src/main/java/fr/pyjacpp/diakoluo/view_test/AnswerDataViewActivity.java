@@ -19,12 +19,13 @@
 
 package fr.pyjacpp.diakoluo.view_test;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -33,7 +34,7 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
-public class AnswerDataViewActivity extends AppCompatActivity implements AnswerDataViewFragment.OnFragmentInteractionListener{
+public class AnswerDataViewActivity extends AppCompatActivity implements AnswerDataViewFragment.OnFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
 
     private Button previousButton;
     private Button nextButton;
@@ -42,33 +43,31 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
 
     private int answerIndex;
     private Test currentTest;
+    private boolean fragmentCreated;
 
 
-
-    @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_answer_data);
 
         answerIndex = getIntent().getIntExtra(AnswerDataViewFragment.ARG_ANSWER_INDEX, 0);
-        currentTest = DiakoluoApplication.getCurrentTest(this);
 
         previousButton = findViewById(R.id.previousButton);
         nextButton = findViewById(R.id.nextButton);
         navigationTextView = findViewById(R.id.navigationTextView);
+
+        fragmentCreated = savedInstanceState != null;
+
+        DiakoluoApplication.get(this).getCurrentTest(
+                new DiakoluoApplication.GetTest(true, this,
+                        false, this));
 
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
-        }
-
-        if (savedInstanceState == null) {
-            createFragment();
-        } else {
-            updateNavigation();
         }
 
         previousButton.setOnClickListener(new View.OnClickListener() {
@@ -165,6 +164,31 @@ public class AnswerDataViewActivity extends AppCompatActivity implements AnswerD
             answerIndex += 1;
             createFragment();
             getIntent().putExtra(AnswerDataViewFragment.ARG_ANSWER_INDEX, answerIndex);
+        }
+    }
+
+    @Override
+    public void errorFinish(boolean canceled) {
+        finish();
+        if (!canceled) Log.e(getClass().getName(), "No current test, abort.");
+    }
+
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        currentTest = test;
+        if (fragmentCreated) {
+            updateNavigation();
+        } else {
+            createFragment();
         }
     }
 }

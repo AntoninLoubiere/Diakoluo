@@ -51,11 +51,12 @@ public class StarterActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        DiakoluoApplication.setAnalyticsSet(StarterActivity.this, true);
-                        DiakoluoApplication.setAnalyticsEnable(StarterActivity.this,
-                                analyticsCheckBoxChecked);
-                        DiakoluoApplication.setCrashlyticsEnable(StarterActivity.this,
-                                crashCheckBoxChecked);
+                        DiakoluoApplication diakoluoApplication =
+                                DiakoluoApplication.get(StarterActivity.this);
+
+                        diakoluoApplication.setAnalyticsSet(true);
+                        diakoluoApplication.setAnalyticsEnable(analyticsCheckBoxChecked);
+                        diakoluoApplication.setCrashlyticsEnable(crashCheckBoxChecked);
                     }
                 }).start();
                 startActivity(new Intent(StarterActivity.this, ListTestActivity.class));

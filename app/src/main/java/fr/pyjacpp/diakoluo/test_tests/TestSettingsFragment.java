@@ -21,6 +21,8 @@ package fr.pyjacpp.diakoluo.test_tests;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +33,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -40,25 +44,18 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
 
 
-public class TestSettingsFragment extends Fragment {
+public class TestSettingsFragment extends Fragment
+        implements DiakoluoApplication.GetTestRunnable {
+
     private OnFragmentInteractionListener mListener;
     private ColumnToShow numberColumnToShow;
-
-    private static class TestQuestionPossibility {
-        final int possibility;
-        final String toShow;
-
-        TestQuestionPossibility(int possibility, String toShow) {
-            this.possibility = possibility;
-            this.toShow = toShow;
-        }
-
-        @NonNull
-        @Override
-        public String toString() {
-            return toShow;
-        }
-    }
+    @Nullable
+    private Test currentTest;
+    private TextView numberColumnToShowSeekBarTextView;
+    private SeekBar numberColumnToShowSeekBar;
+    private Spinner numberQuestionToAskSpinner;
+    private Spinner scoreMethodSpinner;
+    private Button validButton;
 
     public TestSettingsFragment() {
         // Required empty public constructor
@@ -70,14 +67,31 @@ public class TestSettingsFragment extends Fragment {
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.fragment_test_settings, container, false);
 
-        final TextView numberColumnToShowSeekBarTextView = inflatedView.findViewById(R.id.numberColumnToShowSeekBarTextView);
-        final SeekBar numberColumnToShowSeekBar = inflatedView.findViewById(R.id.numberColumnToShowSeekBar);
-        final Spinner numberQuestionToAskSpinner = inflatedView.findViewById(R.id.numberQuestionToAskSpinner);
-        final Spinner scoreMethodSpinner = inflatedView.findViewById(R.id.scoreMethod);
+        numberColumnToShowSeekBarTextView = inflatedView.findViewById(R.id.numberColumnToShowSeekBarTextView);
+        numberColumnToShowSeekBar = inflatedView.findViewById(R.id.numberColumnToShowSeekBar);
+        numberQuestionToAskSpinner = inflatedView.findViewById(R.id.numberQuestionToAskSpinner);
+        scoreMethodSpinner = inflatedView.findViewById(R.id.scoreMethod);
+        validButton = inflatedView.findViewById(R.id.validButton);
 
-        Button validButton = inflatedView.findViewById(R.id.validButton);
+        DiakoluoApplication.get(requireContext()).getCurrentTest(
+                new DiakoluoApplication.GetTest(true, (AppCompatActivity) getActivity(), false, this));
 
-        final Test currentTest = DiakoluoApplication.getCurrentTest(inflatedView.getContext());
+        return inflatedView;
+    }
+
+    @Override
+    public void loadingInProgress() {
+
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        mListener.errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        currentTest = test;
 
         numberColumnToShow = currentTest.getNumberColumnToAsk();
 
@@ -95,9 +109,8 @@ public class TestSettingsFragment extends Fragment {
         );
 
 
-        ArrayAdapter<TestQuestionPossibility> adapter = new ArrayAdapter<>(inflatedView.getContext(),
+        final ArrayAdapter<TestQuestionPossibility> adapter = new ArrayAdapter<>(requireContext(),
                 R.layout.support_simple_spinner_dropdown_item, listOfPossibility);
-        numberQuestionToAskSpinner.setAdapter(adapter);
 
         int max = numberColumnToShow.numberColumnToShowMax -
                 numberColumnToShow.numberColumnToShowMin;
@@ -106,7 +119,6 @@ public class TestSettingsFragment extends Fragment {
         } else {
             numberColumnToShowSeekBar.setMax(max);  // -1 because 0 is a possibility
         }
-
         numberColumnToShowSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -128,29 +140,36 @@ public class TestSettingsFragment extends Fragment {
             }
         });
 
-        numberColumnToShowSeekBarTextView.setText(getString(
-                R.string.number_column_to_show_seekbar_textview,
-                numberColumnToShow.numberColumnToShowMin,
-                numberColumnToShow.numberColumnToShowMax,
-                numberColumnToShow.numberColumnTotal));
-
         validButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int nQTA = ((TestQuestionPossibility) numberQuestionToAskSpinner.getSelectedItem()).possibility;
-                int nbColToShow = numberColumnToShowSeekBar.getProgress() +
-                        numberColumnToShow.numberColumnToShowMin;
-                boolean proportionalityScoreMethod;
-                if (scoreMethodSpinner.getSelectedItemPosition() == 0) {
-                    proportionalityScoreMethod = currentTest.getScoreMethod();
-                } else {
-                    proportionalityScoreMethod = scoreMethodSpinner.getSelectedItemPosition() == 1;
+                if (currentTest != null) {
+                    int nQTA = ((TestQuestionPossibility)
+                            numberQuestionToAskSpinner.getSelectedItem()).possibility;
+                    int nbColToShow = numberColumnToShowSeekBar.getProgress() +
+                            numberColumnToShow.numberColumnToShowMin;
+                    boolean proportionalityScoreMethod;
+                    if (scoreMethodSpinner.getSelectedItemPosition() == 0) {
+                        proportionalityScoreMethod = currentTest.getScoreMethod();
+                    } else {
+                        proportionalityScoreMethod = scoreMethodSpinner.getSelectedItemPosition() == 1;
+                    }
+                    mListener.onDoTest(nQTA, nbColToShow, proportionalityScoreMethod);
                 }
-                mListener.onDoTest(nQTA, nbColToShow, proportionalityScoreMethod);
             }
         });
 
-        return inflatedView;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                numberQuestionToAskSpinner.setAdapter(adapter);
+                numberColumnToShowSeekBarTextView.setText(getString(
+                        R.string.number_column_to_show_seekbar_textview,
+                        numberColumnToShow.numberColumnToShowMin,
+                        numberColumnToShow.numberColumnToShowMax,
+                        numberColumnToShow.numberColumnTotal));
+            }
+        });
     }
 
     @Override
@@ -172,5 +191,23 @@ public class TestSettingsFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         void onDoTest(int numberQuestionToAsk, int numberColumnToShow, boolean proportionalityScoreMethod);
+
+        void errorFinish(boolean canceled);
+    }
+
+    private static class TestQuestionPossibility {
+        final int possibility;
+        final String toShow;
+
+        TestQuestionPossibility(int possibility, String toShow) {
+            this.possibility = possibility;
+            this.toShow = toShow;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return toShow;
+        }
     }
 }

@@ -21,6 +21,8 @@ package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +34,7 @@ import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
@@ -41,7 +44,7 @@ import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 
-public class ColumnDataEditFragment extends Fragment {
+public class ColumnDataEditFragment extends Fragment implements DiakoluoApplication.GetTestRunnable {
     static final String ARG_COLUMN_INDEX = "column_index";
 
     private int columnIndex;
@@ -55,9 +58,11 @@ public class ColumnDataEditFragment extends Fragment {
     private EditText descriptionEditText;
 
     private Column column;
+    @Nullable
     private Test currentEditTest;
     private LinearLayout columnSettingsParent;
     private View editValueView = null;
+    private Spinner columnTypeSpinner;
 
     public ColumnDataEditFragment() {
     }
@@ -85,58 +90,9 @@ public class ColumnDataEditFragment extends Fragment {
 
         inflatedView = inflater.inflate(R.layout.fragment_edit_column_data, container, false);
 
-        if (columnIndex >= 0) {
-            titleEditText = inflatedView.findViewById(R.id.titleEditText);
-            descriptionEditText = inflatedView.findViewById(R.id.descriptionEditText);
-            columnSettingsParent = inflatedView.findViewById(R.id.columnSettings);
-            Spinner columnTypeSpinner = inflatedView.findViewById(R.id.columnTypeSpinner);
-
-            currentEditTest = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext());
-            column = currentEditTest
-                    .getListColumn().get(columnIndex);
-
-            titleEditText.setText(column.getName());
-            descriptionEditText.setText(column.getDescription());
-
-            View.OnFocusChangeListener editTextFocusListener = new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean b) {
-                    if (!b) {
-                        saveChanges();
-                    }
-                }
-            };
-
-            titleEditText.setOnFocusChangeListener(editTextFocusListener);
-            descriptionEditText.setOnFocusChangeListener(editTextFocusListener);
-
-
-            ArrayAdapter<ColumnInputType> adapter = new ArrayAdapter<>(inflatedView.getContext(),
-                    R.layout.support_simple_spinner_dropdown_item, ColumnInputType.values());
-            columnTypeSpinner.setAdapter(adapter);
-
-            columnTypeSpinner.setSelection(column.getInputType().ordinal());
-
-            columnTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                    ColumnInputType inputType = ColumnInputType.values()[position];
-                    if (column.getInputType() != inputType) {
-                        saveChanges(); // save change before migrate
-                        Column newColumn = Column.newColumn(inputType);
-                        newColumn.migrateColumn(currentEditTest, column);
-                        currentEditTest.getListColumn().set(columnIndex, newColumn);
-                        column = newColumn;
-                        updateColumnSettings();
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                }
-            });
-            updateColumnSettings();
-        }
+        DiakoluoApplication.get(inflatedView.getContext()).getCurrentEditTest(
+                new DiakoluoApplication.GetTest(true,
+                        (AppCompatActivity) getActivity(), false, this));
 
         inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
             @Override
@@ -153,6 +109,71 @@ public class ColumnDataEditFragment extends Fragment {
         return inflatedView;
     }
 
+    /**
+     * Initialize the ui could be in a worker thread.
+     *
+     * @param test the test to show
+     */
+    private void initialize(@NonNull Test test) {
+        currentEditTest = test;
+
+        titleEditText = inflatedView.findViewById(R.id.titleEditText);
+        descriptionEditText = inflatedView.findViewById(R.id.descriptionEditText);
+        columnSettingsParent = inflatedView.findViewById(R.id.columnSettings);
+        columnTypeSpinner = inflatedView.findViewById(R.id.columnTypeSpinner);
+
+        column = currentEditTest
+                .getListColumn().get(columnIndex);
+
+        View.OnFocusChangeListener editTextFocusListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b) {
+                    saveChanges();
+                }
+            }
+        };
+
+        titleEditText.setOnFocusChangeListener(editTextFocusListener);
+        descriptionEditText.setOnFocusChangeListener(editTextFocusListener);
+
+        ArrayAdapter<ColumnInputType> adapter = new ArrayAdapter<>(inflatedView.getContext(),
+                R.layout.support_simple_spinner_dropdown_item, ColumnInputType.values());
+        columnTypeSpinner.setAdapter(adapter);
+
+        columnTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                ColumnInputType inputType = ColumnInputType.values()[position];
+                if (column.getInputType() != inputType) {
+                    saveChanges(); // save change before migrate
+                    Column newColumn = Column.newColumn(inputType);
+                    newColumn.migrateColumn(currentEditTest, column);
+                    currentEditTest.getListColumn().set(columnIndex, newColumn);
+                    column = newColumn;
+                    updateColumnSettings();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                titleEditText.setText(column.getName());
+                descriptionEditText.setText(column.getDescription());
+                columnTypeSpinner.setSelection(column.getInputType().ordinal());
+                updateColumnSettings();
+            }
+        });
+    }
+
+    /**
+     * Update the column settings, must be in the UI thread
+     */
     public void updateColumnSettings() {
         columnSettingsParent.removeAllViews();
         editValueView = column.showEditValueView(columnSettingsParent.getContext(), column.getDefaultValue());
@@ -190,9 +211,8 @@ public class ColumnDataEditFragment extends Fragment {
     }
 
     private void saveChanges() {
-        if (columnIndex >= 0) {
-            Column column = DiakoluoApplication.getCurrentEditTest(inflatedView.getContext())
-                    .getListColumn().get(columnIndex);
+        if (currentEditTest != null && columnIndex >= 0) {
+            Column column = currentEditTest.getListColumn().get(columnIndex);
 
             column.setName(titleEditText.getText().toString());
             column.setDescription(descriptionEditText.getText().toString());
@@ -221,10 +241,29 @@ public class ColumnDataEditFragment extends Fragment {
         }
     }
 
+    @Override
+    public void loadingInProgress() {
+
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        mListener.errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        initialize(test);
+    }
+
     interface OnFragmentInteractionListener {
         void updateColumnRecyclerItem(int position);
+
         void onSwipeRight();
+
         void onSwipeLeft();
+
+        void errorFinish(boolean canceled);
     }
 
     public interface OnParentFragmentInteractionListener {

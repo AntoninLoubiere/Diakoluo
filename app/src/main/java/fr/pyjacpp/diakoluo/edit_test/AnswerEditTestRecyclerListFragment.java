@@ -21,11 +21,15 @@ package fr.pyjacpp.diakoluo.edit_test;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,47 +42,32 @@ import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.tests.Test;
 
-public class AnswerEditTestRecyclerListFragment extends Fragment {
+public class AnswerEditTestRecyclerListFragment extends Fragment implements DiakoluoApplication.GetTestRunnable {
     private AnswerAdapter answerRecyclerViewAdapter;
     private OnFragmentInteractionListener mListener;
     private OnParentFragmentInteractionListener parentListener;
+    @Nullable
+    private Test currentEditTest;
+    private RecyclerView answerRecyclerView;
 
     public AnswerEditTestRecyclerListFragment() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View inflatedView = inflater.inflate(R.layout.fragment_recycler_list, container, false);
 
-        final RecyclerView answerRecyclerView = inflatedView.findViewById(R.id.recyclerView);
-        answerRecyclerViewAdapter = new AnswerAdapter(answerRecyclerView.getContext(), new AnswerAdapter.AnswerViewListener() {
-            @Override
-            public void onItemClick(View view, View itemView) {
-                int position = answerRecyclerView.getChildAdapterPosition(itemView);
-                if (position >= 0) {
-                    parentListener.onItemClick(view, position);
-                }
-            }
+        answerRecyclerView = inflatedView.findViewById(R.id.recyclerView);
+        DiakoluoApplication.get(inflatedView.getContext()).getCurrentEditTest
+                (new DiakoluoApplication.GetTest(true,
+                        (AppCompatActivity) getActivity(), this));
 
-            @Override
-            public void onDeleteClick(View view, View itemView) {
-                int position = answerRecyclerView.getChildAdapterPosition(itemView);
-
-                if (position >= 0) {
-
-                    Test currentEditTest = DiakoluoApplication.getCurrentEditTest(view.getContext());
-                    currentEditTest.getListRow().remove(position);
-                    parentListener.onDelete(view, position);
-                    answerRecyclerViewAdapter.notifyItemRemoved(position);
-                }
-            }
-        });
         LinearLayoutManager answerRecyclerViewLayout = new LinearLayoutManager(answerRecyclerView.getContext());
 
         answerRecyclerView.setHasFixedSize(false);
         answerRecyclerView.setLayoutManager(answerRecyclerViewLayout);
-        answerRecyclerView.setAdapter(answerRecyclerViewAdapter);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             int dragFrom = -1;
@@ -99,18 +88,20 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
                 if (this.dragFrom <= -1)
                     this.dragFrom = dragFrom;
 
-                Test currentEditTest = DiakoluoApplication.getCurrentEditTest(recyclerView.getContext());
+                if (currentEditTest != null) {
+                    Collections.swap(currentEditTest.getListRow(), dragFrom,
+                            dragTo);
 
-                Collections.swap(currentEditTest.getListRow(), dragFrom,
-                        dragTo);
-
-                answerRecyclerViewAdapter.notifyItemMoved(dragFrom, dragTo);
-                if (currentEditTest.getNumberColumn() <= 0) {
-                    // if the text depends of position, we need to refresh all next elements
-                    answerRecyclerViewAdapter.notifyItemRangeChanged(dragFrom - 1,
-                            currentEditTest.getNumberRow() - dragFrom);
+                    answerRecyclerViewAdapter.notifyItemMoved(dragFrom, dragTo);
+                    if (currentEditTest.getNumberColumn() <= 0) {
+                        // if the text depends of position, we need to refresh all next elements
+                        answerRecyclerViewAdapter.notifyItemRangeChanged(dragFrom - 1,
+                                currentEditTest.getNumberRow() - dragFrom);
+                    }
+                    return true;
+                } else {
+                    return false;
                 }
-                return true;
             }
 
             @Override
@@ -166,15 +157,63 @@ public class AnswerEditTestRecyclerListFragment extends Fragment {
     }
 
     void applyRecyclerChanges(RecyclerViewChange answerListChanged) {
-        answerListChanged.apply(answerRecyclerViewAdapter);
+        if (answerRecyclerViewAdapter != null) {
+            answerListChanged.apply(answerRecyclerViewAdapter);
+        }
+    }
+
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        mListener.errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        currentEditTest = test;
+
+        answerRecyclerViewAdapter = new AnswerAdapter(answerRecyclerView.getContext(),
+                new AnswerAdapter.AnswerViewListener() {
+                    @Override
+                    public void onItemClick(View view, View itemView) {
+                        int position = answerRecyclerView.getChildAdapterPosition(itemView);
+                        if (position >= 0) {
+                            parentListener.onItemClick(position);
+                        }
+                    }
+
+                    @Override
+                    public void onDeleteClick(View view, View itemView) {
+                        int position = answerRecyclerView.getChildAdapterPosition(itemView);
+
+                        if (position >= 0) {
+                            currentEditTest.getListRow().remove(position);
+                            parentListener.onDelete(view, position);
+                            answerRecyclerViewAdapter.notifyItemRemoved(position);
+                        }
+                    }
+                }, currentEditTest);
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                answerRecyclerView.setAdapter(answerRecyclerViewAdapter);
+            }
+        });
     }
 
     public interface OnFragmentInteractionListener {
+        void errorFinish(boolean canceled);
     }
 
     interface OnParentFragmentInteractionListener {
-        void onItemClick(View view, int position);
+        void onItemClick(int position);
+
         void onSwap(int dragFrom, int dragTo);
+
         void onDelete(View view, int position);
     }
 }

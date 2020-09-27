@@ -255,7 +255,7 @@ public class TestFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
 
-        testTestContext = DiakoluoApplication.getTestTestContext(context);
+        testTestContext = DiakoluoApplication.get(context).getTestTestContext();
     }
 
     @Override

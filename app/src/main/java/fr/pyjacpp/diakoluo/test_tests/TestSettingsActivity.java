@@ -21,43 +21,82 @@ package fr.pyjacpp.diakoluo.test_tests;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.tests.Test;
 
-public class TestSettingsActivity extends AppCompatActivity implements TestSettingsFragment.OnFragmentInteractionListener {
+public class TestSettingsActivity extends AppCompatActivity implements TestSettingsFragment.OnFragmentInteractionListener, DiakoluoApplication.GetTestRunnable {
+
+    @Nullable private Test currentTest;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_settings);
 
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(DiakoluoApplication.getCurrentTest(this).getName());
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+
+            DiakoluoApplication.get(this).getCurrentTest(
+                    new DiakoluoApplication.GetTest(false, this, this));
         }
     }
 
     @Override
     public void onDoTest(int numberQuestionToAsk, int numberColumnToShow, boolean proportionalityScoreMethod) {
-        TestTestContext testTestContext = new TestTestContext(this, numberQuestionToAsk,
-                numberColumnToShow, proportionalityScoreMethod);
-        testTestContext.selectShowColumn();
-        DiakoluoApplication.setTestTestContext(this, testTestContext);
+        if (currentTest != null) {
+            TestTestContext testTestContext = new TestTestContext(currentTest, numberQuestionToAsk,
+                    numberColumnToShow, proportionalityScoreMethod);
+            testTestContext.selectShowColumn();
+            DiakoluoApplication.get(this).setTestTestContext(testTestContext);
 
-        startActivity(new Intent(this, TestActivity.class));
+            startActivity(new Intent(this, TestActivity.class));
+            finish();
+        }
+    }
+
+    @Override
+    public void errorFinish(boolean canceled) {
         finish();
+        if (!canceled) Log.e(getClass().getName(), "No current test, abort.");
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public void loadingInProgress() {
+    }
+
+    @Override
+    public void error(boolean canceled) {
+        errorFinish(canceled);
+    }
+
+    @Override
+    public void success(@NonNull Test test) {
+        currentTest = test;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                actionBar.setTitle(currentTest.getName());
+            }
+        });
     }
 }
