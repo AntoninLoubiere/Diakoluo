@@ -21,16 +21,19 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.crashlytics'
-apply from: 'exts.gradle'
 
 
 android {
     signingConfigs {
         release {
-            storeFile file(diakoluoStoreFile)
-            storePassword storePassword
-            keyAlias diakoluoKeyAlias
-            keyPassword diakoluoKeyPassword
+            Properties localProps = new Properties()
+            localProps.load(new FileInputStream(file('../local.properties')))
+            if (localProps['signingConfigs.release.defined'] == 'true') {
+                storeFile file(localProps['signingConfigs.release.storeFile'])
+                storePassword localProps['signingConfigs.release.storePassword']
+                keyAlias localProps['signingConfigs.release.keyAlias']
+                keyPassword localProps['signingConfigs.release.keyPassword']
+            }
         }
     }
     compileSdkVersion 30

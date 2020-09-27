@@ -38,3 +38,5 @@ captures/
 app/google-services.json
 
 app/exts.gradle
+
+local_backup.properties
