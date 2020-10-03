@@ -32,8 +32,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.Test;
-import fr.pyjacpp.diakoluo.tests.column.Column;
-import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder> {
     private final Context context;
@@ -78,18 +76,9 @@ class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.AnswerViewHolder>
     @Override
     public void onBindViewHolder(@NonNull final AnswerViewHolder holder, final int position) {
         if (currentTest.getNumberColumn() >= 1) {
-            Column column = currentTest.getListColumn().get(0);
-            DataCell dataCell = currentTest.getListRow().get(position).getListCells().get(
-                    column
+            holder.textView.setText(
+                    currentTest.getRowFirstCellString(context, position)
             );
-            if (dataCell != null)
-                holder.textView.setText(
-                        dataCell.getStringValue(context, column)
-                );
-            else
-                holder.textView.setText(
-                        String.valueOf(position + 1)
-                );
         } else {
             holder.textView.setText(String.valueOf(position + 1));
         }
