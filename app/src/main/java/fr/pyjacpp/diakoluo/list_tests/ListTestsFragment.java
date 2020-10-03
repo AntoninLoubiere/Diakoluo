@@ -19,8 +19,11 @@
 
 package fr.pyjacpp.diakoluo.list_tests;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +32,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,12 +45,14 @@ import java.util.ArrayList;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.RecyclerViewChange;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.tests.CompactTest;
 
 
 public class ListTestsFragment extends Fragment {
+    public static final String EXTRA_INT_POSITION = "position";
+    public static final String ACTION_BROADCAST_UPDATE_INDEX_RECYCLER = "fr.pyjacpp.diakoluo.list_test.UPDATE_INDEX";
+    public static final String ACTION_BROADCAST_TEST_ADDED_LIST_RECYCLER = "fr.pyjacpp.diakoluo.list_test.TEST_ADDED";
     private DiakoluoApplication diakoluoApplication;
     private OnFragmentInteractionListener listener;
     private RecyclerView testRecyclerView;
@@ -55,6 +61,8 @@ public class ListTestsFragment extends Fragment {
     public ListTestsFragment() {
         // Required empty public constructor
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -170,19 +178,6 @@ public class ListTestsFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Context context = getContext();
-        if (context != null) {
-            RecyclerViewChange testListChanged = DiakoluoApplication.get(context).getTestListChanged();
-            if (testListChanged != null) {
-                testListChanged.apply(testRecyclerViewAdapter);
-                DiakoluoApplication.get(context).setTestListChanged(null);
-            }
-        }
-    }
-
-    @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
@@ -191,6 +186,22 @@ public class ListTestsFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
+        localBroadcastManager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                testRecyclerViewAdapter.notifyItemChanged(intent.getIntExtra(EXTRA_INT_POSITION,
+                        0));
+            }
+        }, new IntentFilter(ACTION_BROADCAST_UPDATE_INDEX_RECYCLER));
+
+        localBroadcastManager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                testRecyclerViewAdapter.notifyItemInserted(diakoluoApplication.getListTest().size()
+                        - 1);
+            }
+        }, new IntentFilter(ACTION_BROADCAST_TEST_ADDED_LIST_RECYCLER));
     }
 
     void notifyUpdateInserted(int position) {

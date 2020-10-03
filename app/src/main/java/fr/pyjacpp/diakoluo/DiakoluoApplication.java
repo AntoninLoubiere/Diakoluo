@@ -21,12 +21,14 @@ package fr.pyjacpp.diakoluo;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
@@ -39,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import fr.pyjacpp.diakoluo.list_tests.ListTestsFragment;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.CompactTest;
@@ -70,8 +73,6 @@ public class DiakoluoApplication extends Application {
     private TestTestContext testTestContext = null;
     private int currentEditTestIndex = -1;
     private int currentTestIndex = -1;
-
-    private RecyclerViewChange testListChanged;
 
     private SharedPreferences sharedPreferences;
     private ArrayList<String> listTestFilename;
@@ -436,7 +437,6 @@ public class DiakoluoApplication extends Application {
      * Apply a currentEditTest.
      */
     public void applyCurrentEditTest() {
-        // FIXME send local broadcast instead of global variable
         if (loadCurrentEditTestThread != null) {
             try {
                 loadCurrentEditTestThread.join();
@@ -448,11 +448,10 @@ public class DiakoluoApplication extends Application {
         if (currentEditTestIndex == NEW_CURRENT_EDIT_TEST && currentEditTest != null) {
             addTest(currentEditTest);
             setCurrentEditTest(NO_CURRENT_EDIT_TEST);
-            RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
-                    RecyclerViewChange.ItemInserted
-            );
-            recyclerViewChange.setPosition(listTest.size() - 1);
-            setTestListChanged(recyclerViewChange);
+            Intent intent = new Intent();
+            intent.setAction(ListTestsFragment.ACTION_BROADCAST_TEST_ADDED_LIST_RECYCLER);
+            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+            localBroadcastManager.sendBroadcast(intent);
         } else if (currentEditTestIndex >= 0 && currentEditTest != null) {
             saveTest(currentEditTest, currentEditTestIndex);
             currentEditTest.registerModificationDate();
@@ -460,13 +459,13 @@ public class DiakoluoApplication extends Application {
             if (currentTestIndex == currentEditTestIndex) {
                 currentTest = currentEditTest;
             }
+            Intent intent = new Intent();
+            intent.setAction(ListTestsFragment.ACTION_BROADCAST_UPDATE_INDEX_RECYCLER);
+            intent.putExtra(ListTestsFragment.EXTRA_INT_POSITION, currentEditTestIndex);
+            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+            localBroadcastManager.sendBroadcast(intent);
 
             setCurrentEditTest(NO_CURRENT_EDIT_TEST);
-            RecyclerViewChange recyclerViewChange = new RecyclerViewChange(
-                    RecyclerViewChange.ItemChanged
-            );
-            recyclerViewChange.setPosition(currentEditTestIndex);
-            setTestListChanged(recyclerViewChange);
         }
     }
 
@@ -533,24 +532,6 @@ public class DiakoluoApplication extends Application {
      */
     public int getCurrentEditTestIndex() {
         return currentEditTestIndex;
-    }
-
-    /**
-     * Get recycler change of the test list.
-     *
-     * @return the recycler change of the test list
-     */
-    public RecyclerViewChange getTestListChanged() {
-        return testListChanged;
-    }
-
-    /**
-     * Set the recycler test change of the test list.
-     *
-     * @param testListChanged the recycler test list
-     */
-    public void setTestListChanged(RecyclerViewChange testListChanged) {
-        this.testListChanged = testListChanged;
     }
 
     /**
