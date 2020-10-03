@@ -404,9 +404,14 @@ public class Test {
     public String getRowFirstCellString(Context context, int rowPosition) {
         DataCell firstCell = getRowFirstCell(rowPosition);
         if (firstCell == null) {
-            return String.valueOf(rowPosition);
+            return String.valueOf(rowPosition + 1);
         } else {
-            return firstCell.getStringValue(context, listColumn.get(0));
+            String s = firstCell.getStringValue(context, listColumn.get(0));
+            if (s.equals("")) {
+                return String.valueOf(rowPosition + 1);
+            } else {
+                return s;
+            }
         }
     }
 
