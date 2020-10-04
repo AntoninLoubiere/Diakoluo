@@ -105,7 +105,7 @@ public class TestTest {
         assertEquals(test.getListRow().size(), test.getNumberRow());
         test.setListColumn(new ArrayList<Column>());
         assertNull(test.getRowFirstCell(0));
-        assertEquals("0", test.getRowFirstCellString(null, 0));
+        assertEquals("1", test.getRowFirstCellString(null, 0));
     }
 
     @Test
