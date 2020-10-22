@@ -18,8 +18,13 @@ public class DefaultTest extends Test {
 
         columns.add(Column.newColumn(ColumnInputType.String, "Base verbale", "La base verbale du verbe"));
         columns.add(Column.newColumn(ColumnInputType.String, "Prétérit", "Le prétérit du verbe"));
+        columns.get(1).setSettings(Column.SET_CAN_BE_SHOW, false);
         columns.add(Column.newColumn(ColumnInputType.String, "Participe passé", "Le participe passé du verbe"));
+        columns.get(2).setSettings(Column.SET_CAN_BE_HIDE, false);
         columns.add(Column.newColumn(ColumnInputType.String, "Traduction", "La traduction du verbe"));
+        columns.get(3).setSettings(Column.SET_CAN_BE_SHOW, false);
+        columns.get(3).setSettings(Column.SET_CAN_BE_HIDE, false);
+
 
         ArrayList<DataRow> dataRows = new ArrayList<>();
         dataRows.add(new DataRow());

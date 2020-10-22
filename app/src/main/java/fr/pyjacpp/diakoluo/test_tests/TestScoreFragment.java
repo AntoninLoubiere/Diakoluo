@@ -43,6 +43,7 @@ import fr.pyjacpp.diakoluo.Utils;
 
 
 public class TestScoreFragment extends Fragment {
+    private static final String PREF_TEST_TEST_CONTEXT = "testTestContext";
 
     private OnFragmentInteractionListener mListener;
 
@@ -52,6 +53,8 @@ public class TestScoreFragment extends Fragment {
     private ObjectAnimator animation = null;
     private ValueAnimator primaryValueAnimator = null;
     private ValueAnimator secondaryValueAnimator = null;
+    private TextView primaryScoreTextView;
+    private TextView secondaryScoreTextView;
 
     public TestScoreFragment() {
     }
@@ -61,17 +64,64 @@ public class TestScoreFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View inflatedView = inflater.inflate(R.layout.fragment_test_score, container, false);
 
-        final TextView primaryScoreTextView = inflatedView.findViewById(R.id.scoreTextView);
-        final TextView secondaryScoreTextView = inflatedView.findViewById(R.id.secondaryScoreTextView);
+        primaryScoreTextView = inflatedView.findViewById(R.id.scoreTextView);
+        secondaryScoreTextView = inflatedView.findViewById(R.id.secondaryScoreTextView);
         scoreProgressBar = inflatedView.findViewById(R.id.scoreProgressBar);
         Button restartButton = inflatedView.findViewById(R.id.restartButton);
         Button mainMenuButton = inflatedView.findViewById(R.id.mainMenuButton);
 
+        final DiakoluoApplication diakoluoApplication = DiakoluoApplication.get(requireContext());
+        testTestContext = diakoluoApplication.getTestTestContext();
+        if (savedInstanceState != null && testTestContext == null) {
+            Bundle testTestContextBundle = savedInstanceState.getBundle(PREF_TEST_TEST_CONTEXT);
+            if (testTestContextBundle != null) {
+                diakoluoApplication.setTestTestContext(testTestContextBundle, new Runnable() {
+                    @Override
+                    public void run() {
+                        testTestContext = diakoluoApplication.getTestTestContext();
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                createViews(false);
+                            }
+                        });
+                    }
+                });
+            }
+        } else {
+            createViews(savedInstanceState == null);
+        }
+
+
+        restartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.restartButton();
+            }
+        });
+
+        mainMenuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.mainMenuButton();
+            }
+        });
+
+        return inflatedView;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBundle(PREF_TEST_TEST_CONTEXT, testTestContext.getBundle());
+    }
+
+    private void createViews(boolean postDelay) {
         scoreProgressBar.setMax(testTestContext.getMaxProgressScore());
 
         final float maxScore = testTestContext.getMaxScore();
         if (maxScore > 0) {
-            if (savedInstanceState == null) {
+            if (postDelay) {
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -102,7 +152,9 @@ public class TestScoreFragment extends Fragment {
                         secondaryValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                             @Override
                             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                                secondaryScoreTextView.setText(getString(R.string.score_precise, (Float) valueAnimator.getAnimatedValue(), maxScore));
+                                //noinspection RedundantCast otherwise, an error appear
+                                secondaryScoreTextView.setText(getString(R.string.score_precise,
+                                        (Float) valueAnimator.getAnimatedValue(), maxScore));
                             }
                         });
                         secondaryValueAnimator.start();
@@ -119,23 +171,6 @@ public class TestScoreFragment extends Fragment {
             scoreProgressBar.setVisibility(View.GONE);
             secondaryScoreTextView.setVisibility(View.GONE);
         }
-
-
-        restartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.restartButton();
-            }
-        });
-
-        mainMenuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.mainMenuButton();
-            }
-        });
-
-        return inflatedView;
     }
 
     @Override
@@ -166,6 +201,7 @@ public class TestScoreFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         void mainMenuButton();
+
         void restartButton();
     }
 

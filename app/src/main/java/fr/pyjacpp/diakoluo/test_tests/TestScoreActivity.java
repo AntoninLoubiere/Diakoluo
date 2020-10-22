@@ -60,7 +60,6 @@ public class TestScoreActivity extends AppCompatActivity implements TestScoreFra
         TestTestContext testTestContext = DiakoluoApplication.get(this).getTestTestContext();
         if (testTestContext != null) {
             testTestContext.reset();
-            testTestContext.selectShowColumn();
             startActivity(new Intent(this, TestActivity.class));
             finish();
         }

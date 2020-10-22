@@ -58,8 +58,9 @@ public class DataRow {
 
     /**
      * Copy a data row need the new list of column and the previous list of column.
-     * @param dataRow the dataRow to copy
-     * @param newListColumn the new list of columns
+     *
+     * @param dataRow            the dataRow to copy
+     * @param newListColumn      the new list of columns
      * @param previousListColumn the previous list of columns
      */
     public DataRow(DataRow dataRow, ArrayList<Column> newListColumn,
@@ -116,12 +117,14 @@ public class DataRow {
 
     /**
      * Read rows from xml file.
+     *
      * @return the list of rows loaded
      */
     public static ArrayList<DataRow> readXmlRows(XmlPullParser parser, ArrayList<Column> columns)
             throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, XmlPullParser.NO_NAMESPACE, FileManager.TAG_ROWS);
-        if (columns == null) throw new XmlPullParserException("Columns must be defined before rows");
+        if (columns == null)
+            throw new XmlPullParserException("Columns must be defined before rows");
         ArrayList<DataRow> rows = new ArrayList<>();
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -140,6 +143,7 @@ public class DataRow {
 
     /**
      * Get list of cells.
+     *
      * @return the list of cells
      */
     public HashMap<Column, DataCell> getListCells() {
@@ -156,8 +160,9 @@ public class DataRow {
 
     /**
      * Write the data row in an xml file.
+     *
      * @param fileOutputStream the file output stream of the file
-     * @param test the test to save
+     * @param test             the test to save
      * @throws IOException if an exception occur while writing the file
      */
     public void writeXml(OutputStream fileOutputStream, Test test) throws IOException {
@@ -177,8 +182,9 @@ public class DataRow {
 
     /**
      * Write the row in a csv file.
+     *
      * @param csvContext the CsvContext to write
-     * @param test the test to save
+     * @param test       the test to save
      * @throws IOException if an exception occur while writing the file
      */
     public void writeCsv(CsvSaver.CsvContext csvContext, Test test) throws IOException {
@@ -194,12 +200,27 @@ public class DataRow {
         }
     }
 
+    /**
+     * Don't use this in test !
+     * To scan the the hashList, use{@link #equals(Object, ArrayList, ArrayList)}
+     *
+     * @param obj the obj to test
+     * @return an exception
+     * @see #equals(Object, ArrayList, ArrayList)
+     */
     @Override
     public boolean equals(@Nullable Object obj) {
-        throw new RuntimeException("Equals(@Nullable Object obj, ArrayList<Column> objColumns, " +
-                "ArrayList<Column> dataRowColumns) should be used instead");
+        return super.equals(obj);
     }
 
+    /**
+     * Test if this DataRow is equal to another DataRow
+     *
+     * @param obj            the obj to test
+     * @param objColumns     the columns of the row
+     * @param dataRowColumns the columns of this DataRow
+     * @return if this DataRow is equal to the obj
+     */
     public boolean equals(@Nullable Object obj, ArrayList<Column> objColumns,
                           ArrayList<Column> dataRowColumns) {
         if (obj instanceof DataRow) {

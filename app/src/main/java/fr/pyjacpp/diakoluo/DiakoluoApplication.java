@@ -23,6 +23,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -52,16 +53,24 @@ import fr.pyjacpp.diakoluo.tests.Test;
  */
 public class DiakoluoApplication extends Application {
     public static final String DEFAULT_TEST = "default.dkl";
+
     public static final int NO_CURRENT_EDIT_TEST = -2;
     public static final int NEW_CURRENT_EDIT_TEST = -1;
+
     private static final String GLOBAL_SHARED_PREFERENCES = "diakoluo";
+
     private static final String PREFERENCES_LIST_TEST_FILENAMES = "testFilenames";
     private static final String PREFERENCES_NUMBER_TEST_CREATED_FILENAMES = "numberTestCreated";
+    private static final String PREFERENCES_CURRENT_TEST_INDEX = "currentTestIndex";
+    private static final String PREFERENCES_CURRENT_EDIT_TEST_INDEX = "currentEditTestIndex";
+
     private static final String USER_PROPERTY_NUMBER_TEST_CREATED = "number_test";
     private static final String ANALYTICS_ENABLE = "analytics";
+
     private static final int ANALYTIC = 1 << 1;
     private static final int CRASHLYTICS = 1 << 2;
     private static final int ANALYTICS_SET = 1;
+
     private ArrayList<CompactTest> listTest;
     @Nullable
     private Test currentTest = null;
@@ -71,7 +80,7 @@ public class DiakoluoApplication extends Application {
     private FileManager.ImportContext currentImportContext = null;
     @Nullable
     private TestTestContext testTestContext = null;
-    private int currentEditTestIndex = -1;
+    private int currentEditTestIndex = NO_CURRENT_EDIT_TEST;
     private int currentTestIndex = -1;
 
     private SharedPreferences sharedPreferences;
@@ -106,9 +115,7 @@ public class DiakoluoApplication extends Application {
                 sharedPreferences = getSharedPreferences(GLOBAL_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
                 listTest = new ArrayList<>();
-
                 loadFilenameList();
-
                 if (listTestFilename == null) {
                     try {
                         Test test = FileManager.loadFromAsset(DiakoluoApplication.this, DEFAULT_TEST);
@@ -124,7 +131,17 @@ public class DiakoluoApplication extends Application {
                 firebaseAnalytics.setAnalyticsCollectionEnabled(getAnalyticsEnable());
                 firebaseCrashlytics.setCrashlyticsCollectionEnabled(getCrashlyticsEnable());
 
+                currentTestIndex = sharedPreferences.getInt(PREFERENCES_CURRENT_TEST_INDEX, -1);
+                currentEditTestIndex = sharedPreferences.getInt(PREFERENCES_CURRENT_EDIT_TEST_INDEX,
+                        NO_CURRENT_EDIT_TEST);
+
                 loadCompactsTests();
+
+                if (currentTestIndex >= 0 && currentTest == null) setCurrentTest(currentTestIndex);
+                if (currentEditTestIndex != NO_CURRENT_EDIT_TEST && currentEditTest == null) {
+                    setCurrentEditTest(currentTestIndex);
+                }
+
                 loadingThread = null;
             }
         });
@@ -186,7 +203,7 @@ public class DiakoluoApplication extends Application {
      * @see #saveCurrentTest()
      * @see #saveTest(Test, int)
      */
-    public void saveTest(@NonNull Test test) {
+    private void saveTest(@NonNull Test test) {
         if (test.getFilename() == null) {
             FileManager.getAvailableFilename(DiakoluoApplication.this, test);
         }
@@ -272,10 +289,15 @@ public class DiakoluoApplication extends Application {
      * @see #loadFilenameList()
      */
     public void loadCompactsTests() {
-        for (String filename : listTestFilename) {
-            Test e = FileManager.loadFromPrivateFile(this, filename);
-            if (e != null)
-                listTest.add(new CompactTest(e));
+        for (int i = 0; i < listTestFilename.size(); i++) {
+            String filename = listTestFilename.get(i);
+
+            Test test = FileManager.loadFromPrivateFile(this, filename);
+            if (test != null)
+                listTest.add(new CompactTest(test));
+
+            if (i == currentTestIndex) currentTest = test;
+            if (i == currentEditTestIndex) currentEditTest = test; // TODO recover the edit test
         }
 
         Log.i("DiakoluoApplication", "Test loaded");
@@ -299,6 +321,7 @@ public class DiakoluoApplication extends Application {
      */
     public File removeTestAndCache(int position) {
         CompactTest testRemoved = listTest.remove(position);
+        save();
         return FileManager.deleteAndCache(this, testRemoved);
     }
 
@@ -315,6 +338,10 @@ public class DiakoluoApplication extends Application {
             currentTestIndex = position;
             currentTest = null;
 
+            sharedPreferences.edit()
+                    .putInt(PREFERENCES_CURRENT_TEST_INDEX, currentTestIndex)
+                    .apply();
+
             if (position >= 0) {
                 loadCurrentTestThread = new Thread(new Runnable() {
                     @Override
@@ -322,6 +349,9 @@ public class DiakoluoApplication extends Application {
                         currentTest = loadCompleteTest(currentTestIndex);
                         if (currentTest == null) {
                             currentTestIndex = -1;
+                            sharedPreferences.edit()
+                                    .putInt(PREFERENCES_CURRENT_TEST_INDEX, currentTestIndex)
+                                    .apply();
                         }
                         loadCurrentTestThread = null;
                     }
@@ -394,11 +424,40 @@ public class DiakoluoApplication extends Application {
 
     /**
      * Set the test context of a test (in testActivities).
+     * If the testTestContext need to resist internal restart, save it in a bundle and recover it
+     * with {@link #setTestTestContext(Bundle, Runnable)}.
      *
      * @param testTestContext the test context of a test
+     * @see #setTestTestContext(Bundle, Runnable)
      */
     public void setTestTestContext(@Nullable TestTestContext testTestContext) {
         this.testTestContext = testTestContext;
+    }
+
+    /**
+     * Set the test context of a test (in testActivities). The bundle must hold the necessary data,
+     * otherwise, exception may occur.
+     *
+     * @param bundle          the bundle that must hold the testTestContext
+     * @param successCallback if the testTestContext is set correctly
+     * @see #setTestTestContext(TestTestContext)
+     */
+    public void setTestTestContext(@NonNull final Bundle bundle, @NonNull final Runnable successCallback) {
+        getCurrentTest(new GetTest(false, new GetTestRunnable() {
+            @Override
+            public void loadingInProgress() {
+            }
+
+            @Override
+            public void error(boolean canceled) {
+            }
+
+            @Override
+            public void success(@NonNull Test test) {
+                testTestContext = new TestTestContext(test, bundle);
+                successCallback.run();
+            }
+        }));
     }
 
     /**
@@ -480,29 +539,37 @@ public class DiakoluoApplication extends Application {
      * @see #NEW_CURRENT_EDIT_TEST
      */
     public void setCurrentEditTest(int position) {
-        if (loadCurrentEditTestThread != null) loadCurrentEditTestThread.interrupt();
-        currentEditTestIndex = position;
-        currentEditTest = null;
+        if (currentEditTestIndex != position) {
+            if (loadCurrentEditTestThread != null) loadCurrentEditTestThread.interrupt();
+            currentEditTestIndex = position;
+            currentEditTest = null;
+            sharedPreferences.edit()
+                    .putInt(PREFERENCES_CURRENT_EDIT_TEST_INDEX, currentEditTestIndex)
+                    .apply();
 
-        if (position >= 0 || position == NEW_CURRENT_EDIT_TEST) {
-            loadCurrentEditTestThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (currentEditTestIndex == NEW_CURRENT_EDIT_TEST) {
-                        currentEditTest = new Test(getString(R.string.test_default_name),
-                                getString(R.string.test_default_description));
-                    } else if (currentEditTestIndex == currentTestIndex && currentTest != null) {
-                        currentEditTest = new Test(currentTest);
-                    } else {
-                        currentEditTest = loadCompleteTest(currentEditTestIndex);
+            if (position >= 0 || position == NEW_CURRENT_EDIT_TEST) {
+                loadCurrentEditTestThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (currentEditTestIndex == NEW_CURRENT_EDIT_TEST) {
+                            currentEditTest = new Test(getString(R.string.test_default_name),
+                                    getString(R.string.test_default_description));
+                        } else if (currentEditTestIndex == currentTestIndex && currentTest != null) {
+                            currentEditTest = new Test(currentTest);
+                        } else {
+                            currentEditTest = loadCompleteTest(currentEditTestIndex);
+                        }
+                        if (currentEditTest == null) {
+                            currentEditTestIndex = NO_CURRENT_EDIT_TEST;
+                            sharedPreferences.edit()
+                                    .putInt(PREFERENCES_CURRENT_EDIT_TEST_INDEX, currentEditTestIndex)
+                                    .apply();
+                        }
+                        loadCurrentEditTestThread = null;
                     }
-                    if (currentEditTest == null) {
-                        currentEditTestIndex = NO_CURRENT_EDIT_TEST;
-                    }
-                    loadCurrentEditTestThread = null;
-                }
-            });
-            loadCurrentEditTestThread.start();
+                });
+                loadCurrentEditTestThread.start();
+            }
         }
     }
 

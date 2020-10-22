@@ -162,6 +162,7 @@ public class ListTestsFragment extends Fragment {
                                     FileManager.copyTestFromFile(requireContext(),
                                             testFile, testToDelete.getFilename());
                                     listTest.add(position, testToDelete);
+                                    diakoluoApplication.save();
                                     testRecyclerViewAdapter.notifyItemInserted(position);
                                     if (!testFile.delete()) {
                                         Log.e(getClass().getName(), "Can't delete the cache file");

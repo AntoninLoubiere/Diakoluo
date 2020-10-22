@@ -64,7 +64,7 @@ public class TestTestContextTest {
 
     @Test
     public void incrementCurrentIndex() {
-        int numberQuestionToAsk = NUMBER_QUESTION_TO_ASK;
+        final int numberQuestionToAsk = NUMBER_QUESTION_TO_ASK;
         TestTestContext testTestContext = new TestTestContext(defaultTest, numberQuestionToAsk, NUMBER_COLUMN_TO_SHOW,
                 false);
         for (int i = 0; i < numberQuestionToAsk - 1; i++) {
@@ -94,12 +94,11 @@ public class TestTestContextTest {
     public void selectShowColumn() {
         int numberColumnToShow = 2;
         TestTestContext testTestContext = new TestTestContext(defaultTest, NUMBER_QUESTION_TO_ASK, numberColumnToShow, false);
-        for (int i = 0; i < 10; i++) {
-            testTestContext.selectShowColumn();
+        for (int i = 0; i < NUMBER_QUESTION_TO_ASK; i++) {
+            testTestContext.incrementCurrentIndex();
             assertEquals(numberColumnToShow, countShowColumn(testTestContext));
         }
         testTestContext.reset();
-        testTestContext.selectShowColumn();
         assertEquals(numberColumnToShow, countShowColumn(testTestContext));
     }
 
@@ -118,7 +117,7 @@ public class TestTestContextTest {
         String test = "Test";
         testTestContext.getUserAnswer().put(testTestContext.getTest().getListColumn().get(0), test);
         assertEquals(test, testTestContext.getUserAnswer().get(testTestContext.getTest().getListColumn().get(0)));
-        testTestContext.removeUserInput();
+        testTestContext.incrementCurrentIndex();
         assertNull(testTestContext.getUserAnswer().get(testTestContext.getTest().getListColumn().get(0)));
     }
 

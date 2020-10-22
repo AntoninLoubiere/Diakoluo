@@ -59,6 +59,8 @@ android {
     }
     testOptions {
         unitTests.returnDefaultValues = true
+        useLibrary 'android.test.base'
+        useLibrary 'android.test.mock'
     }
 }
 

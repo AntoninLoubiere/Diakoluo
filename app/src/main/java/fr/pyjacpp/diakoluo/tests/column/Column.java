@@ -29,7 +29,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -83,24 +82,6 @@ public abstract class Column {
     public static final float SCORE_SKIPPED_DEFAULT = 0;
 
     protected static final int SET_DEFAULT = SET_CAN_BE_HIDE | SET_CAN_BE_SHOW;
-    /**
-     * When a edit text with a layout is clicked send focus change to the parent so it can be
-     * receive from other class
-     */
-    private static final View.OnFocusChangeListener editTextListener =
-            new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    ViewParent parent = v.getParent();
-                    if (parent instanceof View) {
-                        View parent1 = (View) parent;
-                        View.OnFocusChangeListener onFocusChangeListener =
-                                parent1.getOnFocusChangeListener();
-                        if (onFocusChangeListener != null)
-                            onFocusChangeListener.onFocusChange(parent1, true);
-                    }
-                }
-            };
 
     // if a field is added, all columns with a comment "// fields" should be verified
     @NonNull
@@ -459,7 +440,7 @@ public abstract class Column {
         TextInputEditText inputField = new TextInputEditText(context);
         inputLayout.setHint(name);
         inputLayout.addView(inputField);
-        inputField.setOnFocusChangeListener(editTextListener);
+        inputField.setOnFocusChangeListener(ViewUtils.TRANSFER_TO_PARENT_FOCUS_LISTENER);
 
         if (defaultValue != null)
             inputField.setText((String) defaultValue);
@@ -720,7 +701,8 @@ public abstract class Column {
      * @param parameter the settings to set
      * @param value     the value of the settings
      */
-    protected void setSettings(int parameter, boolean value) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void setSettings(int parameter, boolean value) {
         if (value) {
             settings = settings | parameter;
         } else {
