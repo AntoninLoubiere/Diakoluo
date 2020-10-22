@@ -135,6 +135,10 @@ public class DiakoluoApplication extends Application {
                 currentEditTestIndex = sharedPreferences.getInt(PREFERENCES_CURRENT_EDIT_TEST_INDEX,
                         NO_CURRENT_EDIT_TEST);
 
+                if (currentEditTestIndex != NO_CURRENT_EDIT_TEST) {
+                    currentEditTest = FileManager.loadCurrentEditTest(DiakoluoApplication.this);
+                }
+
                 loadCompactsTests();
 
                 if (currentTestIndex >= 0 && currentTest == null) setCurrentTest(currentTestIndex);
@@ -147,6 +151,20 @@ public class DiakoluoApplication extends Application {
         });
 
         loadingThread.start();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (level == TRIM_MEMORY_UI_HIDDEN) {
+            // Do the last saves in case we are kill
+            try {
+                if (currentEditTest != null)
+                    FileManager.saveCurrentEditTest(this, currentEditTest);
+            } catch (IOException e) {
+                Log.e(getClass().getName(), "Can't save the current edit test.", e);
+            }
+        }
     }
 
     /**
@@ -208,9 +226,9 @@ public class DiakoluoApplication extends Application {
             FileManager.getAvailableFilename(DiakoluoApplication.this, test);
         }
         try {
-            FileManager.saveFromPrivateFile(DiakoluoApplication.this, test);
+            FileManager.saveInPrivateFile(DiakoluoApplication.this, test);
         } catch (IOException e) {
-            Log.e("DiakoluoApplication", "Can't saveFromPrivateFile test " + test.getName());
+            Log.e("DiakoluoApplication", "Can't saveInPrivateFile test " + test.getName());
             e.printStackTrace();
         }
         Log.i("DiakoluoApplication", "Test saved");
@@ -297,7 +315,9 @@ public class DiakoluoApplication extends Application {
                 listTest.add(new CompactTest(test));
 
             if (i == currentTestIndex) currentTest = test;
-            if (i == currentEditTestIndex) currentEditTest = test; // TODO recover the edit test
+            if (i == currentEditTestIndex && currentEditTest == null) {
+                currentEditTest = test;
+            }
         }
 
         Log.i("DiakoluoApplication", "Test loaded");
@@ -512,6 +532,7 @@ public class DiakoluoApplication extends Application {
             LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
             localBroadcastManager.sendBroadcast(intent);
         } else if (currentEditTestIndex >= 0 && currentEditTest != null) {
+            currentEditTest.setFilename(listTest.get(currentEditTestIndex).getFilename());
             saveTest(currentEditTest, currentEditTestIndex);
             currentEditTest.registerModificationDate();
 
@@ -526,6 +547,7 @@ public class DiakoluoApplication extends Application {
 
             setCurrentEditTest(NO_CURRENT_EDIT_TEST);
         }
+        FileManager.deleteCurrentEditTest(this);
     }
 
     /**

@@ -87,6 +87,7 @@ public class FileManager {
     private static final String MIME_TYPE = "*/*";
 
     private static final String TEST_PREFIX = "test_";
+    private static final String EDIT_TEST_FILE = "edit_test";
 
     private static final int CREATE_DOCUMENT_REQUEST_CODE = 1;
     private static final int OPEN_DOCUMENT_REQUEST_CODE = 2;
@@ -104,12 +105,26 @@ public class FileManager {
      *
      * @param context the context of the application
      * @param test    the test to save
-     * @throws IOException ig an IOException occur while writing the file
+     * @throws IOException if an IOException occur while writing the file
      */
-    public static void saveFromPrivateFile(Context context, Test test) throws IOException {
+    public static void saveInPrivateFile(Context context, Test test) throws IOException {
         try (FileOutputStream fileOutputStream = context.openFileOutput(TEST_PREFIX + test.getFilename(),
                 Context.MODE_PRIVATE)) {
             XmlSaver.save(fileOutputStream, test);
+        }
+    }
+
+    /**
+     * Save the edit test in a private file.
+     *
+     * @param context  the context of the application
+     * @param editTest the test to save
+     * @throws IOException if an IOException occur while writing the file
+     */
+    public static void saveCurrentEditTest(Context context, Test editTest) throws IOException {
+        try (FileOutputStream fileOutputStream = context.openFileOutput(EDIT_TEST_FILE,
+                Context.MODE_PRIVATE)) {
+            XmlSaver.save(fileOutputStream, editTest);
         }
     }
 
@@ -135,6 +150,22 @@ public class FileManager {
     }
 
     /**
+     * Load the current edit test.
+     *
+     * @param context the context of the application
+     * @return the test loaded or null if an error occur
+     */
+    @Nullable
+    public static Test loadCurrentEditTest(Context context) {
+        try (FileInputStream fileInputStream = context.openFileInput(EDIT_TEST_FILE)) {
+            return XmlLoader.load(fileInputStream);
+        } catch (IOException | XmlPullParserException e) {
+            Log.e("DiakoluoApplication", "Can't load the edit test", e);
+            return null;
+        }
+    }
+
+    /**
      * Load a test from an asset.
      *
      * @param context  the context of the application
@@ -152,6 +183,14 @@ public class FileManager {
             }
             return loadedTest;
         }
+    }
+
+    /**
+     * Remove the file that hold the edit test.
+     * @param context the context
+     */
+    public static void deleteCurrentEditTest(Context context) {
+        context.deleteFile(EDIT_TEST_FILE);
     }
 
     /**
@@ -197,6 +236,12 @@ public class FileManager {
         return false;
     }
 
+    /**
+     * Get all filename that represent a test.
+     *
+     * @param context the context
+     * @return all filename
+     */
     public static ArrayList<String> getListFilenameTest(Context context) {
         ArrayList<String> strings = new ArrayList<>();
         for (String f : context.fileList()) {
@@ -397,7 +442,7 @@ public class FileManager {
                                             public void success(@NonNull Test test) {
                                                 onExportTest(activity, snackbarAnchorView, uri, test);
                                             }
-                                            }));
+                                        }));
                     }
                 }
             }
@@ -416,6 +461,13 @@ public class FileManager {
         }
     }
 
+    /**
+     * When a import occur.
+     *
+     * @param activity       the activity that create the import
+     * @param resultListener the result callback
+     * @param uri            the uri where the file is imported
+     */
     private static void onImportTest(Activity activity, ResultListener resultListener, Uri uri) {
         InputStream inputStream = null;
         try {
@@ -478,6 +530,14 @@ public class FileManager {
         }
     }
 
+    /**
+     * When an export is in progress.
+     *
+     * @param activity           the activity that create the export
+     * @param snackbarAnchorView a optional anchor for the respond snack bar
+     * @param uri                the uri of the file where export
+     * @param testToSave         the test to export
+     */
     private static void onExportTest(Activity activity, @Nullable View snackbarAnchorView, Uri uri,
                                      Test testToSave) {
         try {
@@ -512,6 +572,13 @@ public class FileManager {
         }
     }
 
+    /**
+     * Show an error dialog.
+     *
+     * @param activity       the activity that is show
+     * @param titleRes       the title of the error
+     * @param descriptionRes the description of the error
+     */
     private static void showError(Activity activity,
                                   @StringRes int titleRes, @StringRes int descriptionRes) {
         new MaterialAlertDialogBuilder(activity)
@@ -551,6 +618,14 @@ public class FileManager {
         return result; // file empty
     }
 
+    /**
+     * Copy a test from a file.
+     *
+     * @param context  the context
+     * @param testFile the file to copy
+     * @param filename the test to save
+     * @throws IOException if an exception occur
+     */
     public static void copyTestFromFile(Context context, File testFile, String filename) throws IOException {
         Utils.copyStream(new FileInputStream(testFile),
                 context.openFileOutput(
@@ -655,7 +730,7 @@ public class FileManager {
     }
 
     /**
-     * The csv import context
+     * The csv import context.
      */
     public static class ImportCsvContext extends ImportContext {
         public final String[] firstLines;
