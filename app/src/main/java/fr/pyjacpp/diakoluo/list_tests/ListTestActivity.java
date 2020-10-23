@@ -29,6 +29,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -64,7 +65,7 @@ public class ListTestActivity extends AppCompatActivity
 
     private int currentTestSelected = -1;
     private FloatingActionButton addButton;
-    
+
     private DiakoluoApplication diakoluoApplication;
 
     @Override
@@ -72,7 +73,28 @@ public class ListTestActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_test);
 
-        this.diakoluoApplication = DiakoluoApplication.get(this);
+        diakoluoApplication = DiakoluoApplication.get(this);
+
+        // first time open it
+        if (diakoluoApplication.getCurrentEditTestIndex() != DiakoluoApplication.NO_CURRENT_EDIT_TEST) {
+            diakoluoApplication.getCurrentEditTest(
+                    new DiakoluoApplication.GetTest(false, this, false,
+                            new DiakoluoApplication.GetTestRunnable() {
+                                @Override
+                                public void loadingInProgress() {
+                                }
+
+                                @Override
+                                public void error(boolean canceled) {
+                                }
+
+                                @Override
+                                public void success(@NonNull Test test) {
+                                    showRecoverEditTest(test.getName());
+                                }
+                            })
+            );
+        }
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
@@ -96,6 +118,29 @@ public class ListTestActivity extends AppCompatActivity
             if (diakoluoApplication.getListTest().size() > 0)
                 updateDetail(0);
         }
+    }
+
+    private void showRecoverEditTest(String editTestName) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.dialog_edit_test_existing_title)
+                .setMessage(getString(R.string.dialog_edit_test_existing_message, editTestName))
+                .setCancelable(false)
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        diakoluoApplication.setCurrentEditTest(DiakoluoApplication.NO_CURRENT_EDIT_TEST);
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setPositiveButton(R.string.edit, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startActivity(new Intent(ListTestActivity.this,
+                                EditTestActivity.class));
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
     }
 
     @Override

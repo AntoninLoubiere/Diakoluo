@@ -158,6 +158,7 @@ public class ImportCsvDialogFragment extends DialogFragment {
     }
 
     public interface OnValidListener {
-        void loadCsvFile(Uri fileUri, String name, int separatorId, boolean saveColumnName, boolean saveColumnType);
+        void loadCsvFile(Uri fileUri, String name, int separatorId, boolean loadColumnName,
+                         boolean loadColumnType);
     }
 }

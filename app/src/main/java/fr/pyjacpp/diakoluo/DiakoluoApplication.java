@@ -589,6 +589,13 @@ public class DiakoluoApplication extends Application {
                     }
                 });
                 loadCurrentEditTestThread.start();
+            } else {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FileManager.deleteCurrentEditTest(DiakoluoApplication.this);
+                    }
+                }).start();
             }
         }
     }
