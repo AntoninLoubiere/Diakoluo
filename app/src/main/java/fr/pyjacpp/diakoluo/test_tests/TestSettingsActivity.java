@@ -60,10 +60,10 @@ public class TestSettingsActivity extends AppCompatActivity implements TestSetti
         if (currentTest != null) {
             TestTestContext testTestContext = new TestTestContext(currentTest, numberQuestionToAsk,
                     numberColumnToShow, proportionalityScoreMethod);
-            testTestContext.selectShowColumn();
             DiakoluoApplication.get(this).setTestTestContext(testTestContext);
 
-            startActivity(new Intent(this, TestActivity.class));
+            Intent intent = new Intent(this, TestActivity.class);
+            startActivity(intent);
             finish();
         }
     }

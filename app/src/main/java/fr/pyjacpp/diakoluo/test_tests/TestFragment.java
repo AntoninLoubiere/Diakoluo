@@ -22,6 +22,8 @@ package fr.pyjacpp.diakoluo.test_tests;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,13 +47,13 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 
 public class TestFragment extends Fragment {
+    private static final String PREF_TEST_TEST_CONTEXT = "testTestContext";
+    private final HashMap<Column, LinearLayout> columnLinearLayoutHashMap = new HashMap<>();
+    private final HashMap<Column, View> columnViewHashMap = new HashMap<>();
     private OnFragmentInteractionListener mListener;
     private View inflatedView;
     private TestTestContext testTestContext;
-
     private ArrayList<Column> columns;
-    private final HashMap<Column, LinearLayout> columnLinearLayoutHashMap = new HashMap<>();
-    private final HashMap<Column, View> columnViewHashMap = new HashMap<>();
     private Context context;
     private Button validButton;
     private ProgressBar progressBar;
@@ -59,13 +61,43 @@ public class TestFragment extends Fragment {
     public TestFragment() {
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         inflatedView = inflater.inflate(R.layout.fragment_test, container, false);
         context = inflatedView.getContext();
 
+        final DiakoluoApplication diakoluoApplication = DiakoluoApplication.get(context);
+        testTestContext = diakoluoApplication.getTestTestContext();
+        if (savedInstanceState != null && testTestContext == null) {
+            Bundle testTestContextBundle = savedInstanceState.getBundle(PREF_TEST_TEST_CONTEXT);
+            if (testTestContextBundle != null) {
+                diakoluoApplication.setTestTestContext(testTestContextBundle, new Runnable() {
+                    @Override
+                    public void run() {
+                        testTestContext = diakoluoApplication.getTestTestContext();
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                createViews();
+                            }
+                        });
+                    }
+                });
+            }
+        } else {
+            createViews();
+        }
+        return inflatedView;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBundle(PREF_TEST_TEST_CONTEXT, testTestContext.getBundle());
+    }
+
+    private void createViews() {
         validButton = inflatedView.findViewById(R.id.validButton);
         LinearLayout linearLayout = inflatedView.findViewById(R.id.answerListLinearLayout);
         progressBar = inflatedView.findViewById(R.id.progressBar);
@@ -97,8 +129,6 @@ public class TestFragment extends Fragment {
         progressBar.setMax(testTestContext.getMaxProgress());
 
         updateAnswer();
-
-        return inflatedView;
     }
 
     @Override
@@ -139,7 +169,7 @@ public class TestFragment extends Fragment {
                                 Object answer = testTestContext.getUserAnswer().get(column);
                                 if (answer != null) {
                                     Column.ShowValueResponse showValueResponse =
-                                            column.showViewValueView(context, 
+                                            column.showViewValueView(context,
                                                     dataCell, answer);
 
                                     answerRow.addView(showValueResponse.getValueView(), params);
@@ -198,8 +228,6 @@ public class TestFragment extends Fragment {
     private void validButtonClick() {
         if (testTestContext.isAnswerGive()) {
             if (testTestContext.incrementCurrentIndex()) {
-                testTestContext.selectShowColumn();
-                testTestContext.removeUserInput();
                 testTestContext.setAnswerGive(false);
                 updateAnswer();
             } else {
@@ -254,8 +282,6 @@ public class TestFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-
-        testTestContext = DiakoluoApplication.get(context).getTestTestContext();
     }
 
     @Override

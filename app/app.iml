@@ -173,5 +173,7 @@
     <orderEntry type="library" name="Gradle: androidx.print:print:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.interpolator:interpolator:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.annotation:annotation-experimental:1.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: android.test.mock-android-30" level="project" />
+    <orderEntry type="library" name="Gradle: android.test.base-android-30" level="project" />
   </component>
 </module>

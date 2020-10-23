@@ -98,15 +98,21 @@ public class ColumnDataViewFragment extends Fragment {
 
                         column.getViewColumnSettings(inflater, columnSettingsParent); // FIXME  handle in handler
 
-                        inflatedView.setOnTouchListener(new OnSwipeTouchListener(inflatedView.getContext()) {
+                        inflatedView.post(new Runnable() {
                             @Override
-                            public void onSwipeRight() {
-                                mListener.onSwipeRight();
-                            }
+                            public void run() {
+                                inflatedView.setOnTouchListener(
+                                        new OnSwipeTouchListener(inflatedView.getContext()) {
+                                            @Override
+                                            public void onSwipeRight() {
+                                                mListener.onSwipeRight();
+                                            }
 
-                            @Override
-                            public void onSwipeLeft() {
-                                mListener.onSwipeLeft();
+                                            @Override
+                                            public void onSwipeLeft() {
+                                                mListener.onSwipeLeft();
+                                            }
+                                        });
                             }
                         });
                     }
@@ -134,6 +140,7 @@ public class ColumnDataViewFragment extends Fragment {
 
     interface OnFragmentInteractionListener {
         void onSwipeRight();
+
         void onSwipeLeft();
     }
 }

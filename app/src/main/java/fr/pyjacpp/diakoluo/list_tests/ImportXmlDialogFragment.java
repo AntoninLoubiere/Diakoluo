@@ -32,35 +32,35 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
-import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.tests.Test;
 
 
 public class ImportXmlDialogFragment extends DialogFragment {
 
+    private final Test importedTest;
     private OnValidListener listener;
-
     private EditText titleEditText;
 
     public ImportXmlDialogFragment() {
+        importedTest = null;
+    }
 
+    public ImportXmlDialogFragment(Test test) {
+        importedTest = test;
+        setRetainInstance(false);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View inflatedView = inflater.inflate(R.layout.fragment_dialog_import_xml, container, false);
-
-        FileManager.ImportContext _currentImportContext = DiakoluoApplication.get(requireContext())
-                .getCurrentImportContext();
-        final FileManager.ImportXmlContext currentImportContext;
-        if (_currentImportContext instanceof FileManager.ImportXmlContext) {
-            currentImportContext = (FileManager.ImportXmlContext) _currentImportContext;
-        } else {
+        if (importedTest == null) {
+            // abort the test has been forgot
             dismiss();
-            return new View(inflatedView.getContext());
+            return new View(requireContext());
         }
+
+        final View inflatedView = inflater.inflate(R.layout.fragment_dialog_import_xml, container, false);
 
         titleEditText = inflatedView.findViewById(R.id.titleInput);
 
@@ -69,7 +69,7 @@ public class ImportXmlDialogFragment extends DialogFragment {
 
         if (savedInstanceState == null) {
             // first dialog open
-            titleEditText.setText(currentImportContext.importTest.getName());
+            titleEditText.setText(importedTest.getName());
         }
 
         titleEditText.addTextChangedListener(new TextWatcher() {
@@ -104,8 +104,8 @@ public class ImportXmlDialogFragment extends DialogFragment {
                 if (titleEditText.getText().length() < 1) {
                     titleEditText.requestFocus();
                 } else {
-                    currentImportContext.importTest.setName(titleEditText.getText().toString());
-                    listener.loadXmlFile();
+                    importedTest.setName(titleEditText.getText().toString());
+                    listener.loadXmlFile(importedTest);
                     dismiss();
                 }
             }
@@ -126,6 +126,6 @@ public class ImportXmlDialogFragment extends DialogFragment {
     }
 
     public interface OnValidListener {
-        void loadXmlFile();
+        void loadXmlFile(Test importedTest);
     }
 }

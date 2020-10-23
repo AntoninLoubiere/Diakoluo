@@ -284,7 +284,7 @@ public class EditTestActivity extends AppCompatActivity
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                showCancelDialog();
             }
         });
 
@@ -351,5 +351,31 @@ public class EditTestActivity extends AppCompatActivity
                 viewPager.setAdapter(adapter);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        showCancelDialog();
+    }
+
+    private void showCancelDialog() {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.dialog_edit_unsave_title)
+                .setMessage(R.string.dialog_edit_unsave_message)
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setPositiveButton(R.string.quit, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                        diakoluoApplication.setCurrentEditTest(DiakoluoApplication.NO_CURRENT_EDIT_TEST);
+                        finish();
+                    }
+                })
+                .show();
     }
 }

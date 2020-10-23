@@ -30,6 +30,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+
+import fr.pyjacpp.diakoluo.tests.DataRow;
+import fr.pyjacpp.diakoluo.tests.column.Column;
 
 /**
  * A utils class that hold useful methods.
@@ -119,6 +123,31 @@ public final class Utils {
 
     public static String formatScore(float score) {
         return SCORE_DECIMAL_FORMATTER.format(score);
+    }
+
+    /**
+     * Return if two lists of {@link fr.pyjacpp.diakoluo.tests.DataRow} are equals
+     *
+     * @param first         the first list of DataRow to test
+     * @param firstColumns  list of columns of first
+     * @param second        the second list of DataRow to test
+     * @param secondColumns list of columns of second columns
+     * @return if the two lists of {@link fr.pyjacpp.diakoluo.tests.DataRow} are equals
+     */
+    public static boolean dataRowArrayEquals(ArrayList<DataRow> first, ArrayList<Column> firstColumns,
+                                             ArrayList<DataRow> second, ArrayList<Column> secondColumns) {
+        if (first.size() != second.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < first.size(); i++) {
+            DataRow df = first.get(i);
+            DataRow ds = second.get(i);
+            if (!df.equals(ds, secondColumns, firstColumns)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

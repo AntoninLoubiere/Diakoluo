@@ -21,6 +21,8 @@ package fr.pyjacpp.diakoluo;
 
 import android.content.Context;
 import android.text.Editable;
+import android.view.View;
+import android.view.ViewParent;
 
 import androidx.core.content.res.ResourcesCompat;
 
@@ -28,6 +30,25 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 
 public final class ViewUtils {
+    /**
+     * When a edit text with a layout is clicked send focus change to the parent so it can be
+     * receive from other class
+     */
+    public static final View.OnFocusChangeListener TRANSFER_TO_PARENT_FOCUS_LISTENER =
+            new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    ViewParent parent = v.getParent();
+                    if (parent instanceof View) {
+                        View parent1 = (View) parent;
+                        View.OnFocusChangeListener onFocusChangeListener =
+                                parent1.getOnFocusChangeListener();
+                        if (onFocusChangeListener != null)
+                            onFocusChangeListener.onFocusChange(parent1, true);
+                    }
+                }
+            };
+
     public static void setBooleanView(Context context, MaterialTextView materialTextView, boolean value) {
         materialTextView.setCompoundDrawablesWithIntrinsicBounds(
                 ResourcesCompat.getDrawable(context.getResources(),
