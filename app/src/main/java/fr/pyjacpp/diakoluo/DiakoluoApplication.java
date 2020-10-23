@@ -77,8 +77,6 @@ public class DiakoluoApplication extends Application {
     @Nullable
     private Test currentEditTest = null;
     @Nullable
-    private FileManager.ImportContext currentImportContext = null;
-    @Nullable
     private TestTestContext testTestContext = null;
     private int currentEditTestIndex = NO_CURRENT_EDIT_TEST;
     private int currentTestIndex = -1;
@@ -593,25 +591,6 @@ public class DiakoluoApplication extends Application {
                 loadCurrentEditTestThread.start();
             }
         }
-    }
-
-    /**
-     * Get the import context.
-     *
-     * @return the import context
-     */
-    @Nullable
-    public FileManager.ImportContext getCurrentImportContext() {
-        return currentImportContext;
-    }
-
-    /**
-     * Set the current import context.
-     *
-     * @param currentImportTest the import context to set
-     */
-    public void setCurrentImportContext(@Nullable FileManager.ImportContext currentImportTest) {
-        this.currentImportContext = currentImportTest;
     }
 
     /**

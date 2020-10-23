@@ -187,6 +187,7 @@ public class FileManager {
 
     /**
      * Remove the file that hold the edit test.
+     *
      * @param context the context
      */
     public static void deleteCurrentEditTest(Context context) {
@@ -494,7 +495,7 @@ public class FileManager {
                 // Process .dkl
                 Test testLoaded = XmlLoader.load(inputStream);
                 if (testLoaded != null && testLoaded.isValid()) {
-                    resultListener.showXmlImportDialog(new ImportXmlContext(testLoaded));
+                    resultListener.showXmlImportDialog(testLoaded);
                 } else {
                     throw new IOException("Test not imported");
                 }
@@ -515,7 +516,7 @@ public class FileManager {
                     }
                 }
 
-                resultListener.showCsvImportDialog(new ImportCsvContext(firstsLines, uri));
+                resultListener.showCsvImportDialog(firstsLines, uri);
             }
         } catch (IOException | ClassCastException | XmlPullParserException e) {
             showError(activity, R.string.dialog_import_error_title, R.string.dialog_import_error_message);
@@ -639,16 +640,17 @@ public class FileManager {
         /**
          * Show the xml import dialog
          *
-         * @param importXmlContext the context of the import
+         * @param test the test imported
          */
-        void showXmlImportDialog(ImportXmlContext importXmlContext);
+        void showXmlImportDialog(Test test);
 
         /**
          * Show the xml import dialog
          *
-         * @param importCsvContext the context of the import
+         * @param firstsLines the first lines of the files
+         * @param uri         the uri of the file to import
          */
-        void showCsvImportDialog(ImportCsvContext importCsvContext);
+        void showCsvImportDialog(String[] firstsLines, Uri uri);
     }
 
     /**
@@ -704,48 +706,6 @@ public class FileManager {
             this.columnTypeHeader = columnTypeHeader;
             this.separator = separator;
             this.lineSeparator = lineSeparator;
-        }
-    }
-
-    /**
-     * A context to import a file.
-     */
-    public static class ImportContext {
-    }
-
-    /**
-     * A import xml context.
-     */
-    public static class ImportXmlContext extends ImportContext {
-        public final Test importTest;
-
-        /**
-         * Default constructor.
-         *
-         * @param importTest the test loaded
-         */
-        ImportXmlContext(Test importTest) {
-            this.importTest = importTest;
-        }
-    }
-
-    /**
-     * The csv import context.
-     */
-    public static class ImportCsvContext extends ImportContext {
-        public final String[] firstLines;
-        public final Uri fileUri;
-
-        /**
-         * Default constructor
-         *
-         * @param firstLines first lines of the files. The size is {@link #NUMBER_LINE_SHOW_CSV}
-         * @param fileUri    the file uri to load
-         * @see #NUMBER_LINE_SHOW_CSV
-         */
-        ImportCsvContext(String[] firstLines, Uri fileUri) {
-            this.firstLines = firstLines;
-            this.fileUri = fileUri;
         }
     }
 }

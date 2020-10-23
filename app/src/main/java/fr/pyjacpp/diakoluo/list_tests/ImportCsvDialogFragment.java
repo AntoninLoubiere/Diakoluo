@@ -20,6 +20,7 @@
 package fr.pyjacpp.diakoluo.list_tests;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,11 +36,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
-import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.save_test.FileManager;
 
 public class ImportCsvDialogFragment extends DialogFragment {
+    private static final String PREF_FIRST_LINES = "firstLines";
+    private static final String PREF_URI = "uri";
+    private String[] firstLines;
+    private Uri uri;
     private OnValidListener listener;
 
     private EditText titleEditText;
@@ -48,22 +51,24 @@ public class ImportCsvDialogFragment extends DialogFragment {
     private Spinner separatorSpinner;
 
     public ImportCsvDialogFragment() {
+        firstLines = null;
+        uri = null;
+    }
+
+    public ImportCsvDialogFragment(String[] firstLines, Uri uri) {
+        this.firstLines = firstLines;
+        this.uri = uri;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View inflatedView = inflater.inflate(R.layout.fragment_dialog_import_csv, container, false);
-
-        FileManager.ImportContext _currentImportContext =
-                DiakoluoApplication.get(inflatedView.getContext()).getCurrentImportContext();
-        final FileManager.ImportCsvContext currentImportContext;
-        if (_currentImportContext instanceof FileManager.ImportCsvContext) {
-            currentImportContext = (FileManager.ImportCsvContext) _currentImportContext;
-        } else {
-            dismiss();
-            return new View(inflatedView.getContext());
+        if (savedInstanceState != null) {
+            firstLines = savedInstanceState.getStringArray(PREF_FIRST_LINES);
+            uri = Uri.parse(savedInstanceState.getString(PREF_URI));
         }
+
+        final View inflatedView = inflater.inflate(R.layout.fragment_dialog_import_csv, container, false);
 
         titleEditText = inflatedView.findViewById(R.id.titleInput);
         loadColumnName = inflatedView.findViewById(R.id.columnHeaderCheckBox);
@@ -101,11 +106,11 @@ public class ImportCsvDialogFragment extends DialogFragment {
 
         StringBuilder previewText = new StringBuilder();
 
-        for (int i = 0; i < currentImportContext.firstLines.length; i++) {
+        for (int i = 0; i < firstLines.length; i++) {
             if (i > 0)
                 previewText.append("\n\n");
 
-            previewText.append(currentImportContext.firstLines[i]);
+            previewText.append(firstLines[i]);
         }
         filePreviewTextFile.setText(previewText.toString());
 
@@ -122,16 +127,23 @@ public class ImportCsvDialogFragment extends DialogFragment {
                 if (titleEditText.getText().length() < 1) {
                     titleEditText.requestFocus();
                 } else {
-                    listener.loadCsvFile(titleEditText.getText().toString(),
+                    listener.loadCsvFile(uri,
+                            titleEditText.getText().toString(),
                             (int) separatorSpinner.getSelectedItemId(),
-                            loadColumnName.isChecked(),
-                            loadColumnType.isChecked());
+                            loadColumnName.isChecked(), loadColumnType.isChecked());
                     dismiss();
                 }
             }
         });
 
         return inflatedView;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArray(PREF_FIRST_LINES, firstLines);
+        outState.putString(PREF_URI, uri.toString());
     }
 
     @Override
@@ -146,6 +158,6 @@ public class ImportCsvDialogFragment extends DialogFragment {
     }
 
     public interface OnValidListener {
-        void loadCsvFile(String name, int separatorId, boolean saveColumnName, boolean saveColumnType);
+        void loadCsvFile(Uri fileUri, String name, int separatorId, boolean saveColumnName, boolean saveColumnType);
     }
 }
