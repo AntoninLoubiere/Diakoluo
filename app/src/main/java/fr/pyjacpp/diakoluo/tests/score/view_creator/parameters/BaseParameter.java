@@ -17,15 +17,16 @@
  *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-package fr.pyjacpp.diakoluo.tests.score.descriptor;
+package fr.pyjacpp.diakoluo.tests.score.view_creator.parameters;
+
+import android.view.View;
 
 import androidx.annotation.StringRes;
 
 /**
- * A descriptor that describe a {@link fr.pyjacpp.diakoluo.tests.score.condition.BaseCondition} or
- * a {@link fr.pyjacpp.diakoluo.tests.score.action.BaseAction}
+ * A base parameter that will create a view to edit the parameter.
  */
-public final class Descriptor {
+public abstract class BaseParameter {
     @StringRes
     private final int name;
     @StringRes
@@ -34,18 +35,43 @@ public final class Descriptor {
     /**
      * Default constructor.
      *
-     * @param name        the name of the object
-     * @param description the description of the object
+     * @param name        the name of the parameter
+     * @param description the description of the parameter
      */
-    public Descriptor(@StringRes int name, @StringRes int description) {
+    public BaseParameter(@StringRes int name, @StringRes int description) {
         this.name = name;
         this.description = description;
     }
 
     /**
-     * Get the name of the object.
+     * Generate the view to view the value of this parameter.
      *
-     * @return the name
+     * @return the view generated
+     * @see #getEditView()
+     */
+    public abstract View getViewView();
+
+    /**
+     * Generate the view to view the value of this parameter.
+     *
+     * @return the view generated
+     * @see #getEditValue()
+     * @see #getViewView()
+     */
+    public abstract View getEditView();
+
+    /**
+     * Get the value inputted by the user.
+     *
+     * @return the value inputted by the user
+     * @see #getEditView()
+     */
+    public abstract Object getEditValue();
+
+    /**
+     * Get the name of the field.
+     *
+     * @return the name of the field
      */
     @StringRes
     public int getName() {
@@ -53,9 +79,9 @@ public final class Descriptor {
     }
 
     /**
-     * Get the description of the object.
+     * Get the description of the field.
      *
-     * @return the description
+     * @return the description of the field
      */
     @StringRes
     public int getDescription() {

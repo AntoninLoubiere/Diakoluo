@@ -31,7 +31,7 @@ import com.google.android.material.textview.MaterialTextView;
 
 public final class ViewUtils {
     /**
-     * When a edit text with a layout is clicked send focus change to the parent so it can be
+     * When an edit text with a layout is clicked send focus change to the parent so it can be
      * receive from other class
      */
     public static final View.OnFocusChangeListener TRANSFER_TO_PARENT_FOCUS_LISTENER =
