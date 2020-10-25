@@ -133,4 +133,8 @@
     <string name="dialog_edit_unsave_title">Test unsaved</string>
     <string name="dialog_edit_unsave_message">All changes aren\'t save and they will be lost if you quit.</string>
     <string name="quit">quit</string>
+    <string name="condition_not_name">Not gate</string>
+    <string name="condition_not_description">Invert the result of a condition.</string>
+    <string name="condition_not_condition_name">Condition</string>
+    <string name="condition_not_condition_description">The description to invert</string>
 </resources>

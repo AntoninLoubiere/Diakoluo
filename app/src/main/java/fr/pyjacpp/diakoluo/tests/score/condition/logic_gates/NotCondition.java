@@ -17,18 +17,29 @@
  *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-package fr.pyjacpp.diakoluo.tests.score.condition;
+package fr.pyjacpp.diakoluo.tests.score.condition.logic_gates;
 
 import androidx.annotation.NonNull;
 
+import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
+import fr.pyjacpp.diakoluo.tests.score.condition.BaseCondition;
 import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
+import fr.pyjacpp.diakoluo.tests.score.view_creator.parameters.BaseParameter;
+import fr.pyjacpp.diakoluo.tests.score.view_creator.parameters.ConditionParameter;
 
 /**
- * A base condition class
+ * Inverse the result of a condition
  */
-public abstract class BaseCondition {
+public class NotCondition extends BaseCondition {
+
+    private BaseCondition condition;
+
+    public NotCondition(BaseCondition condition) {
+        this.condition = condition;
+    }
+
     /**
      * Get the value of the condition
      *
@@ -37,7 +48,10 @@ public abstract class BaseCondition {
      * @param answer the answer from the user
      * @return if the condition is respected
      */
-    public abstract boolean get(Column column, DataCell cell, Object answer);
+    @Override
+    public boolean get(Column column, DataCell cell, Object answer) {
+        return !condition.get(column, cell, answer);
+    }
 
     /**
      * Get the view creator of the condition, the name and the description.
@@ -45,7 +59,20 @@ public abstract class BaseCondition {
      * @return the descriptor of the condition
      * @see #setFromViewCreator(ViewCreator)
      */
-    public abstract ViewCreator getViewCreator();
+    @Override
+    public ViewCreator getViewCreator() {
+        return new ViewCreator(
+                R.string.condition_not_name,
+                R.string.condition_not_description,
+                new BaseParameter[]{
+                        new ConditionParameter(
+                                R.string.condition_not_condition_name,
+                                R.string.condition_not_condition_description,
+                                condition
+                        )
+                }
+        );
+    }
 
     /**
      * Set value from the edited view.
@@ -53,5 +80,8 @@ public abstract class BaseCondition {
      * @param viewCreator the view creator that create views
      * @see #getViewCreator()
      */
-    public abstract void setFromViewCreator(@NonNull ViewCreator viewCreator);
+    @Override
+    public void setFromViewCreator(@NonNull ViewCreator viewCreator) {
+        this.condition = (BaseCondition) viewCreator.getParameters()[0].getEditValue();
+    }
 }

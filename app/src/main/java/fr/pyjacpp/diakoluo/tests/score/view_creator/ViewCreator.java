@@ -22,6 +22,7 @@ package fr.pyjacpp.diakoluo.tests.score.view_creator;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import fr.pyjacpp.diakoluo.tests.score.view_creator.parameters.BaseParameter;
@@ -51,7 +52,7 @@ public class ViewCreator {
     public ViewCreator(@StringRes int name, @StringRes int description) {
         this.name = name;
         this.description = description;
-        parameters =  new BaseParameter[0];
+        parameters = new BaseParameter[0];
     }
 
     /**
@@ -73,7 +74,7 @@ public class ViewCreator {
      * @return the view to add
      * @see #getEditView(Context)
      */
-    public View getViewView(Context context) {
+    public View getViewView(@NonNull Context context) {
         throw new RuntimeException("Not implemented yet !"); // TODO
     }
 
@@ -84,7 +85,7 @@ public class ViewCreator {
      * @return the view to add
      * @see #getViewView(Context)
      */
-    public View getEditView(Context context) {
+    public View getEditView(@NonNull Context context) {
         throw new RuntimeException("Not implemented yet !"); // TODO
     }
 
@@ -106,5 +107,13 @@ public class ViewCreator {
     @StringRes
     public int getDescription() {
         return description;
+    }
+
+    /**
+     * Get parameters
+     * @return the list of parameters
+     */
+    public BaseParameter[] getParameters() {
+        return parameters;
     }
 }

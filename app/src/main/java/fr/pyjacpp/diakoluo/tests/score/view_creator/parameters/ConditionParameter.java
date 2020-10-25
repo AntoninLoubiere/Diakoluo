@@ -23,16 +23,16 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
+
+import fr.pyjacpp.diakoluo.tests.score.condition.BaseCondition;
+import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
 
 /**
- * A base parameter that will create a view to edit the parameter.
+ * A condition parameter.
  */
-public abstract class BaseParameter {
-    @StringRes
-    private final int name;
-    @StringRes
-    private final int description;
+public class ConditionParameter extends BaseParameter {
+    private final BaseCondition condition;
+    private final ViewCreator conditionViewCreator;
 
     /**
      * Default constructor.
@@ -40,9 +40,10 @@ public abstract class BaseParameter {
      * @param name        the name of the parameter
      * @param description the description of the parameter
      */
-    public BaseParameter(@StringRes int name, @StringRes int description) {
-        this.name = name;
-        this.description = description;
+    public ConditionParameter(int name, int description, BaseCondition condition) {
+        super(name, description);
+        this.condition = condition;
+        this.conditionViewCreator = condition.getViewCreator();
     }
 
     /**
@@ -50,9 +51,12 @@ public abstract class BaseParameter {
      *
      * @param context the context of the application
      * @return the view generated
-     * @see #getEditView(Context)
+     * @see BaseParameter#getEditView(Context)
      */
-    public abstract View getViewView(@NonNull Context context);
+    @Override
+    public View getViewView(@NonNull Context context) {
+        return conditionViewCreator.getViewView(context);
+    }
 
     /**
      * Generate the view to view the value of this parameter.
@@ -60,35 +64,22 @@ public abstract class BaseParameter {
      * @param context the context of the application
      * @return the view generated
      * @see #getEditValue()
-     * @see #getViewView(Context)
+     * @see BaseParameter#getViewView(Context)
      */
-    public abstract View getEditView(@NonNull Context context);
+    @Override
+    public View getEditView(@NonNull Context context) {
+        return conditionViewCreator.getEditView(context);
+    }
 
     /**
      * Get the value inputted by the user.
      *
      * @return the value inputted by the user
-     * @see #getEditView(Context)
+     * @see BaseParameter#getEditView(Context)
      */
-    public abstract Object getEditValue();
-
-    /**
-     * Get the name of the field.
-     *
-     * @return the name of the field
-     */
-    @StringRes
-    public int getName() {
-        return name;
-    }
-
-    /**
-     * Get the description of the field.
-     *
-     * @return the description of the field
-     */
-    @StringRes
-    public int getDescription() {
-        return description;
+    @Override
+    public Object getEditValue() {
+        condition.setFromViewCreator(conditionViewCreator);
+        return condition;
     }
 }
