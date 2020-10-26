@@ -22,4 +22,5 @@
     <dimen name="appbar_padding">15dp</dimen>
     <dimen name="default_margin">8dp</dimen>
     <dimen name="large">32dp</dimen>
+    <dimen name="accordion_view_offset">24dp</dimen>
 </resources>

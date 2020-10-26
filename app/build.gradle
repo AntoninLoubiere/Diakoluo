@@ -39,7 +39,7 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "fr.pyjacpp.diakoluo"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 4
         versionName 'v-dev-0.3.0'
