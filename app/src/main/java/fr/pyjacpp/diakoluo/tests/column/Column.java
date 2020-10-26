@@ -621,7 +621,7 @@ public abstract class Column {
                 }
                 if (!scoresErrors[1] && scoreWrong >= scoreRight) {
                     scoreWrongInputEditText.setError(
-                            context.getString(R.string.score_wrong_greatter_right));
+                            context.getString(R.string.score_wrong_greater_right));
                 } else if (!scoresErrors[1]) {
                     scoreWrongInputEditText.setError(null);
                 }

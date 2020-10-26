@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
   ~
   ~ This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
@@ -19,6 +18,7 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -43,47 +43,47 @@
 
             <TextView
                 style="@style/TextAppearance.MaterialComponents.Headline6"
-                android:layout_marginTop="@dimen/default_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/select_export"/>
+                android:layout_marginTop="@dimen/default_margin"
+                android:text="@string/select_export" />
 
             <Spinner
                 android:id="@+id/exportFileTypeSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:entries="@array/export_entries"/>
+                android:entries="@array/export_entries" />
 
             <TextView
                 android:id="@+id/warningFileTypeTextView"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_warning_yellow_24dp"
                 android:drawablePadding="@dimen/default_margin"
                 android:text="@string/all_features_may_not_be_available_in_this_format"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_warning_yellow_24dp" />
 
             <CheckBox
                 android:id="@+id/testDoneCheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/save_test_done"
-                android:checked="true" />
+                android:checked="true"
+                android:text="@string/save_test_done" />
 
             <CheckBox
                 android:id="@+id/columnHeaderCheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/save_column_header_save"
-                android:checked="true" />
+                android:checked="true"
+                android:text="@string/save_column_header_save" />
 
             <CheckBox
                 android:id="@+id/columnTypeHeaderCheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/save_column_type_header_save"
-                android:checked="true" />
+                android:checked="true"
+                android:text="@string/save_column_type_header_save" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -95,7 +95,7 @@
                     style="@style/TextAppearance.MaterialComponents.Body1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="@string/separator"/>
+                    android:text="@string/separator" />
 
                 <Spinner
                     android:id="@+id/separatorSpinner"
@@ -127,16 +127,14 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cancel">
-        </Button>
+            android:text="@string/cancel" />
 
         <Button
             android:id="@+id/validButton"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/export">
-        </Button>
+            android:text="@string/export" />
 
     </LinearLayout>
 

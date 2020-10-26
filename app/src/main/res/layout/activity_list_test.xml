@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2020 LOUBIERE Antonin <https://www.github.com/AntoninLoubiere/>
   ~
   ~ This file is part of Diakôluô project <https://www.github.com/AntoninLoubiere/Diakoluo/>.
@@ -18,8 +17,8 @@
   ~     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
   -->
 
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -33,12 +32,14 @@
         tools:layout="@layout/fragment_recycler_list" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        style="@style/FloatingActionButton"
         android:id="@+id/addFloatingButton"
+        style="@style/FloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
+        android:layout_margin="10dp"
+        android:backgroundTint="?colorPrimary"
         android:src="@drawable/ic_add_white_24dp"
-        android:layout_margin="10dp"/>
+        app:borderWidth="0dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

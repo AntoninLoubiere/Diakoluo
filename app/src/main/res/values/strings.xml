@@ -118,7 +118,7 @@
     <string name="score_right_text_view">Right answer:</string>
     <string name="score_wrong_text_view">Wrong answer:</string>
     <string name="score_skipped_text_view">Skipped answer:</string>
-    <string name="score_wrong_greatter_right">A wrong answer will give more points than a right answer.</string>
+    <string name="score_wrong_greater_right">A wrong answer will give more points than a right answer.</string>
     <string name="score_right_lesser_skipped">A skipped answer will give more point than a right answer.</string>
     <string name="score_skipped_lesser_wrong">A wrong answer will give more points than a skipped answer.</string>
     <string name="column_list_skipped_item" />
@@ -129,7 +129,7 @@
     <string name="loading">Loading</string>
     <string name="dialog_error_cant_load_test">Can\'t load the test.</string>
     <string name="dialog_edit_test_existing_title">Editable test</string>
-    <string name="dialog_edit_test_existing_message">You haven\'t finish to edit \"%s\". Do you want to contiue edit it ?</string>
+    <string name="dialog_edit_test_existing_message">You haven\'t finish to edit \"%s\". Do you want to continue edit it ?</string>
     <string name="dialog_edit_unsave_title">Test unsaved</string>
     <string name="dialog_edit_unsave_message">All changes aren\'t save and they will be lost if you quit.</string>
     <string name="quit">quit</string>
