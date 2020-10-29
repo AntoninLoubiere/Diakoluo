@@ -20,12 +20,18 @@
 package fr.pyjacpp.diakoluo.tests.score.view_creator;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import com.google.android.material.textview.MaterialTextView;
+
+import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.score.view_creator.parameters.BaseParameter;
+import fr.pyjacpp.diakoluo.widgets.accordion.AccordionView;
 
 /**
  * A view creator that create view to show the object represented. It has also parameters views that
@@ -42,6 +48,7 @@ public class ViewCreator {
     private final int description;
 
     private BaseParameter[] parameters;
+    private boolean useAccordion = true;
 
     /**
      * Default constructor.
@@ -75,7 +82,30 @@ public class ViewCreator {
      * @see #getEditView(Context)
      */
     public View getViewView(@NonNull Context context) {
-        throw new RuntimeException("Not implemented yet !"); // TODO
+        LinearLayout parentView;
+        LinearLayout rootView;
+
+        if (useAccordion) {
+            AccordionView accordion = new AccordionView(context);
+            accordion.setText(name);
+            parentView = accordion.getParentView();
+            rootView = accordion.getRootView();
+        } else {
+            rootView = new LinearLayout(context);
+
+            MaterialTextView textView = new MaterialTextView(context);
+            textView.setText(name);
+            textView.setTextAppearance(context, R.style.TextAppearance_MaterialComponents_Body1);
+            textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+            rootView.addView(textView);
+
+            parentView = rootView;
+        }
+
+        for (BaseParameter baseParameter : parameters) {
+            parentView.addView(baseParameter.getViewView(context));
+        }
+        return rootView;
     }
 
     /**
@@ -86,7 +116,30 @@ public class ViewCreator {
      * @see #getViewView(Context)
      */
     public View getEditView(@NonNull Context context) {
-        throw new RuntimeException("Not implemented yet !"); // TODO
+        LinearLayout parentView;
+        LinearLayout rootView;
+
+        if (useAccordion) {
+            AccordionView accordion = new AccordionView(context);
+            accordion.setText(name);
+            parentView = accordion.getParentView();
+            rootView = accordion.getRootView();
+        } else {
+            rootView = new LinearLayout(context);
+
+            MaterialTextView textView = new MaterialTextView(context);
+            textView.setText(name);
+            textView.setTextAppearance(context, R.style.TextAppearance_MaterialComponents_Body1);
+            textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+            rootView.addView(textView);
+
+            parentView = rootView;
+        }
+
+        for (BaseParameter baseParameter : parameters) {
+            parentView.addView(baseParameter.getEditView(context));
+        }
+        return rootView;
     }
 
     /**
@@ -115,5 +168,21 @@ public class ViewCreator {
      */
     public BaseParameter[] getParameters() {
         return parameters;
+    }
+
+    /**
+     * Set if the view generated should use an accordion (if the view should have a drop down).
+     * @param b if the view generate should use an accordion
+     */
+    public void setUseAccordion(boolean b) {
+        useAccordion = b;
+    }
+
+    /**
+     * Get if the view use an accordion
+     * @return if the view should use an accordion
+     */
+    public boolean isUseAccordion() {
+        return useAccordion;
     }
 }
