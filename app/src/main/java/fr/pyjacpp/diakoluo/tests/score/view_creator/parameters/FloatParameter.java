@@ -20,29 +20,31 @@
 package fr.pyjacpp.diakoluo.tests.score.view_creator.parameters;
 
 import android.content.Context;
+import android.text.InputType;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
-/**
- * A base parameter that will create a view to edit the parameter.
- */
-public abstract class BaseParameter {
-    @StringRes
-    protected final int name;
-    @StringRes
-    protected final int description;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textview.MaterialTextView;
+
+import fr.pyjacpp.diakoluo.R;
+
+public class FloatParameter extends BaseParameter {
+    private float value;
+    private TextInputEditText editText;
 
     /**
      * Default constructor.
      *
-     * @param name        the name of the parameter
-     * @param description the description of the parameter
+     * @param name         the name of the parameter
+     * @param description  the description of the parameter
+     * @param defaultValue the default value of the view
      */
-    public BaseParameter(@StringRes int name, @StringRes int description) {
-        this.name = name;
-        this.description = description;
+    public FloatParameter(int name, int description, float defaultValue) {
+        super(name, description);
+        value = defaultValue;
     }
 
     /**
@@ -53,7 +55,12 @@ public abstract class BaseParameter {
      * @see #getEditView(Context)
      */
     @NonNull
-    public abstract View getViewView(@NonNull Context context);
+    @Override
+    public View getViewView(@NonNull Context context) {
+        MaterialTextView view = new MaterialTextView(context);
+        view.setText(context.getString(R.string.float_formatter, value));
+        return view;
+    }
 
     /**
      * Generate the view to view the value of this parameter.
@@ -64,7 +71,19 @@ public abstract class BaseParameter {
      * @see #getViewView(Context)
      */
     @NonNull
-    public abstract View getEditView(@NonNull Context context);
+    @Override
+    public View getEditView(@NonNull Context context) {
+        TextInputLayout layout = new TextInputLayout(context, null,
+                R.style.Widget_MaterialComponents_TextInputLayout_OutlinedBox);
+
+        editText = new TextInputEditText(context);
+        editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        editText.setHint(name);
+        editText.setText(context.getString(R.string.float_formatter, value));
+        layout.addView(editText);
+
+        return layout;
+    }
 
     /**
      * Get the value inputted by the user.
@@ -72,25 +91,8 @@ public abstract class BaseParameter {
      * @return the value inputted by the user
      * @see #getEditView(Context)
      */
-    public abstract Object getEditValue();
-
-    /**
-     * Get the name of the field.
-     *
-     * @return the name of the field
-     */
-    @StringRes
-    public int getName() {
-        return name;
-    }
-
-    /**
-     * Get the description of the field.
-     *
-     * @return the description of the field
-     */
-    @StringRes
-    public int getDescription() {
-        return description;
+    @Override
+    public Object getEditValue() {
+        return Float.valueOf(String.valueOf(editText.getText()));
     }
 }

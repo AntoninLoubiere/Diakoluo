@@ -133,8 +133,20 @@
     <string name="dialog_edit_unsave_title">Test unsaved</string>
     <string name="dialog_edit_unsave_message">All changes aren\'t save and they will be lost if you quit.</string>
     <string name="quit">quit</string>
+    <string name="float_formatter">%f</string>
     <string name="condition_not_name">Not gate</string>
     <string name="condition_not_description">Invert the result of a condition.</string>
     <string name="condition_not_condition_name">Condition</string>
     <string name="condition_not_condition_description">The description to invert</string>
+    <string name="condition_true_name">True</string>
+    <string name="condition_true_description">A condition that is always true.</string>
+    <string name="action_set_name">Set score</string>
+    <string name="action_set_description">Set the score of a certain amount.</string>
+    <string name="action_set_score_name">Score</string>
+    <string name="action_set_score_description">The score to set.</string>
+    <string name="action_add_name">Add score</string>
+    <string name="action_add_description">Add an amount to the score.</string>
+    <string name="action_add_score_name">Score</string>
+    <string name="action_add_score_description">The score to add.</string>
+
 </resources>

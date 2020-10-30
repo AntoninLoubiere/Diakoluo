@@ -17,25 +17,46 @@
  *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-package fr.pyjacpp.diakoluo.tests.score.action;
+package fr.pyjacpp.diakoluo.tests.score.action.base;
 
 import androidx.annotation.NonNull;
 
+import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.column.Column;
+import fr.pyjacpp.diakoluo.tests.score.action.BaseAction;
+import fr.pyjacpp.diakoluo.tests.score.action.ScoreActionContext;
 import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
+import fr.pyjacpp.diakoluo.tests.score.view_creator.parameters.BaseParameter;
+import fr.pyjacpp.diakoluo.tests.score.view_creator.parameters.FloatParameter;
 
 /**
- * A base action that will give the appropriate score to the column
+ * An action that will set the score of an amount
  */
-public abstract class BaseAction {
+public class SetAction extends BaseAction {
+
+    private float score;
+
+    /**
+     * Initialise with a score
+     *
+     * @param score the score to set
+     */
+    public SetAction(float score) {
+        this.score = score;
+    }
+
     /**
      * Apply the action, set the score to the context.
      *
      * @param context the context of actions
-     * @param column the column attached to the cell
+     * @param column  the column attached to the cell
      * @return true if the column should stop reading rules
      */
-    public abstract boolean apply(ScoreActionContext context, Column column);
+    @Override
+    public boolean apply(ScoreActionContext context, Column column) {
+        context.addCurrentScore(score);
+        return true;
+    }
 
     /**
      * Get the view creator of the condition, the name and the description.
@@ -43,7 +64,20 @@ public abstract class BaseAction {
      * @return the descriptor of the condition
      * @see #setFromViewCreator(ViewCreator)
      */
-    public abstract ViewCreator getViewCreator();
+    @Override
+    public ViewCreator getViewCreator() {
+        return new ViewCreator(
+                R.string.action_set_name,
+                R.string.action_set_description,
+                new BaseParameter[]{
+                        new FloatParameter(
+                                R.string.action_set_score_name,
+                                R.string.action_set_score_description,
+                                score
+                        )
+                }
+        );
+    }
 
     /**
      * Set value from the edited view.
@@ -51,5 +85,8 @@ public abstract class BaseAction {
      * @param viewCreator the view creator that create views
      * @see #getViewCreator()
      */
-    public abstract void setFromViewCreator(@NonNull ViewCreator viewCreator);
+    @Override
+    public void setFromViewCreator(@NonNull ViewCreator viewCreator) {
+        score = (float) viewCreator.getParameters()[0].getEditValue();
+    }
 }

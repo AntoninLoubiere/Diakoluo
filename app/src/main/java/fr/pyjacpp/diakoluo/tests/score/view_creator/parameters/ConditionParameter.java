@@ -53,6 +53,7 @@ public class ConditionParameter extends BaseParameter {
      * @return the view generated
      * @see BaseParameter#getEditView(Context)
      */
+    @NonNull
     @Override
     public View getViewView(@NonNull Context context) {
         return conditionViewCreator.getViewView(context);
@@ -66,6 +67,7 @@ public class ConditionParameter extends BaseParameter {
      * @see #getEditValue()
      * @see BaseParameter#getViewView(Context)
      */
+    @NonNull
     @Override
     public View getEditView(@NonNull Context context) {
         return conditionViewCreator.getEditView(context);
