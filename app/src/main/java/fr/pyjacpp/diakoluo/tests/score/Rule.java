@@ -19,10 +19,55 @@
 
 package fr.pyjacpp.diakoluo.tests.score;
 
+import androidx.annotation.NonNull;
+
 import fr.pyjacpp.diakoluo.tests.score.action.BaseAction;
 import fr.pyjacpp.diakoluo.tests.score.condition.BaseCondition;
+import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
 
+/**
+ * A Rule class that hold a condition and an action to do
+ */
 public class Rule {
     private BaseCondition condition;
     private BaseAction action;
+
+    /**
+     * Create a Rule from a condition and an action
+     *
+     * @param condition the condition
+     * @param action    the action
+     */
+    public Rule(BaseCondition condition, BaseAction action) {
+        this.condition = condition;
+        this.action = action;
+    }
+
+    /**
+     * Get the view creator of the condition, the name and the description.
+     *
+     * @return the descriptor of the condition
+     * @see #setFromViewCreator(ViewCreator)
+     */
+    public ViewCreator getViewCreator() {
+        return new ViewCreator(0, 0); // TODO
+    }
+
+    /**
+     * Set value from the edited view.
+     *
+     * @param viewCreator the view creator that create views
+     * @see #getViewCreator()
+     */
+    public void setFromViewCreator(@NonNull ViewCreator viewCreator) {
+        // TODO
+    }
+
+    public BaseCondition getCondition() {
+        return condition;
+    }
+
+    public BaseAction getAction() {
+        return action;
+    }
 }

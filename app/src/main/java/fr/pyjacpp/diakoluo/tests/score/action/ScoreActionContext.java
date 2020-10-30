@@ -19,37 +19,46 @@
 
 package fr.pyjacpp.diakoluo.tests.score.action;
 
-import androidx.annotation.NonNull;
-
-import fr.pyjacpp.diakoluo.tests.column.Column;
-import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
-
 /**
- * A base action that will give the appropriate score to the column
+ * A class that will hold the current score when processing different columns.
  */
-public abstract class BaseAction {
-    /**
-     * Get the
-     *
-     * @param context the context of actions
-     * @param column the column attached to the cell
-     * @return true if the column should stop reading rules
-     */
-    public abstract boolean apply(ScoreActionContext context, Column column);
+public class ScoreActionContext {
+    private float currentScore;
+    private boolean addMode;
 
     /**
-     * Get the view creator of the condition, the name and the description.
-     *
-     * @return the descriptor of the condition
-     * @see #setFromViewCreator(ViewCreator)
+     * Create a score action context with a currentScore of 0.
      */
-    public abstract ViewCreator getViewCreator();
+    public ScoreActionContext() {
+        currentScore = 0f;
+        addMode = false;
+    }
 
     /**
-     * Set value from the edited view.
+     * Get the current score.
      *
-     * @param viewCreator the view creator that create views
-     * @see #getViewCreator()
+     * @return the current score
      */
-    public abstract void setFromViewCreator(@NonNull ViewCreator viewCreator);
+    public float getCurrentScore() {
+        return currentScore;
+    }
+
+    /**
+     * Set the current score.
+     *
+     * @param currentScore the current score to add
+     */
+    public void setCurrentScore(float currentScore) {
+        if (!addMode) this.currentScore = currentScore;
+    }
+
+    /**
+     * Add to the current score.
+     *
+     * @param currentScore the current score to add
+     */
+    public void addCurrentScore(float currentScore) {
+        addMode = true;
+        this.currentScore += currentScore;
+    }
 }

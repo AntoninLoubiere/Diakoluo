@@ -19,8 +19,75 @@
 
 package fr.pyjacpp.diakoluo.tests.score;
 
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+
+import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
+import fr.pyjacpp.diakoluo.tests.column.Column;
+import fr.pyjacpp.diakoluo.tests.data.DataCell;
+import fr.pyjacpp.diakoluo.tests.score.action.ScoreActionContext;
+import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
+
 /**
- * A class that save all informations of the score of a column
+ * A class that save all informations of the score of a column.
  */
 public class ScoreColumn {
+    public ArrayList<Rule> rules;
+    public float maxScore;
+
+    /**
+     * Create a new instance.
+     *
+     * @param rules    the list of rules
+     * @param maxScore the max score of the column
+     */
+    public ScoreColumn(ArrayList<Rule> rules, float maxScore) {
+        this.rules = rules;
+        this.maxScore = maxScore;
+    }
+
+    /**
+     * Apply the score of the column.
+     *
+     * @param testTestContext the context of the test
+     * @param column          the column that hold the dataCell
+     * @param dataCell        the dataCell that hold the right value
+     * @param answer          the answer inputted by the user
+     */
+    public void apply(TestTestContext testTestContext, Column column, DataCell dataCell, Object answer) {
+        ScoreActionContext context = new ScoreActionContext();
+        for (Rule r : rules) {
+            if (r.getCondition().get(column, dataCell, answer) &&
+                    r.getAction().apply(context, column)) {
+                // if the condition is true, apply, AND if the apply return that we can break, break.
+                break;
+            }
+        }
+        testTestContext.addScore(context.getCurrentScore(), maxScore);
+    }
+
+    /**
+     * Get the view creator of the condition, the name and the description.
+     *
+     * @return the descriptor of the condition
+     * @see #setFromViewCreator(ViewCreator)
+     */
+    public ViewCreator getViewCreator() {
+        ViewCreator viewCreator = new ViewCreator(
+                0, 0
+        );// TODO
+        viewCreator.setUseAccordion(false);
+        return viewCreator;
+    }
+
+    /**
+     * Set value from the edited view.
+     *
+     * @param viewCreator the view creator that create views
+     * @see #getViewCreator()
+     */
+    public void setFromViewCreator(@NonNull ViewCreator viewCreator) {
+        // TODO
+    }
 }
