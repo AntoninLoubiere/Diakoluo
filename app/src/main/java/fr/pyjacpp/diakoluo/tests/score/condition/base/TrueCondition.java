@@ -17,30 +17,33 @@
  *     name of LICENSE.md. You could find it also at <https://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-package fr.pyjacpp.diakoluo.tests.score;
+package fr.pyjacpp.diakoluo.tests.score.condition.base;
+
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import fr.pyjacpp.diakoluo.tests.score.action.BaseAction;
+import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.tests.column.Column;
+import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.score.condition.BaseCondition;
 import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
 
 /**
- * A Rule class that hold a condition and an action to do
+ * A condition that return always true.
  */
-public class Rule {
-    private BaseCondition condition;
-    private BaseAction action;
-
+public class TrueCondition extends BaseCondition {
     /**
-     * Create a Rule from a condition and an action
+     * Get the value of the condition
      *
-     * @param condition the condition
-     * @param action    the action
+     * @param column the column attached to the cell
+     * @param cell   the cell with contain the right value
+     * @param answer the answer from the user
+     * @return if the condition is respected
      */
-    public Rule(BaseCondition condition, BaseAction action) {
-        this.condition = condition;
-        this.action = action;
+    @Override
+    public boolean get(Column column, DataCell cell, Object answer) {
+        return true;
     }
 
     /**
@@ -49,8 +52,12 @@ public class Rule {
      * @return the descriptor of the condition
      * @see #setFromViewCreator(ViewCreator)
      */
+    @Override
     public ViewCreator getViewCreator() {
-        return new ViewCreator(0, 0); // TODO
+        return new ViewCreator(
+                R.string.condition_true_name,
+                R.string.condition_true_description
+        );
     }
 
     /**
@@ -59,33 +66,13 @@ public class Rule {
      * @param viewCreator the view creator that create views
      * @see #getViewCreator()
      */
+    @Override
     public void setFromViewCreator(@NonNull ViewCreator viewCreator) {
-        // TODO
-    }
-
-    /**
-     * Get the condition of the rule.
-     * @return the condition of the rule
-     */
-    public BaseCondition getCondition() {
-        return condition;
-    }
-
-    /**
-     * Get the action of the rule.
-     * @return the action of the rule
-     */
-    public BaseAction getAction() {
-        return action;
+        // Nothing to set because there is no parameters
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Rule) {
-            Rule rule = (Rule) obj;
-            return condition.equals(rule.condition) &&
-                    action.equals(rule.action);
-        }
-        return false;
+    public boolean equals(@Nullable Object obj) {
+        return obj instanceof TrueCondition;
     }
 }

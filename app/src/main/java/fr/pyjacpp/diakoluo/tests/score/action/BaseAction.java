@@ -20,19 +20,20 @@
 package fr.pyjacpp.diakoluo.tests.score.action;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
 
 /**
- * A base action that will give the appropriate score to the column
+ * A base action that will give the appropriate score to the column.
  */
 public abstract class BaseAction {
     /**
      * Apply the action, set the score to the context.
      *
      * @param context the context of actions
-     * @param column the column attached to the cell
+     * @param column  the column attached to the cell
      * @return true if the column should stop reading rules
      */
     public abstract boolean apply(ScoreActionContext context, Column column);
@@ -52,4 +53,9 @@ public abstract class BaseAction {
      * @see #getViewCreator()
      */
     public abstract void setFromViewCreator(@NonNull ViewCreator viewCreator);
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return super.equals(obj);
+    }
 }

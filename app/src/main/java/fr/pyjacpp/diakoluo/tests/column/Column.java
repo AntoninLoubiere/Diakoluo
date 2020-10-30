@@ -63,6 +63,10 @@ import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
 import fr.pyjacpp.diakoluo.tests.data.AnswerValidEnum;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
+import fr.pyjacpp.diakoluo.tests.score.Rule;
+import fr.pyjacpp.diakoluo.tests.score.ScoreColumn;
+import fr.pyjacpp.diakoluo.tests.score.action.base.SetAction;
+import fr.pyjacpp.diakoluo.tests.score.condition.base.TrueCondition;
 
 /**
  * A column class that hold parameters for cells, like type, and column specific settings
@@ -91,6 +95,7 @@ public abstract class Column {
     private String name;
     @Nullable
     private String description;
+    private ScoreColumn scoreRule;
     private float scoreRight;
     private float scoreWrong;
     private float scoreSkipped;
@@ -248,6 +253,7 @@ public abstract class Column {
         newColumn.scoreRight = scoreRight;
         newColumn.scoreWrong = scoreWrong;
         newColumn.scoreSkipped = scoreSkipped;
+        newColumn.scoreRule = scoreRule;
     }
 
     /**
@@ -263,6 +269,7 @@ public abstract class Column {
         scoreRight = SCORE_RIGHT_DEFAULT;
         scoreWrong = SCORE_WRONG_DEFAULT;
         scoreSkipped = SCORE_SKIPPED_DEFAULT;
+        scoreRule = null;
     }
 
     /**
@@ -280,6 +287,18 @@ public abstract class Column {
         scoreRight = SCORE_RIGHT_DEFAULT;
         scoreWrong = SCORE_WRONG_DEFAULT;
         scoreSkipped = SCORE_SKIPPED_DEFAULT;
+        scoreRule = getDefaultScoreColumn();
+    }
+
+    /**
+     * Get the default score column of the column.
+     *
+     * @return the default score column
+     */
+    protected ScoreColumn getDefaultScoreColumn() {
+        ArrayList<Rule> rules = new ArrayList<>();
+        rules.add(new Rule(new TrueCondition(), new SetAction(0f)));
+        return new ScoreColumn(rules, 1f);
     }
 
     /**
@@ -382,10 +401,11 @@ public abstract class Column {
 
     /**
      * Show the value to the user (view only).
-     * @see Column#showViewValueView(Context, DataCell, Object)
-     * @param context the context to show the value cell
+     *
+     * @param context  the context to show the value cell
      * @param dataCell the dataCell to show
      * @return the view which contain the value
+     * @see Column#showViewValueView(Context, DataCell, Object)
      */
     @NonNull
     public View showViewValueView(Context context, DataCell dataCell) {
@@ -398,11 +418,12 @@ public abstract class Column {
     /**
      * Show the value formatted given by the user in test. Show the value stroked if the user has
      * wrong, green or red...
-     * @see #showViewValueView(Context, DataCell)
-     * @param context the context to show the value cell
+     *
+     * @param context  the context to show the value cell
      * @param dataCell the dataCell to show
-     * @param answer the answer of the user
+     * @param answer   the answer of the user
      * @return the view which contain the value of the user
+     * @see #showViewValueView(Context, DataCell)
      */
     public ShowValueResponse showViewValueView(Context context, DataCell dataCell, Object answer) {
         MaterialTextView valueTextView = (MaterialTextView) showViewValueView(context, dataCell);
@@ -854,7 +875,8 @@ public abstract class Column {
             // fields
             return Objects.equals(c.name, name) && Objects.equals(c.description, description) &&
                     c.settings == settings && c.scoreRight == scoreRight &&
-                    c.scoreWrong == scoreWrong && c.scoreSkipped == scoreSkipped;
+                    c.scoreWrong == scoreWrong && c.scoreSkipped == scoreSkipped &&
+                    c.scoreRule.equals(scoreRule);
         }
         return false;
     }
@@ -882,7 +904,8 @@ public abstract class Column {
 
         /**
          * Constructor
-         * @param valueView the view which contain the value
+         *
+         * @param valueView   the view which contain the value
          * @param answerValid if the answer is right
          */
         ShowValueResponse(View valueView, AnswerValidEnum answerValid) {
@@ -892,6 +915,7 @@ public abstract class Column {
 
         /**
          * Get the view which contain the value to show
+         *
          * @return the view to show
          */
         public View getValueView() {
@@ -900,6 +924,7 @@ public abstract class Column {
 
         /**
          * Get if the answer is right
+         *
          * @return if the answer is right
          */
         public boolean isAnswerRight() {
@@ -908,6 +933,7 @@ public abstract class Column {
 
         /**
          * Get a score view that show the score given
+         *
          * @param context the context
          * @return the view that show the score
          */

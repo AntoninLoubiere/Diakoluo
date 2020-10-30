@@ -20,6 +20,7 @@
 package fr.pyjacpp.diakoluo.tests.score.action.base;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.column.Column;
@@ -88,5 +89,14 @@ public class SetAction extends BaseAction {
     @Override
     public void setFromViewCreator(@NonNull ViewCreator viewCreator) {
         score = (float) viewCreator.getParameters()[0].getEditValue();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof SetAction) {
+            SetAction a = (SetAction) obj;
+            return a.score == score;
+        }
+        return false;
     }
 }

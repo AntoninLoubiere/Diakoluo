@@ -20,6 +20,7 @@
 package fr.pyjacpp.diakoluo.tests.score;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
@@ -89,5 +90,14 @@ public class ScoreColumn {
      */
     public void setFromViewCreator(@NonNull ViewCreator viewCreator) {
         // TODO
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof ScoreColumn) {
+            ScoreColumn sc = ((ScoreColumn) obj);
+            return sc.maxScore == maxScore && sc.rules.equals(rules);
+        }
+        return false;
     }
 }

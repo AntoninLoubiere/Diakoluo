@@ -20,6 +20,7 @@
 package fr.pyjacpp.diakoluo.tests.score.condition.logic_gates;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import fr.pyjacpp.diakoluo.R;
 import fr.pyjacpp.diakoluo.tests.column.Column;
@@ -83,5 +84,14 @@ public class NotCondition extends BaseCondition {
     @Override
     public void setFromViewCreator(@NonNull ViewCreator viewCreator) {
         this.condition = (BaseCondition) viewCreator.getParameters()[0].getEditValue();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof NotCondition) {
+            NotCondition c = (NotCondition) obj;
+            return c.condition.equals(condition);
+        }
+        return false;
     }
 }

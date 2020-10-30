@@ -20,6 +20,7 @@
 package fr.pyjacpp.diakoluo.tests.score.condition;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
@@ -54,4 +55,9 @@ public abstract class BaseCondition {
      * @see #getViewCreator()
      */
     public abstract void setFromViewCreator(@NonNull ViewCreator viewCreator);
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return super.equals(obj);
+    }
 }
