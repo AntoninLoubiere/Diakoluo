@@ -22,7 +22,15 @@ package fr.pyjacpp.diakoluo.tests.score.condition.logic_gates;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.score.condition.BaseCondition;
@@ -34,11 +42,72 @@ import fr.pyjacpp.diakoluo.tests.score.view_creator.parameters.ConditionParamete
  * Inverse the result of a condition
  */
 public class NotCondition extends BaseCondition {
+    public static final String ATTRIBUTE_TYPE_VALUE = "not";
 
-    private BaseCondition condition;
+    private BaseCondition condition = null;
 
+    /**
+     * Create a new empty base condition .
+     */
     public NotCondition(BaseCondition condition) {
         this.condition = condition;
+    }
+
+    /**
+     * Read a condition from a xml file.
+     *
+     * @param parser    the parser to load
+     * @param inputType the inputType of the column that hold the condition
+     * @throws IOException            if an error occur while reading the file
+     * @throws XmlPullParserException if an error occur while reading the file
+     */
+    public NotCondition(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
+        super(parser, inputType);
+    }
+
+    /**
+     * Get if the condition is valid after loaded it.
+     *
+     * @param inputType the input type of the column that hold the action
+     * @return if the column is valid
+     */
+    @Override
+    protected boolean isValid(ColumnInputType inputType) {
+        // accept all input type
+        return condition != null;
+    }
+
+    /**
+     * Read xml tag of the condition.
+     *
+     * @param parser    the parser that read the file
+     * @param inputType the inputType of the column that hold the condition
+     * @throws IOException            if an exception occur while reading the file
+     * @throws XmlPullParserException if an exception occur while reading the file
+     */
+    @Override
+    protected void readXmlTag(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
+        if (parser.getName().equals(FileManager.TAG_CONDITION)) {
+            condition = BaseCondition.readXmlCondition(parser, inputType);
+        } else {
+            super.readXmlTag(parser, inputType);
+        }
+    }
+
+    @Override
+    public void writeXmlFields(OutputStream fileOutputStream) throws IOException {
+        super.writeXmlFields(fileOutputStream);
+        condition.writeXml(fileOutputStream);
+    }
+
+    /**
+     * Get the type of the class (to write in xml file).
+     *
+     * @return the type of the class
+     */
+    @Override
+    protected String getType() {
+        return ATTRIBUTE_TYPE_VALUE;
     }
 
     /**

@@ -22,7 +22,15 @@ package fr.pyjacpp.diakoluo.tests.score.action.base;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.save_test.XmlLoader;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.score.action.BaseAction;
 import fr.pyjacpp.diakoluo.tests.score.action.ScoreActionContext;
@@ -34,8 +42,11 @@ import fr.pyjacpp.diakoluo.tests.score.view_creator.parameters.FloatParameter;
  * An action that will set the score of an amount
  */
 public class SetAction extends BaseAction {
+    public static final String ATTRIBUTE_TYPE_VALUE = "set";
+    private static final String TAG_SCORE = "score";
+    private static final float DEFAULT_SCORE = 0f;
 
-    private float score;
+    private float score = DEFAULT_SCORE;
 
     /**
      * Initialise with a score
@@ -45,6 +56,56 @@ public class SetAction extends BaseAction {
     public SetAction(float score) {
         this.score = score;
     }
+
+    /**
+     * Read an action from a xml file.
+     *
+     * @param parser the parser to load
+     * @throws IOException            if an error occur while reading the file
+     * @throws XmlPullParserException if an error occur while reading the file
+     */
+    public SetAction(XmlPullParser parser) throws IOException, XmlPullParserException {
+        super(parser);
+    }
+
+    /**
+     * Read xml tag of the action.
+     *
+     * @param parser the parser that read the file
+     * @throws IOException            if an exception occur while reading the file
+     * @throws XmlPullParserException if an exception occur while reading the file
+     */
+    @Override
+    protected void readXmlTag(XmlPullParser parser) throws IOException, XmlPullParserException {
+        if (parser.getName().equals(TAG_SCORE)) {
+            score = XmlLoader.readFloat(parser, DEFAULT_SCORE);
+        } else {
+            super.readXmlTag(parser);
+        }
+    }
+
+    /**
+     * Write the action fields in a xml file. Override method should call the super.
+     *
+     * @param fileOutputStream the file stream to write
+     * @throws IOException if an error occur while writing the file
+     */
+    @Override
+    protected void writeXmlFields(OutputStream fileOutputStream) throws IOException {
+        super.writeXmlFields(fileOutputStream);
+        XmlSaver.writeData(fileOutputStream, TAG_SCORE, score);
+    }
+
+    /**
+     * Get the type of the class.
+     *
+     * @return the type of the class (to be write in the xml file)
+     */
+    @Override
+    protected String getType() {
+        return ATTRIBUTE_TYPE_VALUE;
+    }
+
 
     /**
      * Apply the action, set the score to the context.

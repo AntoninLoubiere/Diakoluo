@@ -21,6 +21,17 @@ package fr.pyjacpp.diakoluo.tests.score;
 
 import androidx.annotation.NonNull;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+
+import fr.pyjacpp.diakoluo.save_test.FileManager;
+import fr.pyjacpp.diakoluo.save_test.XmlLoader;
+import fr.pyjacpp.diakoluo.save_test.XmlSaver;
+import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.score.action.BaseAction;
 import fr.pyjacpp.diakoluo.tests.score.condition.BaseCondition;
 import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
@@ -29,6 +40,7 @@ import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
  * A Rule class that hold a condition and an action to do
  */
 public class Rule {
+
     private BaseCondition condition;
     private BaseAction action;
 
@@ -41,6 +53,108 @@ public class Rule {
     public Rule(BaseCondition condition, BaseAction action) {
         this.condition = condition;
         this.action = action;
+    }
+
+    /**
+     * Create a rule from a xml file.
+     *
+     * @param parser    the parser to load
+     * @param inputType the input type of the column that hold this rule
+     * @throws IOException            if an error occur while reading the file
+     * @throws XmlPullParserException if an error occur while reading the file
+     */
+    private Rule(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, null, FileManager.TAG_RULE);
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            switch (parser.getName()) {
+                case FileManager.TAG_ACTION:
+                    action = BaseAction.readXmlAction(parser, inputType);
+                    break;
+
+                case FileManager.TAG_CONDITION:
+                    condition = BaseCondition.readXmlCondition(parser, inputType);
+                    break;
+
+                default:
+                    XmlLoader.skip(parser);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Read rules from a xml document.
+     *
+     * @param parser    the parser to load
+     * @param inputType the InputType of the column
+     * @return the list of rules
+     * @throws IOException            if an error occur while reading the file
+     * @throws XmlPullParserException if an error occur while reading the file
+     */
+    public static ArrayList<Rule> readXmlRules(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, null, FileManager.TAG_RULES);
+        ArrayList<Rule> rules = new ArrayList<>();
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                // continue until it is a start tag
+                continue;
+            }
+
+            if (parser.getName().equals(FileManager.TAG_RULE)) {
+                Rule rule = new Rule(parser, inputType);
+                if (rule.isValid()) {
+                    rules.add(rule);
+                }
+            } else {
+                XmlLoader.skip(parser);
+            }
+        }
+
+        return rules;
+    }
+
+    /**
+     * Write a list of rules in a xml file.
+     *
+     * @param fileOutputStream the file to write
+     * @param rules            the list of rules to write
+     * @throws IOException if an exception occur while writing the file
+     */
+    public static void writeXmlRules(OutputStream fileOutputStream, ArrayList<Rule> rules) throws IOException {
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_RULES);
+        for (Rule r : rules) {
+            r.writeXml(fileOutputStream);
+        }
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_RULES);
+    }
+
+    /**
+     * Write the rule in a xml file.
+     *
+     * @param fileOutputStream the file to write
+     * @throws IOException if an error occur while writing the file
+     */
+    private void writeXml(OutputStream fileOutputStream) throws IOException {
+        XmlSaver.writeStartBeacon(fileOutputStream, FileManager.TAG_RULE);
+        action.writeXml(fileOutputStream);
+        condition.writeXml(fileOutputStream);
+        XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_RULE);
+    }
+
+    /**
+     * Get if it is a valid column after load.
+     *
+     * @see #readXmlRules(XmlPullParser, ColumnInputType)
+     */
+    private boolean isValid() {
+        return condition != null && action != null;
     }
 
     /**
@@ -65,6 +179,7 @@ public class Rule {
 
     /**
      * Get the condition of the rule.
+     *
      * @return the condition of the rule
      */
     public BaseCondition getCondition() {
@@ -73,6 +188,7 @@ public class Rule {
 
     /**
      * Get the action of the rule.
+     *
      * @return the action of the rule
      */
     public BaseAction getAction() {

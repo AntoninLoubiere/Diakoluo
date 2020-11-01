@@ -23,7 +23,13 @@ package fr.pyjacpp.diakoluo.tests.score.condition.base;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.score.condition.BaseCondition;
@@ -33,6 +39,36 @@ import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
  * A condition that return always true.
  */
 public class TrueCondition extends BaseCondition {
+    public static final String ATTRIBUTE_TYPE_VALUE = "true";
+
+    /**
+     * Create a new empty base condition .
+     */
+    public TrueCondition() {
+    }
+
+    /**
+     * Read a condition from a xml file.
+     *
+     * @param parser    the parser to load
+     * @param inputType the inputType of the column that hold the condition
+     * @throws IOException            if an error occur while reading the file
+     * @throws XmlPullParserException if an error occur while reading the file
+     */
+    public TrueCondition(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
+        super(parser, inputType);
+    }
+
+    /**
+     * Get the type of the class (to write in xml file).
+     *
+     * @return the type of the class
+     */
+    @Override
+    protected String getType() {
+        return ATTRIBUTE_TYPE_VALUE;
+    }
+
     /**
      * Get the value of the condition
      *

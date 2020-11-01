@@ -87,7 +87,7 @@ public abstract class Column {
 
     protected static final int SET_DEFAULT = SET_CAN_BE_HIDE | SET_CAN_BE_SHOW;
 
-    // if a field is added, all columns with a comment "// fields" should be verified
+    // if a field is added, all methods with a comment "// fields" should be verified
     @NonNull
     protected ColumnInputType inputType;
     protected int settings = -1;
@@ -748,6 +748,7 @@ public abstract class Column {
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_RIGHT, scoreRight);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_WRONG, scoreWrong);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_SKIPPED, scoreSkipped);
+        scoreRule.writeXml(fileOutputStream);
     }
 
     /**
@@ -800,6 +801,10 @@ public abstract class Column {
                 scoreSkipped = XmlLoader.readFloat(parser, SCORE_SKIPPED_DEFAULT);
                 break;
 
+            case FileManager.TAG_SCORE_COLUMN:
+                scoreRule = ScoreColumn.readScoreColumn(parser, inputType);
+                break;
+
             default:
                 XmlLoader.skip(parser);
                 break;
@@ -817,6 +822,8 @@ public abstract class Column {
             if (scoreWrong < 0) scoreWrong = SCORE_WRONG_DEFAULT;
             if (scoreSkipped < 0) scoreSkipped = SCORE_SKIPPED_DEFAULT;
         }
+
+        if (scoreRule == null) scoreRule = getDefaultScoreColumn(); // FIXME move to the < VER_V_0_3_0
     }
 
     /**
@@ -849,6 +856,7 @@ public abstract class Column {
         name = previousColumn.name;
         description = previousColumn.description;
         scoreRight = previousColumn.scoreRight;
+        scoreRule = previousColumn.scoreRule;
         setSettings(SET_CAN_BE_HIDE, previousColumn.isInSettings(SET_CAN_BE_HIDE));
         setSettings(SET_CAN_BE_SHOW, previousColumn.isInSettings(SET_CAN_BE_SHOW));
 

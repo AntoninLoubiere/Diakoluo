@@ -63,7 +63,7 @@ public class FileManager {
     public static final int VER_V_0_3_0 = 1;
     public static final int VER_ACTUAL = VER_V_0_3_0;
 
-    // tag constants
+    // tag constants (global, specifics tags are defined by the class)
     public static final String TAG_TEST = "test";
     public static final String TAG_NAME = "name";
     public static final String TAG_DESCRIPTION = "description";
@@ -81,8 +81,15 @@ public class FileManager {
     public static final String TAG_SCORE_WRONG = "scoreWrong";
     public static final String TAG_SCORE_SKIPPED = "scoreSkipped";
     public static final String TAG_SCORE_METHOD = "scoreMethod";
+    public static final String TAG_SCORE_COLUMN = "score";
+    public static final String TAG_RULE = "rule";
+    public static final String TAG_RULES = "rules";
+    public static final String TAG_MAX_SCORE = "maxScore";
+    public static final String TAG_CONDITION = "condition";
+    public static final String TAG_ACTION = "action";
     public static final String ATTRIBUTE_VERSION = "version";
     public static final String ATTRIBUTE_INPUT_TYPE = "inputType";
+    public static final String ATTRIBUTE_TYPE = "type";
 
     private static final String MIME_TYPE = "*/*";
 
@@ -96,6 +103,7 @@ public class FileManager {
     private static final Boolean BOOLEAN_DIAKOLUO_TYPE = true;
 
     private static final int NUMBER_LINE_SHOW_CSV = 4;
+
 
     private static FileCreateContext fileCreateContext = null;
 
