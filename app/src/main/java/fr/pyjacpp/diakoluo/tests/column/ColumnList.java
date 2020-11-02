@@ -131,6 +131,32 @@ public class ColumnList extends Column {
         else return AnswerValidEnum.WRONG;
     }
 
+    /**
+     * Get if the answer inputted is equals to the answer excepted.
+     *
+     * @param dataCell the data cell that hold the answer
+     * @param answer   the answer inputted by the user
+     * @return true if the answer inputted is equals to the answer excepted
+     */
+    @Override
+    public boolean isAnswerEquals(DataCell dataCell, Object answer) {
+        int value = (int) answer;
+        return value == ((int) dataCell.getValue());
+    }
+
+    /**
+     * Get if the user skip the answer.
+     *
+     * @param dataCell the data cell that hold the answer
+     * @param answer   the answer inputted by the user
+     * @return true if the user skip the answer
+     */
+    @Override
+    public boolean isAnswerSkipped(DataCell dataCell, Object answer) {
+        int value = (int) answer;
+        return value < 0;
+    }
+
     @Override
     public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
         super.getViewColumnSettings(layoutInflater, parent);

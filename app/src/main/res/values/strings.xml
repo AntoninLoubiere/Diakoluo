@@ -148,5 +148,9 @@
     <string name="action_add_description">Add an amount to the score.</string>
     <string name="action_add_score_name">Score</string>
     <string name="action_add_score_description">The score to add.</string>
+    <string name="condition_equals_name">Equals</string>
+    <string name="condition_equals_description">Test if a answer is equals to the value.</string>
+    <string name="condition_skipped_name">Answer skipped</string>
+    <string name="condition_skipped_description">Test if the user has skip the answer</string>
 
 </resources>

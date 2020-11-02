@@ -34,6 +34,8 @@ import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
+import fr.pyjacpp.diakoluo.tests.score.condition.base.EqualsCondition;
+import fr.pyjacpp.diakoluo.tests.score.condition.base.SkippedCondition;
 import fr.pyjacpp.diakoluo.tests.score.condition.base.TrueCondition;
 import fr.pyjacpp.diakoluo.tests.score.condition.logic_gates.NotCondition;
 import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
@@ -93,6 +95,14 @@ public abstract class BaseCondition {
                 condition = new NotCondition(parser, inputType);
                 break;
 
+            case EqualsCondition.ATTRIBUTE_TYPE_VALUE:
+                condition = new EqualsCondition(parser, inputType);
+                break;
+
+            case SkippedCondition.ATTRIBUTE_TYPE_VALUE:
+                condition = new SkippedCondition(parser, inputType);
+                break;
+
             default:
                 condition = null;
                 break;
@@ -137,7 +147,13 @@ public abstract class BaseCondition {
         XmlSaver.writeEndBeacon(fileOutputStream, FileManager.TAG_CONDITION);
     }
 
-    public void writeXmlFields(OutputStream fileOutputStream) throws IOException {
+    /**
+     * Write the xml fields in a xml file. If override, it should call the the super.
+     *
+     * @param fileOutputStream the file stream to write
+     * @throws IOException if an error occur while writing the file
+     */
+    protected void writeXmlFields(OutputStream fileOutputStream) throws IOException {
         // Nothing to write in Base condition
     }
 
@@ -164,6 +180,7 @@ public abstract class BaseCondition {
      * @return the descriptor of the condition
      * @see #setFromViewCreator(ViewCreator)
      */
+    @NonNull
     public abstract ViewCreator getViewCreator();
 
     /**

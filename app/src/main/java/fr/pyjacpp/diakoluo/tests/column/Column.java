@@ -66,6 +66,7 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.score.Rule;
 import fr.pyjacpp.diakoluo.tests.score.ScoreColumn;
 import fr.pyjacpp.diakoluo.tests.score.action.base.SetAction;
+import fr.pyjacpp.diakoluo.tests.score.condition.base.EqualsCondition;
 import fr.pyjacpp.diakoluo.tests.score.condition.base.TrueCondition;
 
 /**
@@ -230,7 +231,26 @@ public abstract class Column {
      * @param answer   the value inputted by the user
      * @return if the a
      */
+    @Deprecated
     public abstract AnswerValidEnum verifyAnswer(DataCell dataCell, Object answer);
+
+    /**
+     * Get if the answer inputted is equals to the answer excepted.
+     *
+     * @param dataCell the data cell that hold the answer
+     * @param answer   the answer inputted by the user
+     * @return true if the answer inputted is equals to the answer excepted
+     */
+    public abstract boolean isAnswerEquals(DataCell dataCell, Object answer);
+
+    /**
+     * Get if the user skip the answer.
+     *
+     * @param dataCell the data cell that hold the answer
+     * @param answer   the answer inputted by the user
+     * @return true if the user skip the answer
+     */
+    public abstract boolean isAnswerSkipped(DataCell dataCell, Object answer);
 
     /**
      * Copy the column.
@@ -297,6 +317,7 @@ public abstract class Column {
      */
     protected ScoreColumn getDefaultScoreColumn() {
         ArrayList<Rule> rules = new ArrayList<>();
+        rules.add(new Rule(new EqualsCondition(), new SetAction(1f)));
         rules.add(new Rule(new TrueCondition(), new SetAction(0f)));
         return new ScoreColumn(rules, 1f);
     }
@@ -823,7 +844,8 @@ public abstract class Column {
             if (scoreSkipped < 0) scoreSkipped = SCORE_SKIPPED_DEFAULT;
         }
 
-        if (scoreRule == null) scoreRule = getDefaultScoreColumn(); // FIXME move to the < VER_V_0_3_0
+        if (scoreRule == null)
+            scoreRule = getDefaultScoreColumn(); // FIXME move to the < VER_V_0_3_0
     }
 
     /**

@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.data.AnswerValidEnum;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
+import fr.pyjacpp.diakoluo.tests.score.ScoreColumn;
 
 
 /**
@@ -49,10 +50,10 @@ public class DummyColumn extends Column {
     // TODO create a ColumnInputType, do not forget to implement ColumnInputType.get(String)
     // TODO create the corresponding DataCell
     // TODO implement required functions
-    // TODO launch unit test and instrumented test to verify that all is working
     // TODO implement the switch in Column#newColumn()
     // TODO if the column contain data like ColumnList implement in test/DefaultTest and
     //  android/DefaultTest #setTestValue(Column) and #setTestValueEmpty(Column)
+    // TODO launch unit test and instrumented test to verify that all is working
 
     /**
      * Default constructor that initialize a non-valid column.
@@ -93,6 +94,42 @@ public class DummyColumn extends Column {
     @Override
     public AnswerValidEnum verifyAnswer(DataCell dataCell, Object answer) {
         return AnswerValidEnum.WRONG; // TODO verify answer depending of the data cell and the answer
+    }
+
+    /**
+     * Get if the answer inputted is equals to the answer excepted.
+     *
+     * @param dataCell the data cell that hold the answer
+     * @param answer   the answer inputted by the user
+     * @return true if the answer inputted is equals to the answer excepted
+     */
+    @Override
+    public boolean isAnswerEquals(DataCell dataCell, Object answer) {
+        return false; // TODO depending on the cell and the answer return if it is equals
+    }
+
+    /**
+     * Get if the user skip the answer.
+     *
+     * @param dataCell the data cell that hold the answer
+     * @param answer   the answer inputted by the user
+     * @return true if the user skip the answer
+     */
+    @Override
+    public boolean isAnswerSkipped(DataCell dataCell, Object answer) {
+        return false;// TODO depending on the cell and the answer return if the user skip
+    }
+
+    /**
+     * Get the default score column of the column.
+     *
+     * @return the default score column
+     */
+    @Override
+    protected ScoreColumn getDefaultScoreColumn() {
+        // TODO get the default score column of the column by default, if not override, give 1 point
+        //  if equals else, give 0 point
+        return null;
     }
 
     /**

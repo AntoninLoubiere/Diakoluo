@@ -19,9 +19,7 @@
 
 package fr.pyjacpp.diakoluo.tests.score.condition.base;
 
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -36,15 +34,16 @@ import fr.pyjacpp.diakoluo.tests.score.condition.BaseCondition;
 import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
 
 /**
- * A condition that return always true.
+ * Test if the column is skipped
  */
-public class TrueCondition extends BaseCondition {
-    public static final String ATTRIBUTE_TYPE_VALUE = "true";
+public class SkippedCondition extends BaseCondition {
+    public static final String ATTRIBUTE_TYPE_VALUE = "skipped";
 
     /**
      * Create a new empty base condition .
      */
-    public TrueCondition() {
+    public SkippedCondition() {
+        super();
     }
 
     /**
@@ -55,7 +54,7 @@ public class TrueCondition extends BaseCondition {
      * @throws IOException            if an error occur while reading the file
      * @throws XmlPullParserException if an error occur while reading the file
      */
-    public TrueCondition(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
+    public SkippedCondition(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
         super(parser, inputType);
     }
 
@@ -79,7 +78,7 @@ public class TrueCondition extends BaseCondition {
      */
     @Override
     public boolean get(Column column, DataCell cell, Object answer) {
-        return true;
+        return column.isAnswerSkipped(cell, answer);
     }
 
     /**
@@ -92,8 +91,8 @@ public class TrueCondition extends BaseCondition {
     @Override
     public ViewCreator getViewCreator() {
         return new ViewCreator(
-                R.string.condition_true_name,
-                R.string.condition_true_description
+                R.string.condition_skipped_name,
+                R.string.condition_skipped_description
         );
     }
 
@@ -105,11 +104,6 @@ public class TrueCondition extends BaseCondition {
      */
     @Override
     public void setFromViewCreator(@NonNull ViewCreator viewCreator) {
-        // Nothing to set because there is no parameters
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        return obj instanceof TrueCondition;
+        // nothing to set
     }
 }

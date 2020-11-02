@@ -129,6 +129,7 @@ public class NotCondition extends BaseCondition {
      * @return the descriptor of the condition
      * @see #setFromViewCreator(ViewCreator)
      */
+    @NonNull
     @Override
     public ViewCreator getViewCreator() {
         return new ViewCreator(

@@ -101,6 +101,46 @@ public class ColumnString extends Column {
         else return AnswerValidEnum.WRONG;
     }
 
+    /**
+     * Get if the answer inputted is equals to the answer excepted.
+     *
+     * @param dataCell the data cell that hold the answer
+     * @param answer   the answer inputted by the user
+     * @return true if the answer inputted is equals to the answer excepted
+     */
+    @Override
+    public boolean isAnswerEquals(DataCell dataCell, Object answer) {
+        String value = (String) dataCell.getValue();
+        String a = (String) answer;
+        if (isInSettings(SET_REMOVE_USELESS_SPACES)) {
+            value = Utils.removeUselessSpaces(value);
+            a = Utils.removeUselessSpaces(a);
+        }
+
+        if (isInSettings(SET_CASE_SENSITIVE)) {
+            return value.equals(a);
+        } else {
+            return value.equalsIgnoreCase(a);
+        }
+    }
+
+    /**
+     * Get if the user skip the answer.
+     *
+     * @param dataCell the data cell that hold the answer
+     * @param answer   the answer inputted by the user
+     * @return true if the user skip the answer
+     */
+    @Override
+    public boolean isAnswerSkipped(DataCell dataCell, Object answer) {
+        String a = (String) answer;
+        if (isInSettings(SET_REMOVE_USELESS_SPACES)) {
+            a = Utils.removeUselessSpaces(a);
+        }
+
+        return a.length() <= 0;
+    }
+
     @Override
     public void getViewColumnSettings(LayoutInflater layoutInflater, ViewGroup parent) {
         super.getViewColumnSettings(layoutInflater, parent);
