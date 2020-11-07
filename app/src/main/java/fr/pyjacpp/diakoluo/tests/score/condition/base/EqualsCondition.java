@@ -40,7 +40,7 @@ public class EqualsCondition extends BaseCondition {
     public static final String ATTRIBUTE_TYPE_VALUE = "equals";
 
     /**
-     * Create a new empty base condition .
+     * Create a new empty base condition.
      */
     public EqualsCondition() {
         super();

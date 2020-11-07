@@ -42,7 +42,7 @@ public class TrueCondition extends BaseCondition {
     public static final String ATTRIBUTE_TYPE_VALUE = "true";
 
     /**
-     * Create a new empty base condition .
+     * Create a new empty base condition.
      */
     public TrueCondition() {
     }

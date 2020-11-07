@@ -140,6 +140,22 @@
     <string name="condition_not_condition_description">The description to invert</string>
     <string name="condition_true_name">True</string>
     <string name="condition_true_description">A condition that is always true.</string>
+    <string name="condition_equals_name">Equals</string>
+    <string name="condition_equals_description">Test if a answer is equals to the value.</string>
+    <string name="condition_skipped_name">Answer skipped</string>
+    <string name="condition_skipped_description">Test if the user has skip the answer</string>
+    <string name="condition_and_name">And gate</string>
+    <string name="condition_and_description">Test if two condition are true.</string>
+    <string name="condition_and_condition_name">Condition</string>
+    <string name="condition_and_condition_description">A condition to test.</string>
+    <string name="condition_or_name">Or gate</string>
+    <string name="condition_or_description">Test if one of the two condition is true (or inclusive).</string>
+    <string name="condition_or_condition_name">Condition</string>
+    <string name="condition_or_condition_description">A condition to test.</string>
+    <string name="condition_xor_name">Xor gate</string>
+    <string name="condition_xor_description">Test if only one of the two condition is true (or exclusive).</string>
+    <string name="condition_xor_condition_name">Condition</string>
+    <string name="condition_xor_condition_description">A condition to test.</string>
     <string name="action_set_name">Set score</string>
     <string name="action_set_description">Set the score of a certain amount.</string>
     <string name="action_set_score_name">Score</string>
@@ -148,9 +164,5 @@
     <string name="action_add_description">Add an amount to the score.</string>
     <string name="action_add_score_name">Score</string>
     <string name="action_add_score_description">The score to add.</string>
-    <string name="condition_equals_name">Equals</string>
-    <string name="condition_equals_description">Test if a answer is equals to the value.</string>
-    <string name="condition_skipped_name">Answer skipped</string>
-    <string name="condition_skipped_description">Test if the user has skip the answer</string>
 
 </resources>

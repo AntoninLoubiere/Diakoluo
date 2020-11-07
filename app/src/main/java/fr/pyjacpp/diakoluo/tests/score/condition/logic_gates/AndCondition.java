@@ -39,18 +39,20 @@ import fr.pyjacpp.diakoluo.tests.score.view_creator.parameters.BaseParameter;
 import fr.pyjacpp.diakoluo.tests.score.view_creator.parameters.ConditionParameter;
 
 /**
- * Inverse the result of a condition
+ * And gate
  */
-public class NotCondition extends BaseCondition {
-    public static final String ATTRIBUTE_TYPE_VALUE = "not";
+public class AndCondition extends BaseCondition {
+    public static final String ATTRIBUTE_TYPE_VALUE = "and";
 
-    private BaseCondition condition = null;
+    private BaseCondition condition1 = null;
+    private BaseCondition condition2 = null;
 
     /**
      * Create a new empty base condition.
      */
-    public NotCondition(BaseCondition condition) {
-        this.condition = condition;
+    public AndCondition(BaseCondition condition1, BaseCondition condition2) {
+        this.condition1 = condition1;
+        this.condition2 = condition2;
     }
 
     /**
@@ -61,7 +63,7 @@ public class NotCondition extends BaseCondition {
      * @throws IOException            if an error occur while reading the file
      * @throws XmlPullParserException if an error occur while reading the file
      */
-    public NotCondition(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
+    public AndCondition(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
         super(parser, inputType);
     }
 
@@ -74,7 +76,7 @@ public class NotCondition extends BaseCondition {
     @Override
     protected boolean isValid(ColumnInputType inputType) {
         // accept all input type
-        return condition != null;
+        return condition1 != null && condition2 != null;
     }
 
     /**
@@ -88,7 +90,8 @@ public class NotCondition extends BaseCondition {
     @Override
     protected void readXmlTag(XmlPullParser parser, ColumnInputType inputType) throws IOException, XmlPullParserException {
         if (parser.getName().equals(FileManager.TAG_CONDITION)) {
-            condition = BaseCondition.readXmlCondition(parser, inputType);
+            if (condition1 == null) condition1 = BaseCondition.readXmlCondition(parser, inputType);
+            else condition2 = BaseCondition.readXmlCondition(parser, inputType);
         } else {
             super.readXmlTag(parser, inputType);
         }
@@ -97,7 +100,8 @@ public class NotCondition extends BaseCondition {
     @Override
     public void writeXmlFields(OutputStream fileOutputStream) throws IOException {
         super.writeXmlFields(fileOutputStream);
-        condition.writeXml(fileOutputStream);
+        condition1.writeXml(fileOutputStream);
+        condition2.writeXml(fileOutputStream);
     }
 
     /**
@@ -120,7 +124,7 @@ public class NotCondition extends BaseCondition {
      */
     @Override
     public boolean get(Column column, DataCell cell, Object answer) {
-        return !condition.get(column, cell, answer);
+        return condition1.get(column, cell, answer) && condition2.get(column, cell, answer);
     }
 
     /**
@@ -133,13 +137,18 @@ public class NotCondition extends BaseCondition {
     @Override
     public ViewCreator getViewCreator() {
         return new ViewCreator(
-                R.string.condition_not_name,
-                R.string.condition_not_description,
+                R.string.condition_and_name,
+                R.string.condition_and_description,
                 new BaseParameter[]{
                         new ConditionParameter(
-                                R.string.condition_not_condition_name,
-                                R.string.condition_not_condition_description,
-                                condition
+                                R.string.condition_and_condition_name,
+                                R.string.condition_and_condition_description,
+                                condition1
+                        ),
+                        new ConditionParameter(
+                                R.string.condition_and_condition_name,
+                                R.string.condition_and_condition_description,
+                                condition2
                         )
                 }
         );
@@ -153,14 +162,15 @@ public class NotCondition extends BaseCondition {
      */
     @Override
     public void setFromViewCreator(@NonNull ViewCreator viewCreator) {
-        this.condition = (BaseCondition) viewCreator.getParameters()[0].getEditValue();
+        this.condition1 = (BaseCondition) viewCreator.getParameters()[0].getEditValue();
+        this.condition2 = (BaseCondition) viewCreator.getParameters()[1].getEditValue();
     }
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj instanceof NotCondition) {
-            NotCondition c = (NotCondition) obj;
-            return c.condition.equals(condition);
+        if (obj instanceof AndCondition) {
+            AndCondition c = (AndCondition) obj;
+            return c.condition1.equals(condition1) && c.condition2.equals(condition2);
         }
         return false;
     }

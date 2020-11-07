@@ -40,7 +40,7 @@ public class SkippedCondition extends BaseCondition {
     public static final String ATTRIBUTE_TYPE_VALUE = "skipped";
 
     /**
-     * Create a new empty base condition .
+     * Create a new empty base condition.
      */
     public SkippedCondition() {
         super();

@@ -37,7 +37,10 @@ import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.score.condition.base.EqualsCondition;
 import fr.pyjacpp.diakoluo.tests.score.condition.base.SkippedCondition;
 import fr.pyjacpp.diakoluo.tests.score.condition.base.TrueCondition;
+import fr.pyjacpp.diakoluo.tests.score.condition.logic_gates.AndCondition;
 import fr.pyjacpp.diakoluo.tests.score.condition.logic_gates.NotCondition;
+import fr.pyjacpp.diakoluo.tests.score.condition.logic_gates.OrCondition;
+import fr.pyjacpp.diakoluo.tests.score.condition.logic_gates.XorCondition;
 import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
 
 /**
@@ -45,7 +48,7 @@ import fr.pyjacpp.diakoluo.tests.score.view_creator.ViewCreator;
  */
 public abstract class BaseCondition {
     /**
-     * Create a new empty base condition .
+     * Create a new empty base condition.
      */
     protected BaseCondition() {
     }
@@ -101,6 +104,18 @@ public abstract class BaseCondition {
 
             case SkippedCondition.ATTRIBUTE_TYPE_VALUE:
                 condition = new SkippedCondition(parser, inputType);
+                break;
+
+            case AndCondition.ATTRIBUTE_TYPE_VALUE:
+                condition = new AndCondition(parser, inputType);
+                break;
+
+            case OrCondition.ATTRIBUTE_TYPE_VALUE:
+                condition = new OrCondition(parser, inputType);
+                break;
+
+            case XorCondition.ATTRIBUTE_TYPE_VALUE:
+                condition = new XorCondition(parser, inputType);
                 break;
 
             default:
