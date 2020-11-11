@@ -32,7 +32,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TableRow;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -42,12 +41,14 @@ import java.util.HashMap;
 
 import fr.pyjacpp.diakoluo.DiakoluoApplication;
 import fr.pyjacpp.diakoluo.R;
+import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.column.Column;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 
 public class TestFragment extends Fragment {
     private static final String PREF_TEST_TEST_CONTEXT = "testTestContext";
+    private final LinearLayout.LayoutParams LAYOUT_PARAMS = new TableRow.LayoutParams();
     private final HashMap<Column, LinearLayout> columnLinearLayoutHashMap = new HashMap<>();
     private final HashMap<Column, View> columnViewHashMap = new HashMap<>();
     private OnFragmentInteractionListener mListener;
@@ -59,6 +60,7 @@ public class TestFragment extends Fragment {
     private ProgressBar progressBar;
 
     public TestFragment() {
+        LAYOUT_PARAMS.weight = 1;
     }
 
     @Override
@@ -138,78 +140,74 @@ public class TestFragment extends Fragment {
     }
 
     private void updateAnswer() {
-        if (inflatedView != null) {
-            LinearLayout.LayoutParams params = new TableRow.LayoutParams();
-            params.weight = 1;
+        if (testTestContext.isAnswerGive()) {
+            updateAnswerShowAnswer();
+        } else {
+            updateAnswerShowInputs();
+        }
+    }
 
-            if (testTestContext.isAnswerGive()) {
-                // if the answer is give
+    private void updateAnswerShowAnswer() {
+        // if the answer is give
 
-                validButton.setText(R.string.continue_text);
-                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress",
-                        testTestContext.getProgress() + TestTestContext.PROGRESS_BAR_PRECISION);
-                animation.setDuration(300);
-                animation.setInterpolator(new AccelerateDecelerateInterpolator());
-                animation.start();
-                progressBar.setProgress(testTestContext.getProgress() + TestTestContext.PROGRESS_BAR_PRECISION);
+        validButton.setText(R.string.continue_text);
+        ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress",
+                testTestContext.getProgress() + TestTestContext.PROGRESS_BAR_PRECISION);
+        animation.setDuration(300);
+        animation.setInterpolator(new AccelerateDecelerateInterpolator());
+        animation.start();
+        progressBar.setProgress(testTestContext.getProgress() + TestTestContext.PROGRESS_BAR_PRECISION);
 
-                for (Column column : columns) {
-                    LinearLayout answerRow = columnLinearLayoutHashMap.get(column);
+        for (Column column : columns) {
+            LinearLayout answerRow = columnLinearLayoutHashMap.get(column);
 
-                    if (answerRow != null) {
-                        answerRow.removeAllViews();
+            if (answerRow != null) {
+                answerRow.removeAllViews();
 
-                        Boolean columnShow = testTestContext.getShowColumn().get(column);
-                        DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
+                Boolean columnShow = testTestContext.getShowColumn().get(column);
+                DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
 
-                        if (columnShow != null && dataCell != null) {
-                            if (columnShow) {
-                                addAnswer(column, answerRow, params);
-                            } else {
-                                Object answer = testTestContext.getUserAnswer().get(column);
-                                if (answer != null) {
-                                    Column.ShowValueResponse showValueResponse =
-                                            column.showViewValueView(context,
-                                                    dataCell, answer);
-
-                                    answerRow.addView(showValueResponse.getValueView(), params);
-                                    if (!showValueResponse.isAnswerRight()) {
-                                        addAnswer(column, answerRow, params);
-                                    }
-                                    TextView scoreTextView = new TextView(context);
-                                    answerRow.addView(showValueResponse.getScoreView(context));
-                                }
-                            }
-                        }
+                if (columnShow != null && dataCell != null) {
+                    if (columnShow) {
+                        addAnswer(column, answerRow, LAYOUT_PARAMS);
+                    } else {
+                        Object answer = testTestContext.getUserAnswer().get(column);
+                        if (answer != null) column.showCorrectAnswer(context,
+                                dataCell,
+                                answer,
+                                answerRow,
+                                LAYOUT_PARAMS);
                     }
                 }
-            } else {
-                // if the user need to enter the answer
+            }
+        }
+    }
 
-                validButton.setText(R.string.valid);
-                progressBar.setProgress(testTestContext.getProgress());
+    private void updateAnswerShowInputs() {
+        // if the user need to enter the answer
 
-                for (Column column : columns) {
-                    LinearLayout answerRow = columnLinearLayoutHashMap.get(column);
+        validButton.setText(R.string.valid);
+        progressBar.setProgress(testTestContext.getProgress());
 
-                    if (answerRow != null) {
-                        answerRow.removeAllViews();
+        for (Column column : columns) {
+            LinearLayout answerRow = columnLinearLayoutHashMap.get(column);
+
+            if (answerRow != null) {
+                answerRow.removeAllViews();
 
 
-                        Boolean columnShow = testTestContext.getShowColumn().get(column);
-                        if (columnShow != null) {
-                            if (columnShow) {
-                                addAnswer(column, answerRow, params);
-                            } else {
-                                View answerEdit = column.showEditValueTestView(
-                                        context,
-                                        testTestContext.getUserAnswer().get(column));
+                Boolean columnShow = testTestContext.getShowColumn().get(column);
+                if (columnShow != null) {
+                    if (columnShow) {
+                        addAnswer(column, answerRow, LAYOUT_PARAMS);
+                    } else {
+                        View answerEdit = column.showEditValueTestView(
+                                context,
+                                testTestContext.getUserAnswer().get(column));
 
-                                answerRow.addView(answerEdit, params);
+                        answerRow.addView(answerEdit, LAYOUT_PARAMS);
 
-                                columnViewHashMap.put(column, answerEdit);
-                            }
-                        }
+                        columnViewHashMap.put(column, answerEdit);
                     }
                 }
             }
@@ -245,10 +243,10 @@ public class TestFragment extends Fragment {
         for (Column column : columns) {
             Boolean columnShow = testTestContext.getShowColumn().get(column);
             Object answer = testTestContext.getUserAnswer().get(column);
-            DataCell dataCell = testTestContext.getCurrentRow().getListCells().get(column);
+            DataRow row = testTestContext.getCurrentRow();
 
-            if (columnShow != null && answer != null && dataCell != null && !columnShow) {
-                column.verifyAndScoreAnswer(testTestContext, dataCell, answer);
+            if (columnShow != null && answer != null && row != null && !columnShow) {
+                column.scoreAnswer(testTestContext, row, answer);
             }
         }
     }

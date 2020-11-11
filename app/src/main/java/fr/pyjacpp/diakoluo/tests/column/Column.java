@@ -23,14 +23,12 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -47,12 +45,12 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
 import fr.pyjacpp.diakoluo.R;
-import fr.pyjacpp.diakoluo.Utils;
 import fr.pyjacpp.diakoluo.ViewUtils;
 import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
@@ -61,7 +59,6 @@ import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
 import fr.pyjacpp.diakoluo.tests.DataRow;
 import fr.pyjacpp.diakoluo.tests.Test;
-import fr.pyjacpp.diakoluo.tests.data.AnswerValidEnum;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.score.Rule;
 import fr.pyjacpp.diakoluo.tests.score.ScoreColumn;
@@ -82,10 +79,6 @@ public abstract class Column {
     public static final int SET_CAN_BE_HIDE = 1;
     public static final int SET_CAN_BE_SHOW = 1 << 1;
 
-    public static final float SCORE_RIGHT_DEFAULT = 1;
-    public static final float SCORE_WRONG_DEFAULT = 0;
-    public static final float SCORE_SKIPPED_DEFAULT = 0;
-
     protected static final int SET_DEFAULT = SET_CAN_BE_HIDE | SET_CAN_BE_SHOW;
 
     // if a field is added, all methods with a comment "// fields" should be verified
@@ -97,9 +90,6 @@ public abstract class Column {
     @Nullable
     private String description;
     private ScoreColumn scoreRule;
-    private float scoreRight;
-    private float scoreWrong;
-    private float scoreSkipped;
 
     /**
      * Default constructor that initialize a non-valid column.
@@ -225,16 +215,6 @@ public abstract class Column {
     public abstract void setDefaultValue(Object defaultValue);
 
     /**
-     * Verify if a answer inputted by the user is the same that the value stored.
-     *
-     * @param dataCell the DataCell that hold the value
-     * @param answer   the value inputted by the user
-     * @return if the a
-     */
-    @Deprecated
-    public abstract AnswerValidEnum verifyAnswer(DataCell dataCell, Object answer);
-
-    /**
      * Get if the answer inputted is equals to the answer excepted.
      *
      * @param dataCell the data cell that hold the answer
@@ -270,9 +250,6 @@ public abstract class Column {
         newColumn.description = description;
         newColumn.inputType = inputType;
         newColumn.settings = settings;
-        newColumn.scoreRight = scoreRight;
-        newColumn.scoreWrong = scoreWrong;
-        newColumn.scoreSkipped = scoreSkipped;
         newColumn.scoreRule = scoreRule;
     }
 
@@ -286,9 +263,6 @@ public abstract class Column {
         this.name = null;
         this.description = null;
         settings = -1;
-        scoreRight = SCORE_RIGHT_DEFAULT;
-        scoreWrong = SCORE_WRONG_DEFAULT;
-        scoreSkipped = SCORE_SKIPPED_DEFAULT;
         scoreRule = null;
     }
 
@@ -304,9 +278,6 @@ public abstract class Column {
         this.name = name;
         this.description = description;
         settings = SET_DEFAULT;
-        scoreRight = SCORE_RIGHT_DEFAULT;
-        scoreWrong = SCORE_WRONG_DEFAULT;
-        scoreSkipped = SCORE_SKIPPED_DEFAULT;
         scoreRule = getDefaultScoreColumn();
     }
 
@@ -361,12 +332,12 @@ public abstract class Column {
     }
 
     /**
-     * Get the score of the column
+     * Get scores rules
      *
-     * @return the score of the column
+     * @return get score rules
      */
-    public float getScoreRight() {
-        return scoreRight;
+    public ScoreColumn getScoreRules() {
+        return scoreRule;
     }
 
     /**
@@ -389,25 +360,6 @@ public abstract class Column {
     }
 
     /**
-     * Verify if the answer is correct and give score depending
-     *
-     * @param testTestContext the test context
-     * @param dataCell        the dataCell to verify
-     * @param answer          the answer given by the user
-     */
-    public void verifyAndScoreAnswer(TestTestContext testTestContext, DataCell dataCell,
-                                     Object answer) {
-        AnswerValidEnum verifyAnswer = verifyAnswer(dataCell, answer);
-        if (verifyAnswer == AnswerValidEnum.RIGHT) {
-            testTestContext.addScore(scoreRight, scoreRight);
-        } else if (verifyAnswer == AnswerValidEnum.SKIPPED) {
-            testTestContext.addScore(scoreSkipped, scoreRight);
-        } else {
-            testTestContext.addScore(scoreWrong, scoreRight);
-        }
-    }
-
-    /**
      * Get the view who show the column name.
      *
      * @param context the context to create widgets
@@ -421,12 +373,13 @@ public abstract class Column {
     }
 
     /**
-     * Show the value to the user (view only).
+     * Show the value to the user (view only). (If override, consider overriding
+     * {@link #showCorrectAnswer(Context, DataCell, Object, LinearLayout, LinearLayout.LayoutParams)}.
      *
      * @param context  the context to show the value cell
      * @param dataCell the dataCell to show
      * @return the view which contain the value
-     * @see Column#showViewValueView(Context, DataCell, Object)
+     * @see #showCorrectAnswer(Context, DataCell, Object, LinearLayout, LinearLayout.LayoutParams)
      */
     @NonNull
     public View showViewValueView(Context context, DataCell dataCell) {
@@ -434,37 +387,6 @@ public abstract class Column {
         valueTextView.setTextAppearance(context, R.style.Body0);
         valueTextView.setText(dataCell.getStringValue(context, this));
         return valueTextView;
-    }
-
-    /**
-     * Show the value formatted given by the user in test. Show the value stroked if the user has
-     * wrong, green or red...
-     *
-     * @param context  the context to show the value cell
-     * @param dataCell the dataCell to show
-     * @param answer   the answer of the user
-     * @return the view which contain the value of the user
-     * @see #showViewValueView(Context, DataCell)
-     */
-    public ShowValueResponse showViewValueView(Context context, DataCell dataCell, Object answer) {
-        MaterialTextView valueTextView = (MaterialTextView) showViewValueView(context, dataCell);
-        AnswerValidEnum answerValid = verifyAnswer(dataCell, answer);
-
-
-        if (answerValid == AnswerValidEnum.RIGHT) {
-            valueTextView.setTextColor(context.getResources().getColor(R.color.answer_right));
-        } else if (answerValid == AnswerValidEnum.SKIPPED) {
-            valueTextView.setText(R.string.skip);
-            valueTextView.setTypeface(null, Typeface.ITALIC);
-            valueTextView.setTextColor(context.getResources().getColor(R.color.answer_skipped));
-        } else {
-            valueTextView.setPaintFlags(valueTextView.getPaintFlags() |
-                    Paint.STRIKE_THRU_TEXT_FLAG);
-            valueTextView.setText(dataCell.getStringValue(context, this, answer));
-            valueTextView.setTextColor(context.getResources().getColor(R.color.answer_wrong));
-        }
-
-        return new ShowValueResponse(valueTextView, answerValid);
     }
 
     /**
@@ -548,6 +470,90 @@ public abstract class Column {
     }
 
     /**
+     * Score an answer inputted by the user is the same that the value stored.
+     *
+     * @param testTestContext the context of the test (that hold the score)
+     * @param dataRow         the current row asked
+     * @param answer          the value inputted by the user
+     */
+    public void scoreAnswer(TestTestContext testTestContext, @NonNull DataRow dataRow, Object answer) {
+        scoreRule.apply(testTestContext, this, dataRow.getListCells().get(this), answer);
+    }
+
+    /**
+     * When in a test ({@link fr.pyjacpp.diakoluo.test_tests.TestFragment}), show the corrected
+     * answer).
+     * <p>
+     * If the answer is exactly equals, show the answer green.
+     * If the answer give all points show the inputted answer green and show the excepted answer.
+     * If the answer give some points but not all, or if the answer is skipped, show the inputted
+     * answer yellow and show the excepted answer.
+     * If the answer give no points or if the answer is wrong, show the inputted answer red, strike
+     * it, and show the excepted answer.
+     * <p>
+     * If the column doesn't show the answer with a material text view (default), you will need to
+     * override this function and you should respects rules above.
+     *
+     * @param context   the context of the application
+     * @param dataCell  the cell that hold the right answer
+     * @param answer    the answer inputted by the user
+     * @param answerRow the layout to show corrected answer
+     * @param params    the params to use in the layout
+     * @see #showViewValueView(Context, DataCell)
+     */
+    public void showCorrectAnswer(Context context,
+                                  DataCell dataCell,
+                                  Object answer,
+                                  LinearLayout answerRow,
+                                  LinearLayout.LayoutParams params) {
+        MaterialTextView valueTextView = (MaterialTextView) showViewValueView(context, dataCell);
+        answerRow.addView(valueTextView, params);
+
+        float score = scoreRule.getScore(this, dataCell, answer);
+
+        Resources resources = context.getResources();
+        if (isAnswerEquals(dataCell, answer)) {
+            valueTextView.setTextColor(resources.getColor(R.color.answer_right));
+        } else if (isAnswerSkipped(dataCell, answer)) {
+            valueTextView.setText(R.string.skip);
+            valueTextView.setTypeface(null, Typeface.ITALIC);
+            valueTextView.setTextColor(resources.getColor(R.color.answer_skipped));
+
+            answerRow.addView(showViewValueView(context, dataCell), params);
+        } else if (score >= scoreRule.getMaxScore()) {
+            valueTextView.setTextColor(resources.getColor(R.color.answer_right));
+
+            answerRow.addView(showViewValueView(context, dataCell), params);
+        } else if (score > 0) {
+            valueTextView.setTextColor(resources.getColor(R.color.answer_skipped));
+
+            answerRow.addView(showViewValueView(context, dataCell), params);
+        } else {
+            valueTextView.setPaintFlags(valueTextView.getPaintFlags() |
+                    Paint.STRIKE_THRU_TEXT_FLAG);
+            valueTextView.setText(dataCell.getStringValue(context, this, answer));
+            valueTextView.setTextColor(resources.getColor(R.color.answer_wrong));
+
+            answerRow.addView(showViewValueView(context, dataCell), params);
+        }
+
+        MaterialTextView scoreView = new MaterialTextView(context);
+        scoreView.setTextAppearance(context, R.style.TestScore);
+        DecimalFormat decimalFormat = new DecimalFormat("+#.##");
+        scoreView.setText(resources.getString(R.string.score_test_format,
+                decimalFormat.format((double) score)));
+        if (score > 0) {
+            scoreView.setTextColor(resources.getColor(R.color.answer_right));
+        } else if (score == 0) {
+            scoreView.setTextColor(resources.getColor(R.color.answer_skipped));
+        } else {
+            scoreView.setTextColor(resources.getColor(R.color.answer_wrong));
+        }
+
+        answerRow.addView(scoreView);
+    }
+
+    /**
      * Set the settings view of the column.
      * Override method must add to root the view and must call the super method
      *
@@ -562,17 +568,10 @@ public abstract class Column {
 
         Context context = parent.getContext();
 
-        MaterialTextView scoreTextView =
-                inflatedView.findViewById(R.id.scoreTextView);
         MaterialTextView canBeHideTextView =
                 inflatedView.findViewById(R.id.canBeHideTextView);
         MaterialTextView canBeShowTextView =
                 inflatedView.findViewById(R.id.canBeShowTextView);
-
-        scoreTextView.setText(context.getString(R.string.column_settings_score_view,
-                Utils.formatScore(scoreRight),
-                Utils.formatScore(scoreSkipped),
-                Utils.formatScore(scoreWrong)));
 
         ViewUtils.setBooleanView(context,
                 canBeHideTextView, isInSettings(SET_CAN_BE_HIDE));
@@ -594,14 +593,6 @@ public abstract class Column {
         View inflatedView =
                 layoutInflater.inflate(R.layout.fragment_column_settings_edit_default, parent, true);
 
-        final Context context = parent.getContext();
-
-        final TextInputEditText scoreRightInputEditText =
-                inflatedView.findViewById(R.id.scoreRightEditText);
-        final TextInputEditText scoreWrongInputEditText =
-                inflatedView.findViewById(R.id.scoreWrongEditText);
-        final TextInputEditText scoreSkippedInputEditText =
-                inflatedView.findViewById(R.id.scoreSkippedEditText);
         MaterialCheckBox canBeHideTextView =
                 inflatedView.findViewById(R.id.canBeHideCheckBox);
         MaterialCheckBox canBeShowTextView =
@@ -609,94 +600,8 @@ public abstract class Column {
 
         boolean canHide = isInSettings(SET_CAN_BE_HIDE);
 
-        scoreRightInputEditText.setText(String.valueOf(scoreRight));
-        scoreRightInputEditText.setEnabled(canHide);
-        scoreWrongInputEditText.setText(String.valueOf(scoreWrong));
-        scoreWrongInputEditText.setEnabled(canHide);
-        scoreSkippedInputEditText.setText(String.valueOf(scoreSkipped));
-        scoreSkippedInputEditText.setEnabled(canHide);
-
         canBeHideTextView.setChecked(canHide);
         canBeShowTextView.setChecked(isInSettings(SET_CAN_BE_SHOW));
-
-        final TextWatcher watcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                boolean[] scoresErrors = {false, false, false};
-                try {
-                    scoreRight = Float.parseFloat(scoreRightInputEditText.getEditableText().toString());
-                } catch (NumberFormatException ignored) {
-                    scoreRightInputEditText.setError(context.getString(R.string.number_required));
-                    scoreRight = SCORE_RIGHT_DEFAULT;
-                    scoresErrors[0] = true;
-                }
-
-                try {
-                    scoreWrong = Float.parseFloat(scoreWrongInputEditText.getEditableText().toString());
-                } catch (NumberFormatException ignored) {
-                    scoreWrongInputEditText.setError(context.getString(R.string.number_required));
-                    scoreWrong = SCORE_WRONG_DEFAULT;
-                    scoresErrors[1] = true;
-                }
-
-                try {
-                    scoreSkipped = Float.parseFloat(scoreSkippedInputEditText.getEditableText().toString());
-                } catch (NumberFormatException ignored) {
-                    scoreSkippedInputEditText.setError(context.getString(R.string.number_required));
-                    scoreSkipped = SCORE_SKIPPED_DEFAULT;
-                    scoresErrors[2] = true;
-                }
-
-                if (!scoresErrors[0] && scoreRight <= scoreSkipped) {
-                    scoreRightInputEditText.setError(
-                            context.getString(R.string.score_right_lesser_skipped));
-                } else if (!scoresErrors[0]) {
-                    scoreRightInputEditText.setError(null);
-                }
-                if (!scoresErrors[1] && scoreWrong >= scoreRight) {
-                    scoreWrongInputEditText.setError(
-                            context.getString(R.string.score_wrong_greater_right));
-                } else if (!scoresErrors[1]) {
-                    scoreWrongInputEditText.setError(null);
-                }
-                if (!scoresErrors[2] && scoreSkipped < scoreWrong) {
-                    scoreSkippedInputEditText.setError(
-                            context.getString(R.string.score_skipped_lesser_wrong));
-                } else if (!scoresErrors[2]) {
-                    scoreSkippedInputEditText.setError(null);
-                }
-            }
-        };
-
-
-        canBeHideTextView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                scoreRightInputEditText.setEnabled(b);
-                scoreWrongInputEditText.setEnabled(b);
-                scoreSkippedInputEditText.setEnabled(b);
-                if (b) {
-                    watcher.afterTextChanged(scoreRightInputEditText.getEditableText());
-                } else {
-                    scoreRightInputEditText.setError(null);
-                    scoreWrongInputEditText.setError(null);
-                    scoreSkippedInputEditText.setError(null);
-                }
-            }
-        });
-        scoreRightInputEditText.addTextChangedListener(watcher);
-        scoreWrongInputEditText.addTextChangedListener(watcher);
-        scoreSkippedInputEditText.addTextChangedListener(watcher);
-
-        if (canHide) watcher.afterTextChanged(scoreRightInputEditText.getEditableText());
     }
 
     /**
@@ -708,20 +613,10 @@ public abstract class Column {
      * @see #getEditColumnSettings(LayoutInflater, ViewGroup)
      */
     public void setEditColumnSettings(ViewGroup parent) {
-        TextInputEditText scoreRightInputEditText =
-                parent.findViewById(R.id.scoreRightEditText);
-        TextInputEditText scoreWrongInputEditText =
-                parent.findViewById(R.id.scoreWrongEditText);
-        TextInputEditText scoreSkippedInputEditText =
-                parent.findViewById(R.id.scoreSkippedEditText);
         MaterialCheckBox canBeHideTextView =
                 parent.findViewById(R.id.canBeHideCheckBox);
         MaterialCheckBox canBeShowTextView =
                 parent.findViewById(R.id.canBeShowCheckBox);
-
-        scoreRight = ViewUtils.getFloatFromEditText(scoreRightInputEditText, SCORE_RIGHT_DEFAULT);
-        scoreWrong = ViewUtils.getFloatFromEditText(scoreWrongInputEditText, SCORE_WRONG_DEFAULT);
-        scoreSkipped = ViewUtils.getFloatFromEditText(scoreSkippedInputEditText, SCORE_SKIPPED_DEFAULT);
 
         setSettings(SET_CAN_BE_HIDE, canBeHideTextView.isChecked());
         setSettings(SET_CAN_BE_SHOW, canBeShowTextView.isChecked());
@@ -766,9 +661,6 @@ public abstract class Column {
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_NAME, name);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_DESCRIPTION, description);
         XmlSaver.writeData(fileOutputStream, FileManager.TAG_SETTINGS, settings);
-        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_RIGHT, scoreRight);
-        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_WRONG, scoreWrong);
-        XmlSaver.writeData(fileOutputStream, FileManager.TAG_SCORE_SKIPPED, scoreSkipped);
         scoreRule.writeXml(fileOutputStream);
     }
 
@@ -810,18 +702,6 @@ public abstract class Column {
                 settings = XmlLoader.readInt(parser);
                 break;
 
-            case FileManager.TAG_SCORE_RIGHT:
-                scoreRight = XmlLoader.readFloat(parser, SCORE_RIGHT_DEFAULT);
-                break;
-
-            case FileManager.TAG_SCORE_WRONG:
-                scoreWrong = XmlLoader.readFloat(parser, SCORE_WRONG_DEFAULT);
-                break;
-
-            case FileManager.TAG_SCORE_SKIPPED:
-                scoreSkipped = XmlLoader.readFloat(parser, SCORE_SKIPPED_DEFAULT);
-                break;
-
             case FileManager.TAG_SCORE_COLUMN:
                 scoreRule = ScoreColumn.readScoreColumn(parser, inputType);
                 break;
@@ -839,9 +719,7 @@ public abstract class Column {
      */
     protected void setDefaultValueBackWardCompatibility(int fileVersion) {
         if (fileVersion < FileManager.VER_V_0_3_0) {
-            if (scoreRight < 0) scoreRight = SCORE_RIGHT_DEFAULT;
-            if (scoreWrong < 0) scoreWrong = SCORE_WRONG_DEFAULT;
-            if (scoreSkipped < 0) scoreSkipped = SCORE_SKIPPED_DEFAULT;
+
         }
 
         if (scoreRule == null)
@@ -877,7 +755,6 @@ public abstract class Column {
         // fields
         name = previousColumn.name;
         description = previousColumn.description;
-        scoreRight = previousColumn.scoreRight;
         scoreRule = previousColumn.scoreRule;
         setSettings(SET_CAN_BE_HIDE, previousColumn.isInSettings(SET_CAN_BE_HIDE));
         setSettings(SET_CAN_BE_SHOW, previousColumn.isInSettings(SET_CAN_BE_SHOW));
@@ -904,90 +781,9 @@ public abstract class Column {
             Column c = (Column) obj;
             // fields
             return Objects.equals(c.name, name) && Objects.equals(c.description, description) &&
-                    c.settings == settings && c.scoreRight == scoreRight &&
-                    c.scoreWrong == scoreWrong && c.scoreSkipped == scoreSkipped &&
+                    c.settings == settings  &&
                     c.scoreRule.equals(scoreRule);
         }
         return false;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public void setScore(int scoreRight, int scoreWrong, int scoreSkipped) {
-        this.scoreRight = scoreRight;
-        this.scoreWrong = scoreWrong;
-        this.scoreSkipped = scoreSkipped;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public void setScore(Column c) {
-        this.scoreRight = c.scoreRight;
-        this.scoreWrong = c.scoreWrong;
-        this.scoreSkipped = c.scoreSkipped;
-    }
-
-    /**
-     * An response object in test
-     */
-    public class ShowValueResponse {
-        private final View valueView;
-        private final AnswerValidEnum answerValid;
-
-        /**
-         * Constructor
-         *
-         * @param valueView   the view which contain the value
-         * @param answerValid if the answer is right
-         */
-        ShowValueResponse(View valueView, AnswerValidEnum answerValid) {
-            this.valueView = valueView;
-            this.answerValid = answerValid;
-        }
-
-        /**
-         * Get the view which contain the value to show
-         *
-         * @return the view to show
-         */
-        public View getValueView() {
-            return valueView;
-        }
-
-        /**
-         * Get if the answer is right
-         *
-         * @return if the answer is right
-         */
-        public boolean isAnswerRight() {
-            return answerValid == AnswerValidEnum.RIGHT;
-        }
-
-        /**
-         * Get a score view that show the score given
-         *
-         * @param context the context
-         * @return the view that show the score
-         */
-        public View getScoreView(Context context) {
-            Resources resources = context.getResources();
-
-            MaterialTextView view = new MaterialTextView(context);
-            view.setTextAppearance(context, R.style.TestScore);
-
-            float scoreGiven;
-            if (answerValid == AnswerValidEnum.RIGHT) {
-                scoreGiven = scoreRight;
-                view.setTextColor(resources.getColor(R.color.answer_right));
-            } else if (answerValid == AnswerValidEnum.SKIPPED) {
-                view.setTextColor(resources.getColor(R.color.answer_skipped));
-                scoreGiven = scoreSkipped;
-            } else {
-                view.setTextColor(resources.getColor(R.color.answer_wrong));
-                scoreGiven = scoreWrong;
-            }
-
-            view.setText(Utils.formatScore(scoreGiven));
-
-            return view;
-        }
     }
 }

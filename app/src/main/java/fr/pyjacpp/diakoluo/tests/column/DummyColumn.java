@@ -23,6 +23,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,8 +34,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import fr.pyjacpp.diakoluo.test_tests.TestTestContext;
-import fr.pyjacpp.diakoluo.tests.data.AnswerValidEnum;
+import fr.pyjacpp.diakoluo.test_tests.TestFragment;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.score.ScoreColumn;
 
@@ -82,18 +82,6 @@ public class DummyColumn extends Column {
     @Override
     public void setDefaultValue(Object defaultValue) {
         // TODO set the default value
-    }
-
-    /**
-     * Verify if a answer inputted by the user is the same that the value stored.
-     *
-     * @param dataCell the DataCell that hold the value
-     * @param answer   the value inputted by the user
-     * @return if the a
-     */
-    @Override
-    public AnswerValidEnum verifyAnswer(DataCell dataCell, Object answer) {
-        return AnswerValidEnum.WRONG; // TODO verify answer depending of the data cell and the answer
     }
 
     /**
@@ -191,16 +179,29 @@ public class DummyColumn extends Column {
     }
 
     /**
-     * Verify if the answer is correct and give score depending
+     * When in a test ({@link TestFragment}), show the corrected
+     * answer).
+     * <p>
+     * If the answer is exactly equals, show the answer green.
+     * If the answer give all points show the inputted answer green and show the excepted answer.
+     * If the answer give some points but not all, or if the answer is skipped, show the inputted
+     * answer yellow and show the excepted answer.
+     * If the answer give no points or if the answer is wrong, show the inputted answer red, strike
+     * it, and show the excepted answer.
+     * <p>
+     * If the column doesn't show the answer with a material text view (default), you will need to
+     * override this function and you should respects rules above.
      *
-     * @param testTestContext the test context
-     * @param dataCell        the dataCell to verify
-     * @param answer          the answer given by the user
+     * @param context   the context of the application
+     * @param dataCell  the cell that hold the right answer
+     * @param answer    the answer inputted by the user
+     * @param answerRow the layout to show corrected answer
+     * @param params    the params to use in the layout
+     * @see #showViewValueView(Context, DataCell)
      */
     @Override
-    public void verifyAndScoreAnswer(TestTestContext testTestContext, DataCell dataCell, Object answer) {
-        // TODO implement to create a non binary score (0/all) or delete this method
-        //  (super call not recommended)
+    public void showCorrectAnswer(Context context, DataCell dataCell, Object answer, LinearLayout answerRow, LinearLayout.LayoutParams params) {
+        // TODO implement if #showViewValueView is override (or remove)
     }
 
     /**
@@ -209,7 +210,7 @@ public class DummyColumn extends Column {
      * @param context the context to show the value cell
      * @param dataCell the dataCell to show
      * @return the view which contain the value
-     * @see #showEditValueView(Context, Object)
+     * @see #showCorrectAnswer(Context, DataCell, Object, LinearLayout, LinearLayout.LayoutParams)
      */
     @NonNull
     @Override

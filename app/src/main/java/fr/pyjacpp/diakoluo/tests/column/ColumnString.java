@@ -41,7 +41,6 @@ import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
-import fr.pyjacpp.diakoluo.tests.data.AnswerValidEnum;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 import fr.pyjacpp.diakoluo.tests.data.DataCellString;
 
@@ -76,29 +75,6 @@ public class ColumnString extends Column {
         super.initialize(name, description);
         defaultValue = "";
         settings = SET_DEFAULT;
-    }
-
-    @Override
-    public AnswerValidEnum verifyAnswer(DataCell dataCell, Object answer) {
-        DataCellString dataCellString = (DataCellString) dataCell;
-        String value = dataCellString.getValue();
-        String a = (String) answer;
-        if (isInSettings(SET_REMOVE_USELESS_SPACES)) {
-            value = Utils.removeUselessSpaces(value);
-            a = Utils.removeUselessSpaces(a);
-        }
-
-
-        boolean valueRight;
-        if (isInSettings(SET_CASE_SENSITIVE)) {
-            valueRight = value.equals(a);
-        } else {
-            valueRight = value.equalsIgnoreCase(a);
-        }
-        
-        if (valueRight) return AnswerValidEnum.RIGHT;
-        else if (a.length() <= 0)  return AnswerValidEnum.SKIPPED;
-        else return AnswerValidEnum.WRONG;
     }
 
     /**

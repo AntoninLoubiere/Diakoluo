@@ -89,11 +89,9 @@ public class TestTestContext {
 
     /**
      * Create a test from a bundle. The bundle must contain a TestTestContext.
-     * Use {@link #bundleContainTestTestContext(Bundle)} to verify that.
      *
      * @param test the test to test
      * @param b    the bundle that contain the TestTest context
-     * @see #bundleContainTestTestContext(Bundle)
      */
     public TestTestContext(@NonNull Test test, @NonNull Bundle b) {
         this.test = test;
@@ -145,7 +143,7 @@ public class TestTestContext {
             boolean canHide = c.isInSettings(Column.SET_CAN_BE_HIDE);
             boolean canShow = c.isInSettings(Column.SET_CAN_BE_SHOW);
 
-            float score = c.getScoreRight();
+            float score = c.getScoreRules().getMaxScore();
             if (canHide && canShow) {
                 columnsAskRandom.add(c);
                 columnsAsk.add(c);
@@ -227,14 +225,16 @@ public class TestTestContext {
             int index = random.nextInt(columnsToChoose.size());
             Column column = columnsToChoose.get(index);
             Boolean previous = showColumn.get(column);
-            if (previous == null || !previous) columnSelectedScoreSum -= column.getScoreRight();
+            if (previous == null || !previous) columnSelectedScoreSum -= column.getScoreRules()
+                    .getMaxScore();
             showColumn.put(column, true);
             columnsToChoose.remove(index);
         }
 
         for (Column column : columnsToChoose) {
             Boolean previous = showColumn.get(column);
-            if (previous != null && previous) columnSelectedScoreSum += column.getScoreRight();
+            if (previous != null && previous) columnSelectedScoreSum += column.getScoreRules()
+                    .getMaxScore();
             showColumn.put(column, false);
         }
     }
@@ -261,7 +261,8 @@ public class TestTestContext {
         for (Column column : columnsAsk) {
             userAnswer.put(column, null);
             Boolean previous = showColumn.get(column);
-            if (previous != null && previous) columnSelectedScoreSum += column.getScoreRight();
+            if (previous != null && previous) columnSelectedScoreSum += column.getScoreRules()
+                    .getMaxScore();
             showColumn.put(column, false);
         }
         selectShowColumn();

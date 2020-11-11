@@ -123,7 +123,7 @@
     <string name="score_skipped_lesser_wrong">A wrong answer will give more points than a skipped answer.</string>
     <string name="column_list_skipped_item" />
     <string name="no_score">This test doen\'t give score</string>
-    <string name="score_test_format">%+f</string>
+    <string name="score_test_format" translatable="false">%s</string>
     <string name="default_value_column_settings">Default value (edit):</string>
     <string name="test_default_description" />
     <string name="loading">Loading</string>

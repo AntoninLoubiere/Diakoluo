@@ -48,7 +48,6 @@ import fr.pyjacpp.diakoluo.save_test.FileManager;
 import fr.pyjacpp.diakoluo.save_test.XmlLoader;
 import fr.pyjacpp.diakoluo.save_test.XmlSaver;
 import fr.pyjacpp.diakoluo.tests.ColumnInputType;
-import fr.pyjacpp.diakoluo.tests.data.AnswerValidEnum;
 import fr.pyjacpp.diakoluo.tests.data.DataCell;
 
 /**
@@ -121,14 +120,6 @@ public class ColumnList extends Column {
         }
         values.add(migration);
         return valuesSize;
-    }
-
-    @Override
-    public AnswerValidEnum verifyAnswer(DataCell dataCell, Object answer) {
-        int value = ((int) answer);
-        if (value < 0) return AnswerValidEnum.SKIPPED;
-        else if (value == ((int) dataCell.getValue())) return AnswerValidEnum.RIGHT;
-        else return AnswerValidEnum.WRONG;
     }
 
     /**

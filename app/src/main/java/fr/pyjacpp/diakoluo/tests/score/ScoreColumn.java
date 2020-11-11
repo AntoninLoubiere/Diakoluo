@@ -46,8 +46,8 @@ public class ScoreColumn {
 
     private static final float DEFAULT_MAX_SCORE = 1f;
 
-    public ArrayList<Rule> rules;
-    public float maxScore;
+    private ArrayList<Rule> rules;
+    private float maxScore;
 
     /**
      * Create a non-initialised, a non-valid ScoreColumn for xml load only.
@@ -127,6 +127,18 @@ public class ScoreColumn {
      * @param answer          the answer inputted by the user
      */
     public void apply(TestTestContext testTestContext, Column column, DataCell dataCell, Object answer) {
+        testTestContext.addScore(getScore(column, dataCell, answer), maxScore);
+    }
+
+    /**
+     * Get the score of the answer.
+     *
+     * @param column   the column that hold the dataCell
+     * @param dataCell the dataCell that hold the right value
+     * @param answer   the answer inputted by the user
+     * @return the score to give
+     */
+    public float getScore(Column column, DataCell dataCell, Object answer) {
         ScoreActionContext context = new ScoreActionContext();
         for (Rule r : rules) {
             if (r.getCondition().get(column, dataCell, answer) &&
@@ -135,7 +147,7 @@ public class ScoreColumn {
                 break;
             }
         }
-        testTestContext.addScore(context.getCurrentScore(), maxScore);
+        return context.getCurrentScore();
     }
 
     /**
@@ -150,6 +162,10 @@ public class ScoreColumn {
         );// TODO
         viewCreator.setUseAccordion(false);
         return viewCreator;
+    }
+
+    public float getMaxScore() {
+        return maxScore;
     }
 
     /**
